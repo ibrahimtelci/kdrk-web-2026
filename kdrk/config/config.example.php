@@ -10,6 +10,10 @@ return [
     // Sitenin kök adresi; sonunda / olmadan. Alt klasörde çalışıyorsa yolu ekleyin.
     'base_url' => 'http://localhost:8000',
 
+    // true → tüm sayfalar "X-Robots-Tag: noindex" ile gelir. Deneme adresinde (yeni.kdrk.org.tr) true,
+    // asıl alan adına (kdrk.org.tr) geçince false yapılır.
+    'noindex' => false,
+
     'db' => [
         'host' => '127.0.0.1',
         'port' => 3306,

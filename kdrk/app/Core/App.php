@@ -113,5 +113,9 @@ final class App
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: SAMEORIGIN');
         header('Referrer-Policy: strict-origin-when-cross-origin');
+        // Deneme sunucusu (yeni.kdrk.org.tr) arama motorlarına kapalı: config 'noindex' => true
+        if (self::config('noindex')) {
+            header('X-Robots-Tag: noindex, nofollow');
+        }
     }
 }
