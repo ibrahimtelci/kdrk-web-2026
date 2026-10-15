@@ -327,3 +327,21 @@ Sunucuya yayın **SFTP** ile yapılır (düz FTP yerine SFTP tercih edilir). Her
   - `node tools/mobile-check.mjs [--shots]`: 390 ve 360 px'te yatay taşma, dokunma alanı ve form yazı boyutu
 - Yeni sayfa veya bileşen eklendiğinde bu testlere de eklenir.
 - Git deposu kaynak olarak kalır. Yalnızca SFTP ile sunucuda yapılmış bir değişiklik geçerli sayılmaz; değişiklik önce depoya girer.
+
+## 19. SEO (sayfa hazırlarken)
+
+Kapsamlı SEO çalışması (sitemap, robots, Schema.org, panel SEO alanları, Doğa Rehberi) yayın ve testlerden sonra yapılacak; plan ve kulübün raporu: `docs/seo-gereksinimleri.md`. O zamana kadar her yeni sayfa ve modül aşağıdaki kurallarla hazırlanır; böylece sonraki çalışma düzeltme değil ekleme olur.
+
+- **Başlık ve açıklama:** Her sayfa controller'da `$page['title']` ve `$page['description']` verir; ikisi de sayfaya özgüdür, başka sayfayla aynı olmaz. Başlık ~60, açıklama ~155 karakteri geçmez. Açıklama içeriği anlatan doğal bir cümledir; kelime listesi değildir. Kısa ad kulüp onayına kadar "KDRK"dır ("Kaçkar Dağcılık Kulübü" kullanılmaz).
+- **Başlık hiyerarşisi:** Sayfada tek `h1`; altında `h2` → `h3` sırası atlanmaz. Anasayfada `h1` yalnız ilk slayttadır (§4).
+- **Canonical ve tekrar:** `$page['current']` + `currentParams` her sayfada verilir (canonical buradan üretilir). Filtreli ve sayfalı liste adresleri (`?yil=`, `?sayfa=`) ayrı sayfa sayılmaz; canonical yalın adrestir. Aynı içerik için ikinci URL açılmaz; eş anlamlı adres gerekiyorsa `$r->legacy()` / 301 ile mevcut sayfaya yönlenir.
+- **URL:** Kalıcı adresler `slugify()` ile, Türkçe karaktersiz, küçük harf ve tireli üretilir. Yayınlanmış bir adres başlık değişince kendiliğinden değişmez; panelde "değiştirirsen eski link çalışmaz" uyarısı bulunur.
+- **İçerik sunucuda:** Başlık, metin, tarih, yer ve görsel HTML'de gelir; JS yalnızca kolaylık katar (§12). Liste ve filtreler JS kapalıyken de çalışan GET formu ya da linktir.
+- **Görseller:** İçerik görseli `img_tag($src, $sizes, $fallback, $alt)` ile basılır ve anlamlı bir `alt` alır (fotoğraf açıklaması; yoksa sayfa veya albüm başlığı + sıra). Yalnızca süs olan görselde `alt=""`. Sayfanın paylaşım görseli `$page['image']` ile verilir (og:image).
+- **İç bağlantı:** İlgili içerikler birbirine bağlanır (disiplin ↔ faaliyet ↔ galeri albümü ↔ duyuru ↔ Bilgi Bankası). Bağlantılar `url()` ile üretilir; metni "buraya tıkla" değil, gittiği yeri anlatan ifadedir.
+- **Doğal dil:** Anahtar kelime doldurma, gizli metin, `meta keywords` yok. Kelimeler metinde anlamlı yerde ve bir kez geçer.
+- **Gerçek bilgi:** Doğrulanmamış iddia, adres, fiyat, puan, rota veya güvenlik bilgisi yazılmaz (§9). Kulübün yapmadığı faaliyet (ör. rafting, kulüp teyidi olmadan) hedeflenmez.
+- **Boş sayfa yok:** İçeriği olmayan kayıt sitede görünmez (404 ya da listede yok). Örnek: fotoğrafsız albüm, metinsiz duyuru sayfası. Sadece anahtar kelime için sayfa açılmaz.
+- **Yapılandırılmış veriye hazırlık:** Tarih, yer, organizatör, görsel gibi bilgiler ayrı veritabanı sütunlarında tutulur; metnin içine gömülmez. JSON-LD sonradan bu alanlardan üretilecek.
+- **İndeksleme:** Panel (`/yonetim`), teşekkür ve hata sayfaları indekslenmez (`$page['robots']` ya da başlık). Deneme sunucusunda `config 'noindex' => true`; asıl alan adına geçişte `false` yapılır.
+- **Test:** Yeni sayfa `tools/test.php` sayfa listesine eklenir; meta açıklama, `aria-current`, link ve iskelet denetiminden geçer.
