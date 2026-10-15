@@ -2,7 +2,8 @@
 /**
  * Faaliyet detayı + başvuru formu.
  * @var array $a       Activity::decorate() çıktısı
- * @var array $photos  [['thumb' => …, 'full' => …], …] — faaliyetin galeri fotoğrafları
+ * @var array      $photos  faaliyete bağlı albümün ilk fotoğrafları (gallery_photos)
+ * @var array|null $album   o albüm (Gallery::decorate) — "Tüm fotoğraflar" linki
  * @var array $old     sunucu doğrulamasından dönen form değerleri (JS kapalıyken)
  * @var array $errors  alan => hata mesajı
  * @var bool  $applied JS kapalıyken başarılı gönderim sonrası
@@ -147,11 +148,11 @@ $summary = array_filter([
               <span class="eyebrow">Faaliyet Fotoğrafları</span>
               <h2>Sahadan kareler.</h2>
             </div>
-            <a href="<?= e(url('galeri')) ?>" class="btn-text">Tüm Galeriye Git <span class="arrow">→</span></a>
+            <a href="<?= e($album['url']) ?>" class="btn-text">Tüm Fotoğraflar (<?= (int) $album['photo_count'] ?>) <span class="arrow">→</span></a>
           </div>
           <div class="photo-grid">
 <?php foreach ($photos as $i => $p): ?>
-            <button type="button" class="photo-tile" data-lightbox="<?= e($p['full']) ?>" aria-label="Fotoğrafı büyüt (<?= $i + 1 ?> / <?= $n ?>)"><div style="background-image:url('<?= e($p['thumb']) ?>')"></div></button>
+            <button type="button" class="photo-tile" data-lightbox="<?= e(img($p['path'], 1600)) ?>" aria-label="Fotoğrafı büyüt (<?= $i + 1 ?> / <?= $n ?>)"><div><?= img_tag($p['path'], '(min-width: 1024px) 200px, 33vw', 400, $p['caption'] ?? '') ?></div></button>
 <?php endforeach ?>
           </div>
         </article>

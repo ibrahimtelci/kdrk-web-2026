@@ -59,7 +59,8 @@ final class ActivityController extends BaseController
     public function edit(string $id): void
     {
         $a = $this->find((int) $id);
-        $this->render('activities/form', $a['title'], 'activities', ['a' => $a]);
+        $albumId = App::db()->value('SELECT id FROM gallery_albums WHERE activity_id = ? ORDER BY id LIMIT 1', [$a['id']]);
+        $this->render('activities/form', $a['title'], 'activities', ['a' => $a, 'albumId' => $albumId !== null ? (int) $albumId : null]);
     }
 
     public function store(): void

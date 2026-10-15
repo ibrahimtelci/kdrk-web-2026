@@ -54,6 +54,57 @@
     coverPrev.style.backgroundImage = 'url(' + URL.createObjectURL(f) + ')';
   });
 
+  /* Galeri yükleyici: her dosya ayrı istekte gider (sunucunun toplam istek sınırına takılmaz) */
+  const upForm = $('[data-photo-upload]');
+  if (upForm && window.fetch && window.FormData) {
+    const input = $('[data-photo-input]', upForm), zone = $('[data-dropzone]', upForm), prog = $('[data-up-progress]', upForm);
+    const submitRow = $('[data-up-submit]', upForm);
+    const token = upForm.querySelector('input[name="_csrf"]').value;
+    const OK = ['image/jpeg', 'image/png', 'image/webp'];
+    if (submitRow) submitRow.hidden = true;
+    let busy = false;
+    const say = (html) => { prog.hidden = false; prog.innerHTML = html; };
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    async function send(files) {
+      if (busy || !files.length) return;
+      busy = true;
+      const errors = [];
+      const list = [...files].filter(f => {
+        if (!OK.includes(f.type)) { errors.push(f.name + ': yalnızca JPG, PNG veya WebP yüklenebilir.'); return false; }
+        if (f.size > 15 * 1024 * 1024) { errors.push(f.name + ': dosya 15 MB’tan büyük.'); return false; }
+        return true;
+      });
+      let done = 0;
+      for (const f of list) {
+        say('Yükleniyor: <b>' + done + ' / ' + list.length + '</b> · ' + esc(f.name));
+        const fd = new FormData();
+        fd.append('_csrf', token);
+        fd.append('photos[]', f);
+        try {
+          const r = await fetch(upForm.action, { method: 'POST', body: fd, headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+          const j = await r.json().catch(() => ({ ok: false, errors: ['Sunucu yanıt vermedi (' + r.status + ').'] }));
+          if (j.ok) done++; else errors.push(...(j.errors || [f.name + ': yüklenemedi.']));
+        } catch (_) {
+          errors.push(f.name + ': bağlantı kesildi, tekrar dene.');
+        }
+      }
+      busy = false;
+      input.value = '';
+      if (!errors.length) {
+        say('<b>' + done + ' fotoğraf yüklendi.</b> Sayfa yenileniyor…');
+        location.href = location.pathname + '#fotograflar';
+        location.reload();
+        return;
+      }
+      say((done ? '<b>' + done + ' fotoğraf yüklendi.</b> ' : '') + errors.map(e => '<span class="f-err">' + esc(e) + '</span>').join('') +
+        (done ? ' <a href="' + location.pathname + '#fotograflar" onclick="location.reload()">Sayfayı yenile</a>' : ''));
+    }
+    input.addEventListener('change', () => send(input.files));
+    ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('drag'); }));
+    ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('drag'); }));
+    zone.addEventListener('drop', e => send(e.dataTransfer.files));
+  }
+
   /* Ulaşım: kulüp aracı seçilince biniş noktası görünür */
   $$('[data-transport]').forEach(sel => {
     const pick = sel.closest('form').querySelector('[data-pickup]');

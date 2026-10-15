@@ -5,6 +5,7 @@ namespace App\Controllers\Site;
 
 use App\Core\View;
 use App\Models\Activity;
+use App\Models\Gallery;
 
 final class DisciplineController
 {
@@ -18,6 +19,7 @@ final class DisciplineController
         echo View::render('pages/discipline/' . $slug, [
             'activities' => Activity::upcoming(3, $category),
             'category'   => $category,
+            'strip'      => Gallery::strip($category),
             'page'       => [
                 'title'         => $title,
                 'description'   => $description,

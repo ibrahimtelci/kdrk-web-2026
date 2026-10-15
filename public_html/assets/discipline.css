@@ -98,3 +98,4 @@
 .level-card .lv-tag.education{color:#38BDF8}
 .level-card .lv-link{margin-top:auto;min-height:44px;display:inline-flex;align-items:center;font-size:15px;font-weight:600;color:var(--accent-primary);text-decoration:none}
 .level-card .lv-link:hover{text-decoration:underline}
+.disc-strip-empty { margin: 0; font-size: 16px; line-height: 1.6; color: var(--text-secondary); }

@@ -8,6 +8,7 @@ use App\Core\Session;
 use App\Core\View;
 use App\Models\Activity;
 use App\Models\Application;
+use App\Models\Gallery;
 
 final class ActivityController
 {
@@ -94,9 +95,11 @@ final class ActivityController
 
     private function render(array $a, array $old, array $errors, bool $applied): void
     {
+        $album = Gallery::forActivity((int) $a['id']);
         echo View::render('pages/activities/show', [
             'a'       => $a,
-            'photos'  => [],
+            'album'   => $album,
+            'photos'  => $album ? Gallery::photos((int) $album['id'], 6) : [],
             'old'     => $old,
             'errors'  => $errors,
             'applied' => $applied,

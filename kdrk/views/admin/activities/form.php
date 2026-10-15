@@ -2,6 +2,7 @@
 /**
  * Faaliyet ekle / düzenle.
  * @var array|null $a       düzenlenen faaliyet (Activity::decorate) ya da null
+ * @var int|null   $albumId faaliyete bağlı galeri albümü
  * @var array      $old     hata sonrası geri dönen form değerleri
  * @var array      $errors  alan => mesaj
  */
@@ -48,6 +49,11 @@ $training = array_key_exists('title', $old) ? !empty($old['is_training']) : (boo
   <div class="page-head-actions">
     <?= '<span class="chip ' . $S['activity'][$a['status']][1] . ' dot">' . e($S['activity'][$a['status']][0]) . '</span>' ?>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('admin.applications', ['id' => $a['id']])) ?>"><?= icon('users', 14) ?>Başvurular (<?= (int) $a['taken'] ?>)</a>
+<?php if (($albumId ?? null) !== null): ?>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('admin.gallery.edit', ['id' => $albumId])) ?>"><?= icon('gallery', 14) ?>Fotoğraflar</a>
+<?php elseif (Auth::canEdit()): ?>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('admin.gallery.new', ['faaliyet' => $a['id']])) ?>"><?= icon('gallery', 14) ?>Albüm oluştur</a>
+<?php endif ?>
     <a class="btn btn-ghost btn-sm" href="<?= e($a['url']) ?>" target="_blank" rel="noopener"><?= icon('ext', 14) ?>Sitede gör</a>
   </div>
 <?php endif ?>

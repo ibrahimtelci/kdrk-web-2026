@@ -116,6 +116,11 @@ foreach (array_keys(require KDRK_ROOT . '/app/disciplines.php') as $slug) {
 foreach (App::db()->all('SELECT slug FROM activities') as $r) {
     $pages[] = '/faaliyetler/' . $r['slug'];
 }
+$pages[] = '/galeri';
+$pages[] = '/galeri?yil=2024&kategori=dagcilik';
+foreach (App::db()->all('SELECT slug FROM gallery_albums g WHERE is_published = 1 AND EXISTS (SELECT 1 FROM gallery_photos p WHERE p.album_id = g.id)') as $r) {
+    $pages[] = '/galeri/' . $r['slug'];
+}
 
 $linkCache = [];
 $problems = [];
@@ -397,6 +402,56 @@ $r = http('POST', "$BASE/yonetim/kullanicilar/{$tu['admin']}", ['jar' => 'admin'
 check($db->value('SELECT role FROM users WHERE id = ?', [$tu['admin']]) === 'admin', 'admin kendi yetkisini düşüremez');
 $r = http('POST', "$BASE/yonetim/kullanicilar", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'name' => 'Kısa Parola', 'email' => 'kisa@example.invalid', 'role' => 'editor', 'password' => '123', 'is_active' => '1']]);
 check(!$db->value("SELECT COUNT(*) FROM users WHERE email = 'kisa@example.invalid'"), 'kısa parolalı kullanıcı oluşturulmaz');
+
+// Galeri: albüm, fotoğraf yükleme, sıralama, kapak, silme (CLAUDE.md §15 dosya yükleme)
+$t = $token('admin', '/yonetim/galeri/yeni');
+$r = http('POST', "$BASE/yonetim/galeri", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Albüm']]);
+$form = http('GET', $r['location'], ['jar' => 'admin'])['body'];
+check($r['code'] === 303 && str_contains($form, 'tarih gerekli') && str_contains($form, 'kategori seç') && str_contains($form, 'value="Test Albüm"'), 'galeri: bağsız albümde tarih/kategori zorunlu, girilen ad korunur');
+$r = http('POST', "$BASE/yonetim/galeri", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Albüm', 'activity_id' => $act['id'], 'is_published' => '1', 'description' => '<b>açıklama</b>']]);
+$alb = $db->one("SELECT * FROM gallery_albums WHERE title = 'Test Albüm'");
+check($r['code'] === 303 && $alb && $alb['activity_id'] == $act['id'] && $alb['slug'] === 'test-album-' . substr($act['starts_on'], 0, 4), 'galeri: faaliyete bağlı albüm oluşturuldu, adres üretildi');
+check(http('GET', "$BASE/galeri/{$alb['slug']}")['code'] === 404, 'galeri: fotoğrafı olmayan albüm sitede görünmez');
+
+$png = tempnam(sys_get_temp_dir(), 'kdrkimg') . '.png';
+$im2 = imagecreatetruecolor(1000, 1400);
+imagefill($im2, 0, 0, imagecolorallocate($im2, 200, 120, 40));
+imagepng($im2, $png);
+$txt = tempnam(sys_get_temp_dir(), 'kdrktxt') . '.jpg';
+file_put_contents($txt, '<?php echo "x"; ?>');
+$t = $token('admin', "/yonetim/galeri/{$alb['id']}");
+$r = http('POST', "$BASE/yonetim/galeri/{$alb['id']}/fotograf", ['jar' => 'admin', 'headers' => ['Accept: application/json'], 'multipart' => [
+    '_csrf' => $t, 'photos[0]' => new CURLFile($jpg, 'image/jpeg', 'zirve.jpg'), 'photos[1]' => new CURLFile($png, 'image/png', 'dikey.png'),
+    'photos[2]' => new CURLFile($txt, 'image/jpeg', 'sahte.jpg'),
+]]);
+$j = json_decode($r['body'], true);
+$ph = $db->all('SELECT * FROM gallery_photos WHERE album_id = ? ORDER BY sort', [$alb['id']]);
+check(($j['ok'] ?? false) && count($j['added']) === 2 && count($j['errors']) === 1 && str_contains($j['errors'][0], 'sahte.jpg'), 'galeri: 2 görsel yüklendi, görsel olmayan dosya reddedildi');
+$root = App::config('public_path');
+check(count($ph) === 2 && is_file("$root/{$ph[0]['path']}-1600.webp") && !is_file("$root/{$ph[0]['path']}-2400.webp") && !str_contains($ph[0]['path'], 'zirve'), 'galeri: WebP türevleri üretildi, özgün ad diske yazılmadı');
+check($ph[1]['width'] && abs($ph[1]['height'] / $ph[1]['width'] - 1.4) < 0.01, 'galeri: dikey fotoğrafın oranı kaydedildi');
+check(glob("$root/uploads/gallery/*.jpg") === [] && glob("$root/uploads/gallery/*.php") === [], 'galeri: uploads içinde özgün/çalıştırılabilir dosya yok');
+
+http('POST', "$BASE/yonetim/fotograflar/{$ph[1]['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'do' => 'save', 'caption' => 'Zirve <script>x</script>', 'credit' => 'T. Test']]);
+http('POST', "$BASE/yonetim/fotograflar/{$ph[1]['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'do' => 'up']]);
+http('POST', "$BASE/yonetim/fotograflar/{$ph[1]['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'do' => 'cover']]);
+$order = array_map('intval', array_column($db->all('SELECT id FROM gallery_photos WHERE album_id = ? ORDER BY sort', [$alb['id']]), 'id'));
+check($order === [(int) $ph[1]['id'], (int) $ph[0]['id']] && (int) $db->value('SELECT cover_photo_id FROM gallery_albums WHERE id = ?', [$alb['id']]) === (int) $ph[1]['id'], 'galeri: sıralama ve kapak seçimi');
+$site = http('GET', "$BASE/galeri/{$alb['slug']}")['body'];
+check(str_contains($site, 'masonry-tile') && str_contains($site, '© T. Test') && str_contains($site, 'Zirve &lt;script&gt;') && !str_contains($site, '<script>x</script>') && !str_contains($site, '<b>açıklama</b>'), 'galeri: albüm sitede, açıklamalar kaçışlı (XSS yok)');
+check(str_contains(http('GET', "$BASE/galeri")['body'], 'Test Albüm'), 'galeri: albüm listede görünüyor');
+
+$tv = $token('viewer', '/yonetim');
+check(http('GET', "$BASE/yonetim/galeri/{$alb['id']}", ['jar' => 'viewer'])['code'] === 200, 'galeri: izleme rolü albümü görür');
+check(http('POST', "$BASE/yonetim/fotograflar/{$ph[0]['id']}", ['jar' => 'viewer', 'post' => ['_csrf' => $tv, 'do' => 'delete']])['code'] === 403
+    && http('POST', "$BASE/yonetim/galeri/{$alb['id']}/fotograf", ['jar' => 'viewer', 'multipart' => ['_csrf' => $tv, 'photos[0]' => new CURLFile($jpg, 'image/jpeg', 'a.jpg')]])['code'] === 403, 'galeri: izleme rolü yükleyemez ve silemez');
+
+http('POST', "$BASE/yonetim/fotograflar/{$ph[1]['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'do' => 'delete']]);
+check(!is_file("$root/{$ph[1]['path']}-900.webp") && $db->value('SELECT cover_photo_id FROM gallery_albums WHERE id = ?', [$alb['id']]) === null, 'galeri: fotoğraf silinince dosyaları ve kapak bağı kalktı');
+http('POST', "$BASE/yonetim/galeri/{$alb['id']}/sil", ['jar' => 'admin', 'post' => ['_csrf' => $t]]);
+check(!$db->value('SELECT COUNT(*) FROM gallery_albums WHERE id = ?', [$alb['id']]) && !is_file("$root/{$ph[0]['path']}-900.webp"), 'galeri: albüm silinince fotoğraf dosyaları da silindi');
+@unlink($png);
+@unlink($txt);
 
 // Temizlik
 $db->run("DELETE FROM applications WHERE email = 'panel-test@example.invalid'");

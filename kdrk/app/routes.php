@@ -5,6 +5,7 @@ use App\Controllers\Admin;
 use App\Controllers\Site\ActivityController;
 use App\Controllers\Site\ContactController;
 use App\Controllers\Site\DisciplineController;
+use App\Controllers\Site\GalleryController;
 use App\Controllers\Site\HomeController;
 use App\Controllers\Site\PageController;
 use App\Core\Router;
@@ -18,6 +19,11 @@ return static function (Router $r): void {
     $r->post('/faaliyetler/{slug}/basvuru', [ActivityController::class, 'apply'], 'faaliyet.basvuru');
 
     $r->get('/disiplin/{slug}', [DisciplineController::class, 'show'], 'disiplin');
+
+    $r->get('/galeri', [GalleryController::class, 'index'], 'galeri');
+    $r->get('/galeri/{slug}', [GalleryController::class, 'show'], 'galeri.album');
+    $r->legacy('/Galeri.html', 'galeri');
+    $r->legacy('/Galeri Detay.html', 'galeri');
 
     $r->post('/iletisim', [ContactController::class, 'send'], 'iletisim.gonder');
 
@@ -42,6 +48,15 @@ return static function (Router $r): void {
     $r->get('/yonetim/faaliyetler/{id}/liste/{kind}', [Admin\ApplicationController::class, 'printList'], 'admin.applications.print');
     $r->post('/yonetim/basvurular/{id}', [Admin\ApplicationController::class, 'update'], 'admin.applications.update');
     $r->post('/yonetim/basvurular/{id}/sil', [Admin\ApplicationController::class, 'delete'], 'admin.applications.delete');
+
+    $r->get('/yonetim/galeri', [Admin\GalleryController::class, 'index'], 'admin.gallery');
+    $r->get('/yonetim/galeri/yeni', [Admin\GalleryController::class, 'create'], 'admin.gallery.new');
+    $r->post('/yonetim/galeri', [Admin\GalleryController::class, 'store'], 'admin.gallery.store');
+    $r->get('/yonetim/galeri/{id}', [Admin\GalleryController::class, 'edit'], 'admin.gallery.edit');
+    $r->post('/yonetim/galeri/{id}', [Admin\GalleryController::class, 'update'], 'admin.gallery.update');
+    $r->post('/yonetim/galeri/{id}/sil', [Admin\GalleryController::class, 'delete'], 'admin.gallery.delete');
+    $r->post('/yonetim/galeri/{id}/fotograf', [Admin\GalleryController::class, 'upload'], 'admin.gallery.upload');
+    $r->post('/yonetim/fotograflar/{id}', [Admin\GalleryController::class, 'photo'], 'admin.gallery.photo');
 
     $r->get('/yonetim/mesajlar', [Admin\MessageController::class, 'index'], 'admin.messages');
     $r->get('/yonetim/mesajlar/{id}', [Admin\MessageController::class, 'show'], 'admin.messages.show');

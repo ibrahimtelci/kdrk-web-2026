@@ -96,6 +96,15 @@ final class Activity
         return 'open';
     }
 
+    /** @return array{0: string, 1: string} [rozet sınıfı, metin] — faaliyet ve galeri kartı aynı rozeti kullanır */
+    public static function difficultyInfo(?int $difficulty, bool $isTraining): array
+    {
+        if ($difficulty !== null && isset(self::DIFFICULTY[$difficulty])) {
+            return self::DIFFICULTY[$difficulty];
+        }
+        return $isTraining ? ['education', 'Eğitim'] : ['social', 'Herkese açık'];
+    }
+
     /** Görünümlerin ihtiyaç duyduğu türetilmiş alanları ekler. */
     public static function decorate(array $a): array
     {
@@ -111,14 +120,8 @@ final class Activity
         $a['fill'] = $quota > 0 ? min(1, $taken / $quota) : 0.0;
         $a['url'] = url('faaliyet', ['slug' => $a['slug']]);
 
-        if ($a['difficulty'] !== null) {
-            [$a['difficulty_class'], $a['difficulty_text']] = self::DIFFICULTY[(int) $a['difficulty']];
-            $a['difficulty_level'] = $a['difficulty'] . '/4';
-        } else {
-            $a['difficulty_class'] = $a['is_training'] ? 'education' : 'social';
-            $a['difficulty_text'] = $a['is_training'] ? 'Eğitim' : 'Herkese açık';
-            $a['difficulty_level'] = null;
-        }
+        [$a['difficulty_class'], $a['difficulty_text']] = self::difficultyInfo($a['difficulty'] !== null ? (int) $a['difficulty'] : null, (bool) $a['is_training']);
+        $a['difficulty_level'] = $a['difficulty'] !== null ? $a['difficulty'] . '/4' : null;
         $a['category_text'] = self::CATEGORIES[$a['category']] ?? $a['category'];
         $a['program'] = $a['program'] ? json_decode($a['program'], true) : [];
         $a['equipment'] = $a['equipment'] ? json_decode($a['equipment'], true) : [];

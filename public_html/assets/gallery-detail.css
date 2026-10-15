@@ -5,7 +5,7 @@
 .gd-hero {
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border);
-  padding: 56px 0 48px;
+  padding: 120px 0 48px; /* sabit nav (76px) altında boşluk — .list-header ile aynı */
   position: relative;
   overflow: hidden;
 }
@@ -202,7 +202,7 @@
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
 }
-.gd-related h3 {
+.gd-related-title {
   font-family: 'Manrope', sans-serif;
   font-size: 28px;
   font-weight: 700;
@@ -216,3 +216,14 @@
   gap: 20px;
 }
 @media (max-width: 900px) { .gd-related-grid { grid-template-columns: 1fr; } }
+/* Albüm açıklaması (panelden) */
+.gd-lede {
+  max-width: 640px;
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+.lightbox[hidden] { display: none; }
+.gd-hero .breadcrumb { position: static; margin-bottom: 16px; color: var(--text-secondary); }

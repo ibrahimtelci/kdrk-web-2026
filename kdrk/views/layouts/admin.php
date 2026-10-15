@@ -15,7 +15,10 @@ $pending = (int) $db->value("SELECT COUNT(*) FROM applications WHERE status = 'p
 $unread = (int) $db->value('SELECT COUNT(*) FROM messages WHERE is_read = 0');
 $modules = [
     'Genel'    => [['dashboard', 'Gösterge Paneli', 'admin.dashboard', ['admin', 'editor', 'viewer'], 0]],
-    'İçerik'   => [['activities', 'Faaliyetler', 'admin.activities', ['admin', 'editor', 'viewer'], $pending]],
+    'İçerik'   => [
+        ['activities', 'Faaliyetler', 'admin.activities', ['admin', 'editor', 'viewer'], $pending],
+        ['gallery', 'Fotoğraf Galerisi', 'admin.gallery', ['admin', 'editor', 'viewer'], 0],
+    ],
     'İletişim' => [['messages', 'İletişim Mesajları', 'admin.messages', ['admin', 'editor'], $unread]],
     'Sistem'   => [
         ['users', 'Kullanıcılar', 'admin.users', ['admin'], 0],

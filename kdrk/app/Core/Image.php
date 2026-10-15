@@ -88,6 +88,13 @@ final class Image
         return "$base-400.webp";
     }
 
+    /** @return array{0: ?int, 1: ?int} en büyük türevin genişlik/yüksekliği (masonry oranı için) */
+    public static function size(string $base): array
+    {
+        $info = @getimagesize(App::config('public_path') . '/' . self::variant($base, 2400));
+        return $info ? [$info[0], $info[1]] : [null, null];
+    }
+
     public static function delete(?string $base): void
     {
         if ($base === null || !str_starts_with($base, 'uploads/') || str_contains($base, '..')) {

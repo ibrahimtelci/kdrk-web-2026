@@ -153,4 +153,45 @@ foreach ($data['news'] as $n) {
     ]);
 }
 
-printf("Örnek veri yüklendi: %d faaliyet, %d slayt, %d duyuru.\n", count($ids), count($data['banners']), count($data['news']));
+// Galeri: tamamlanan her faaliyete bir albüm + faaliyete bağlı olmayan iki eski albüm (Unsplash yer tutucu)
+$pool = [
+    ['photo-1486870591958-9b9d0d1dda99', 1200, 'Zirve sırtında ilk ışık'], ['photo-1551632436-cbf8dd35adfa', 900, 'Buz kazma molası'],
+    ['photo-1454496522488-7a8e488e8606', 1400, 'Kuzey duvarı'], ['photo-1500382017468-9049fed747ef', 800, 'Sis altında yürüyüş'],
+    ['photo-1519681393784-d120267933ba', 1100, 'Gün doğumu, 3.500 m'], ['photo-1483728642387-6c3bdd6c93e5', 1300, 'Granit kayalıklar'],
+    ['photo-1464822759023-fed622ff2c3b', 850, 'Çadır kuruluyor'], ['photo-1506905925346-21bda4d32df4', 1000, 'Yıldızlı gece'],
+    ['photo-1469474968028-56623f02e42e', 1500, 'Vadi panoraması'], ['photo-1426604966848-d7adac402bff', 900, 'Buzul gölü'],
+    ['photo-1418065460487-3e41a6c84dc5', 1200, 'Kar köprüsü'], ['photo-1501785888041-af3ef285b470', 1100, 'Yamaçtan bakış'],
+    ['photo-1505765050516-f72dcac9c60e', 950, 'Sırt çantaları sıralı'], ['photo-1500534314209-a25ddb2bd429', 1000, 'Çadırdan ilk bakış'],
+    ['photo-1551632811-561732d1e306', 1450, 'Verçenik silueti'], ['photo-1432405972618-c60b0225b8f9', 900, 'Çiy damlaları'],
+];
+$credits = ['M. Yılmaz', 'A. Demir', 'E. Kaya', 'B. Çelik'];
+$albums = [];
+foreach ($db->all('SELECT id, title, starts_on, cover_image FROM activities WHERE COALESCE(ends_on, starts_on) < CURDATE() ORDER BY starts_on') as $a) {
+    $year = substr($a['starts_on'], 0, 4);
+    $albums[] = ['title' => $a['title'], 'slug' => slugify(str_contains($a['title'], $year) ? $a['title'] : $a['title'] . ' ' . $year), 'activity_id' => $a['id'], 'cover' => $a['cover_image']];
+}
+$albums[] = ['title' => 'Verçenik Tepesi Tırmanışı', 'slug' => 'vercenik-tepesi-tirmanisi-2024', 'taken_on' => '2024-09-08', 'category' => 'dagcilik', 'location' => 'Rize / İkizdere · 3.711 m'];
+$albums[] = ['title' => 'Ayder Şelale Yürüyüşü', 'slug' => 'ayder-selale-yuruyusu-2024', 'taken_on' => '2024-06-16', 'category' => 'gunubirlik', 'location' => 'Rize / Ayder',
+    'description' => 'Ailelerle birlikte Gelin Tülü şelalesine kısa ve kolay bir yürüyüş.'];
+$photoCount = 0;
+foreach ($albums as $k => $al) {
+    $cover = $al['cover'] ?? null;
+    unset($al['cover']);
+    $albumId = $db->insert('gallery_albums', $al);
+    $n = 6 + ($k * 5) % 9;
+    for ($i = 0; $i < $n; $i++) {
+        [$pid, $h, $cap] = $pool[($k * 7 + $i * 3) % count($pool)];
+        $db->insert('gallery_photos', [
+            'album_id' => $albumId,
+            'path'     => $i === 0 && $cover ? $cover : "https://images.unsplash.com/$pid",
+            'width'    => 800,
+            'height'   => $h,
+            'caption'  => $i % 3 === 2 ? null : $cap,
+            'credit'   => $credits[($k + $i) % 4],
+            'sort'     => $i + 1,
+        ]);
+        $photoCount++;
+    }
+}
+
+printf("Örnek veri yüklendi: %d faaliyet, %d slayt, %d duyuru, %d albüm (%d fotoğraf).\n", count($ids), count($data['banners']), count($data['news']), count($albums), $photoCount);

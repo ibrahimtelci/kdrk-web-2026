@@ -81,15 +81,10 @@
         <h2 style="font-size:clamp(28px,3.4vw,40px)">Sosyal-Kültürel Anıları</h2>
       </div>
       <div class="section-head-right">
-        <a href="<?= e(url('galeri')) ?>" class="btn-text">Galeriye Git <span class="arrow">→</span></a>
+        <a href="<?= e(url('galeri', ['kategori' => $category])) ?>" class="btn-text">Galeriye Git <span class="arrow">→</span></a>
       </div>
     </div>
-    <div class="disc-strip reveal">
-      <a href="<?= e(url('galeri')) ?>"><div style="background-image:url('https://images.unsplash.com/photo-1496080174650-637e3f22fa03?w=600&q=80&auto=format&fit=crop')"></div></a>
-      <a href="<?= e(url('galeri')) ?>"><div style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80&auto=format&fit=crop')"></div></a>
-      <a href="<?= e(url('galeri')) ?>"><div style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80&auto=format&fit=crop')"></div></a>
-      <a href="<?= e(url('galeri')) ?>"><div style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80&auto=format&fit=crop')"></div></a>
-    </div>
+    <?= $this->partial('partials/gallery-strip', ['strip' => $strip]) ?>
   </div>
 </section>
 <section class="corp-section" data-screen-label="06 CTA">

@@ -30,6 +30,9 @@ $canonical = $page['current'] ? url($page['current'], $page['currentParams']) : 
   <meta property="og:description" content="<?= e($page['description']) ?>">
 <?php endif ?>
   <meta property="og:locale" content="tr_TR">
+<?php if (!empty($page['image'])): ?>
+  <meta property="og:image" content="<?= e(img($page['image'], 1600)) ?>">
+<?php endif ?>
   <link rel="icon" type="image/png" href="<?= e(asset('kdrk-logo-2026-sm.png')) ?>">
   <script>try{var t=localStorage.getItem('kdrk-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 
