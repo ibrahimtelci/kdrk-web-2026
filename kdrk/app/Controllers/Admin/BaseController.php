@@ -6,6 +6,7 @@ namespace App\Controllers\Admin;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\HttpException;
+use App\Core\Image;
 use App\Core\Session;
 use App\Core\View;
 
@@ -73,6 +74,41 @@ abstract class BaseController
         if (!Auth::is(...$roles)) {
             throw new HttpException(403);
         }
+    }
+
+    /**
+     * Formdaki görsel alanını işler: yeni dosya yüklendiyse kaydeder, "kaldır" işaretliyse siler.
+     * Hata olursa forma döner. Eski dosya ancak yenisi başarıyla kaydedildikten sonra silinir.
+     */
+    protected function replaceImage(array &$d, string $field, string $column, ?string $old, string $folder, string $back): void
+    {
+        if (!empty($_FILES[$field]['name']) && ($_FILES[$field]['error'] ?? 0) !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $d[$column] = Image::store($_FILES[$field], $folder);
+            } catch (\RuntimeException $ex) {
+                $this->back($back, [$field => $ex->getMessage()], $_POST);
+            }
+            Image::delete($old);
+        } elseif (!empty($_POST['remove_' . $field])) {
+            $d[$column] = null;
+            Image::delete($old);
+        }
+    }
+
+    /**
+     * Bağlantı alanı: site içi yol (/faaliyetler) ya da tam adres (https://…). Boşsa null.
+     * @return array{0: ?string, 1: ?string} [değer, hata]
+     */
+    protected static function link(string $key): array
+    {
+        $v = self::str($key, 255);
+        if ($v === '') {
+            return [null, null];
+        }
+        if (preg_match('#^/(?!/)[^\s]*$#', $v) || (preg_match('#^https?://#i', $v) && filter_var($v, FILTER_VALIDATE_URL))) {
+            return [$v, null];
+        }
+        return [null, 'Site içi bir yol (/faaliyetler gibi) ya da https:// ile başlayan bir adres yaz.'];
     }
 
     protected static function str(string $key, int $max = 255): string

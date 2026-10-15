@@ -153,6 +153,12 @@ foreach ($data['news'] as $n) {
     ]);
 }
 
+// Bir haberin kendi metni olsun: /duyurular/{slug} sayfası
+$db->run(
+    "UPDATE news SET link_url = NULL, body = ? WHERE slug = 'vercenik-tepesi-bahar-tirmanisi-tamamlandi'",
+    ["Nisan sonunda Verçenik Tepesi'ne (3.711 m) bahar tırmanışımızı tamamladık. Ekip, İkizdere'den gece yola çıkıp sabahın ilk ışığıyla kar hattına ulaştı.\n\nKarın sabah sert olması krampon ve buz baltasıyla güvenli bir çıkış sağladı. Öğleye doğru yumuşayan kar nedeniyle iniş, planlandığı gibi erken saatte başladı.\n\nTüm katılımcılara ve rota hazırlığında emeği geçen eğitmenlerimize teşekkür ederiz. Fotoğraflar galeride."]
+);
+
 // Galeri: tamamlanan her faaliyete bir albüm + faaliyete bağlı olmayan iki eski albüm (Unsplash yer tutucu)
 $pool = [
     ['photo-1486870591958-9b9d0d1dda99', 1200, 'Zirve sırtında ilk ışık'], ['photo-1551632436-cbf8dd35adfa', 900, 'Buz kazma molası'],

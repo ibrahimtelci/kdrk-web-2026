@@ -7,6 +7,7 @@ use App\Controllers\Site\ContactController;
 use App\Controllers\Site\DisciplineController;
 use App\Controllers\Site\GalleryController;
 use App\Controllers\Site\HomeController;
+use App\Controllers\Site\NewsController;
 use App\Controllers\Site\PageController;
 use App\Core\Router;
 
@@ -19,6 +20,8 @@ return static function (Router $r): void {
     $r->post('/faaliyetler/{slug}/basvuru', [ActivityController::class, 'apply'], 'faaliyet.basvuru');
 
     $r->get('/disiplin/{slug}', [DisciplineController::class, 'show'], 'disiplin');
+
+    $r->get('/duyurular/{slug}', [NewsController::class, 'show'], 'duyuru');
 
     $r->get('/galeri', [GalleryController::class, 'index'], 'galeri');
     $r->get('/galeri/{slug}', [GalleryController::class, 'show'], 'galeri.album');
@@ -58,7 +61,22 @@ return static function (Router $r): void {
     $r->post('/yonetim/galeri/{id}/fotograf', [Admin\GalleryController::class, 'upload'], 'admin.gallery.upload');
     $r->post('/yonetim/fotograflar/{id}', [Admin\GalleryController::class, 'photo'], 'admin.gallery.photo');
 
-    $r->get('/yonetim/mesajlar', [Admin\MessageController::class, 'index'], 'admin.messages');
+    $r->get('/yonetim/duyurular', [Admin\NewsController::class, 'index'], 'admin.news');
+    $r->get('/yonetim/duyurular/yeni', [Admin\NewsController::class, 'create'], 'admin.news.new');
+    $r->post('/yonetim/duyurular', [Admin\NewsController::class, 'store'], 'admin.news.store');
+    $r->get('/yonetim/duyurular/{id}', [Admin\NewsController::class, 'edit'], 'admin.news.edit');
+    $r->post('/yonetim/duyurular/{id}', [Admin\NewsController::class, 'update'], 'admin.news.update');
+    $r->post('/yonetim/duyurular/{id}/sil', [Admin\NewsController::class, 'delete'], 'admin.news.delete');
+
+    $r->get('/yonetim/slaytlar', [Admin\BannerController::class, 'index'], 'admin.banners');
+    $r->get('/yonetim/slaytlar/yeni', [Admin\BannerController::class, 'create'], 'admin.banners.new');
+    $r->post('/yonetim/slaytlar', [Admin\BannerController::class, 'store'], 'admin.banners.store');
+    $r->get('/yonetim/slaytlar/{id}', [Admin\BannerController::class, 'edit'], 'admin.banners.edit');
+    $r->post('/yonetim/slaytlar/{id}', [Admin\BannerController::class, 'update'], 'admin.banners.update');
+    $r->post('/yonetim/slaytlar/{id}/sil', [Admin\BannerController::class, 'delete'], 'admin.banners.delete');
+    $r->post('/yonetim/slaytlar/{id}/tasi', [Admin\BannerController::class, 'move'], 'admin.banners.move');
+
+    $r->get('/yonetim/mesajlar',[Admin\MessageController::class, 'index'], 'admin.messages');
     $r->get('/yonetim/mesajlar/{id}', [Admin\MessageController::class, 'show'], 'admin.messages.show');
     $r->post('/yonetim/mesajlar/{id}/okunmadi', [Admin\MessageController::class, 'unread'], 'admin.messages.unread');
     $r->post('/yonetim/mesajlar/{id}/sil', [Admin\MessageController::class, 'delete'], 'admin.messages.delete');

@@ -18,6 +18,8 @@ $modules = [
     'İçerik'   => [
         ['activities', 'Faaliyetler', 'admin.activities', ['admin', 'editor', 'viewer'], $pending],
         ['gallery', 'Fotoğraf Galerisi', 'admin.gallery', ['admin', 'editor', 'viewer'], 0],
+        ['news', 'Duyurular', 'admin.news', ['admin', 'editor', 'viewer'], 0],
+        ['banner', 'Anasayfa Slaytları', 'admin.banners', ['admin', 'editor', 'viewer'], 0],
     ],
     'İletişim' => [['messages', 'İletişim Mesajları', 'admin.messages', ['admin', 'editor'], $unread]],
     'Sistem'   => [

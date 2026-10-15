@@ -148,6 +148,21 @@ fieldset[disabled] input, fieldset[disabled] select, fieldset[disabled] textarea
 .ph-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .btn-icon:disabled { opacity: .35; cursor: not-allowed; }
 
+/* Anasayfa slaytları */
+.bn-list { list-style: none; margin: 0; padding: 0; }
+.bn-item { display: flex; align-items: center; gap: 8px; padding-right: 14px; }
+.bn-item + .bn-item { border-top: 1px solid var(--border); }
+.bn-item.is-off .bn-thumb { opacity: .45; }
+.bn-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 12px 16px; min-height: 72px; color: inherit; }
+.bn-main:hover .t-title { color: var(--accent); }
+.bn-no { width: 22px; flex-shrink: 0; font-size: 14px; font-weight: 600; color: var(--accent); }
+.bn-thumb { width: 96px; height: 54px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--surface-2); }
+.bn-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.bn-text .t-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bn-text .t-sub { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bn-move { display: flex; gap: 6px; margin: 0; }
+.toolbar-note + .panel { margin-top: 12px; }
+
 /* Mobil kenar çubuğu perdesi */
 .sb-scrim { position: fixed; inset: 0; background: rgba(11,18,32,.55); z-index: 45; }
 
@@ -183,7 +198,7 @@ fieldset[disabled] input, fieldset[disabled] select, fieldset[disabled] textarea
   .tbl-cards, .tbl-cards tbody, .tbl-cards tr, .tbl-cards td { display: block; width: 100%; }
   .tbl-cards tr { padding: 14px 16px; border-bottom: 1px solid var(--border); }
   .tbl-cards td { padding: 4px 0; border: 0; }
-  .tbl-cards td[data-label]:not([data-label="Faaliyet"])::before { content: attr(data-label) ': '; font-family: 'JetBrains Mono'; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
+  .tbl-cards td[data-label]:not([data-label="Faaliyet"]):not([data-label="Duyuru"])::before { content: attr(data-label) ': '; font-family: 'JetBrains Mono'; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
   .tbl-cards .t-actions { text-align: left; padding-top: 10px; display: flex; gap: 8px; }
   .tbl-cards .t-actions .btn { flex: 1; justify-content: center; }
   .row-list a { padding: 12px 16px; }
@@ -207,6 +222,10 @@ fieldset[disabled] input, fieldset[disabled] select, fieldset[disabled] textarea
   .ph-fields { grid-template-columns: 1fr; }
   .ph-actions { justify-content: flex-start; }
   .up-submit .btn { width: 100%; justify-content: center; }
+  .bn-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 8px; padding: 0 16px 12px; }
+  .bn-main { grid-column: 1 / -1; padding: 12px 0 0; gap: 12px; }
+  .bn-thumb { width: 72px; height: 44px; }
+  .bn-state { justify-self: start; margin-left: 34px; }
 }
 
 /* Dokunma alanı: tablo içi linkler ve ikon butonlar ≥ 44px */

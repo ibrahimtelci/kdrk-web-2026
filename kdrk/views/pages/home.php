@@ -231,8 +231,6 @@ $whatsapp = (string) setting('social_whatsapp', '');
 </section>
 
 <?php
-$newsCat = ['duyuru' => 'Duyuru', 'haber' => 'Haber', 'rapor' => 'Faaliyet Raporu'];
-$newsHref = static fn (array $n): string => $n['link_url'] ? site_url($n['link_url']) : url('faaliyetler');
 $feature = $news[0] ?? null;
 $rest = array_slice($news, 1, 4);
 ?>
@@ -250,13 +248,13 @@ $rest = array_slice($news, 1, 4);
     </div>
 
     <div class="news-grid">
-      <a href="<?= e($newsHref($feature)) ?>" class="news-feature reveal">
+      <a href="<?= e($feature['url']) ?>" class="news-feature reveal">
         <div class="news-feature-cover">
           <div><?= img_tag($feature['cover_image'], '(min-width: 1280px) 700px, (min-width: 1024px) 55vw, 100vw') ?></div>
         </div>
         <div class="flex gap-12 items-center" style="flex-wrap:wrap">
-          <span class="pill pill-accent"><?= e($newsCat[$feature['category']]) ?></span>
-          <span class="meta mono"><?= e(tr_date($feature['published_on'])) ?><?= $feature['read_minutes'] ? ' · ' . (int) $feature['read_minutes'] . ' DK OKUMA' : '' ?></span>
+          <span class="pill pill-accent"><?= e($feature['category_text']) ?></span>
+          <span class="meta mono"><?= e(tr_date($feature['published_on'])) ?><?= $feature['minutes'] ? ' · ' . (int) $feature['minutes'] . ' DK OKUMA' : '' ?></span>
         </div>
         <h3><?= e($feature['title']) ?></h3>
 <?php if ($feature['excerpt']): ?>
@@ -267,10 +265,10 @@ $rest = array_slice($news, 1, 4);
 <?php if ($rest): ?>
       <div class="news-list reveal">
 <?php foreach ($rest as $n): ?>
-        <a href="<?= e($newsHref($n)) ?>" class="news-item">
+        <a href="<?= e($n['url']) ?>" class="news-item">
           <div class="news-thumb"><div><?= img_tag($n['cover_image'], '80px', 400) ?></div></div>
           <div class="news-item-body">
-            <span class="pill pill-outline"><?= e($newsCat[$n['category']]) ?></span>
+            <span class="pill pill-outline"><?= e($n['category_text']) ?></span>
             <h4><?= e($n['title']) ?></h4>
             <span class="meta"><?= e(tr_date($n['published_on'])) ?></span>
           </div>

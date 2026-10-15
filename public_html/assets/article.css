@@ -16,7 +16,7 @@
   opacity: 0.04; pointer-events: none;
 }
 .kb-hero .container { position: relative; z-index: 1; }
-.kb-hero .breadcrumb { position: static; margin-bottom: 20px; color: var(--text-secondary); }
+.kb-hero .breadcrumb { position: static; margin-bottom: 20px; color: var(--text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .kb-hero .breadcrumb a:hover { color: var(--accent-primary); }
 .kb-hero .breadcrumb .current { color: var(--text-primary); }
 .kb-kicker {
@@ -133,3 +133,8 @@
   font-size: 13px; color: var(--text-primary); transition: border-color 160ms ease, color 160ms ease;
 }
 .kb-related a:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+/* Duyuru / haber sayfası */
+.news-article { margin: 40px auto 72px; }
+.news-article-cover { position: relative; aspect-ratio: 16 / 9; margin: 0 0 32px; border-radius: 12px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); }
+.news-others .news-list { max-width: 720px; }
