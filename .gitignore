@@ -34,3 +34,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# yayın paketleri
+release/
