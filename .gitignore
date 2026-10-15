@@ -1,0 +1,36 @@
+# Sırlar — depoya ve FTP üzerine yazmaya kapalı (CLAUDE.md §15, §18)
+kdrk/config/config.php
+
+# Çalışma zamanı dosyaları
+kdrk/storage/logs/*
+kdrk/storage/cache/*
+!kdrk/storage/*/.gitkeep
+kdrk/vendor/
+
+# Kullanıcı yüklemeleri
+uploads/*
+!uploads/.gitkeep
+public_html/uploads/*
+!public_html/uploads/.gitkeep
+!public_html/uploads/.htaccess
+
+# veritabanı
+*.sqlite
+*.db
+
+# ekran görüntüleri (çalışma dosyaları)
+screenshots/
+tools/screens/
+
+# yazdırma kopyaları (kaynaktan üretilir)
+*-print.html
+
+# sistem
+.DS_Store
+Thumbs.db
+*.log
+
+# editör
+.vscode/*
+!.vscode/extensions.json
+.idea/

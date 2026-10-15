@@ -1,0 +1,826 @@
+/* ============================================================
+   Kurumsal Sayfalar — Hakkımızda / Yönetim / Emeği Geçenler
+   ============================================================ */
+
+/* ---------- Page hero (dark band) ---------- */
+.corp-hero {
+  position: relative;
+  background: #0B1220;
+  color: #F4F6FA;
+  padding: 140px 0 80px;
+  overflow: hidden;
+}
+.corp-hero .topo-watermark { opacity: 0.05; }
+.corp-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.32;
+  filter: saturate(0.85);
+}
+.corp-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.7) 55%, rgba(11,18,32,0.95) 100%);
+}
+.corp-hero .container { position: relative; z-index: 2; }
+.corp-hero .breadcrumb {
+  position: static;
+  margin-bottom: 24px;
+  color: rgba(244,246,250,0.7);
+}
+.corp-hero .breadcrumb a:hover { color: var(--accent-primary); }
+.corp-hero .breadcrumb .current { color: #F4F6FA; }
+.corp-hero h1 {
+  color: #F4F6FA;
+  font-size: clamp(40px, 6vw, 76px);
+  max-width: 16ch;
+}
+.corp-hero .lede {
+  margin-top: 20px;
+  max-width: 60ch;
+  font-size: clamp(16px, 1.6vw, 19px);
+  line-height: 1.6;
+  color: #CBD5E1;
+  text-wrap: pretty;
+}
+.corp-hero-stamp {
+  margin-top: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+.corp-hero-stamp .bar { width: 32px; height: 1px; background: var(--accent-primary); }
+
+/* ---------- Section scaffolding ---------- */
+.corp-section { padding: clamp(72px, 10vh, 120px) 0; }
+.corp-section.alt { background: var(--bg-secondary); }
+.corp-head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+  max-width: 60ch;
+}
+.corp-head.center {
+  align-items: center;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.corp-head h2 { font-size: clamp(28px, 3.6vw, 44px); }
+.corp-head p { font-size: 16px; line-height: 1.6; text-wrap: pretty; }
+
+/* ---------- Story two-column ---------- */
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+@media (max-width: 900px) { .story-grid { grid-template-columns: 1fr; gap: 40px; } }
+.story-text { display: flex; flex-direction: column; gap: 20px; }
+.story-text p { font-size: 16px; line-height: 1.75; color: var(--text-secondary); text-wrap: pretty; }
+.story-text .drop::first-letter {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 3.4em;
+  float: left;
+  line-height: 0.8;
+  margin: 6px 12px 0 0;
+  color: var(--accent-primary);
+}
+.story-media {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.story-media > div {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+}
+.story-media .caption {
+  position: absolute;
+  left: 16px; bottom: 16px;
+  z-index: 2;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: rgba(11,18,32,0.7);
+  backdrop-filter: blur(6px);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+.story-media::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(11,18,32,0.5));
+}
+
+/* ---------- Mission / values cards ---------- */
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) { .value-grid { grid-template-columns: 1fr; } }
+.value-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 220ms ease, transform 220ms ease;
+}
+.corp-section.alt .value-card { background: var(--bg-primary); }
+.value-card:hover { border-color: var(--accent-primary); transform: translateY(-3px); }
+.value-card .vnum {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--accent-primary);
+}
+.value-card .vicon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: rgba(249,115,22,0.1);
+  color: var(--accent-primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.value-card .vicon svg { width: 22px; height: 22px; }
+.value-card h3 { font-size: 20px; }
+.value-card p { font-size: 15px; line-height: 1.6; color: var(--text-secondary); }
+
+/* ---------- Timeline ---------- */
+.corp-timeline {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.corp-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent-primary), color-mix(in srgb, var(--accent-primary) 25%, transparent));
+}
+@media (min-width: 720px) {
+  .corp-timeline::before { left: 50%; transform: translateX(-1px); }
+}
+.tl-item {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 44px;
+}
+@media (min-width: 720px) {
+  .tl-item { width: 50%; padding-left: 0; }
+  .tl-item.left { left: 0; padding-right: 48px; text-align: right; }
+  .tl-item.right { left: 50%; padding-left: 48px; }
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  top: 4px; left: -7px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--accent-primary);
+  z-index: 2;
+}
+@media (min-width: 720px) {
+  .tl-item.left::before { left: auto; right: -7px; }
+  .tl-item.right::before { left: -7px; }
+}
+.tl-year {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: var(--accent-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.tl-item h4 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text-primary);
+}
+.tl-item p { font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+
+/* ---------- Stat band ---------- */
+.stat-band {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+@media (max-width: 720px) { .stat-band { grid-template-columns: 1fr 1fr; } }
+.stat-band .sb-cell {
+  padding: 32px 24px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+.stat-band .sb-cell:last-child { border-right: none; }
+@media (max-width: 720px) {
+  .stat-band .sb-cell:nth-child(2) { border-right: none; }
+  .stat-band .sb-cell:nth-child(1), .stat-band .sb-cell:nth-child(2) { border-bottom: 1px solid var(--border); }
+}
+.sb-num {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: clamp(36px, 4vw, 52px);
+  letter-spacing: -0.02em;
+  color: var(--accent-primary);
+  line-height: 1;
+}
+.sb-label {
+  margin-top: 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   Yönetim Kurulu — Board grid
+   ============================================================ */
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 900px) { .board-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .board-grid { grid-template-columns: 1fr; } }
+
+.board-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+}
+.corp-section.alt .board-card { background: var(--bg-primary); }
+.board-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 16px 40px -18px rgba(249,115,22,0.3);
+  transform: translateY(-3px);
+}
+.board-photo {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--surface);
+}
+.board-photo > div {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center top;
+  filter: grayscale(0.15);
+  transition: transform 600ms ease, filter 300ms ease;
+}
+.board-card:hover .board-photo > div { transform: scale(1.04); filter: grayscale(0); }
+.board-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(11,18,32,0.55));
+}
+.board-role-tag {
+  position: absolute;
+  left: 14px; bottom: 14px;
+  z-index: 2;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+  background: var(--accent-primary);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+.board-body { padding: 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.board-name { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 700; color: var(--text-primary); }
+.board-title { font-size: 13px; color: var(--accent-primary); font-weight: 600; letter-spacing: 0.02em; }
+.board-bio { font-size: 14px; line-height: 1.6; color: var(--text-secondary); flex: 1; }
+.board-meta {
+  display: flex;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  flex-wrap: wrap;
+}
+.board-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.board-meta svg { width: 13px; height: 13px; color: var(--accent-primary); }
+.board-socials { display: flex; gap: 8px; }
+.board-socials a {
+  width: 34px; height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  transition: border-color 180ms ease, color 180ms ease;
+}
+.board-socials a:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+.board-socials svg { width: 15px; height: 15px; }
+
+/* President — featured wide card */
+.board-feature {
+  grid-column: span 3;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 0;
+}
+@media (max-width: 900px) { .board-feature { grid-column: span 2; grid-template-columns: 240px 1fr; } }
+@media (max-width: 560px) { .board-feature { grid-column: span 1; grid-template-columns: 1fr; } }
+.board-feature .board-photo { aspect-ratio: auto; height: 100%; min-height: 280px; }
+.board-feature .board-body { padding: 36px; justify-content: center; gap: 14px; }
+.board-feature .board-name { font-size: 28px; }
+.board-feature .board-quote {
+  font-family: 'Manrope', sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  font-style: italic;
+  border-left: 2px solid var(--accent-primary);
+  padding-left: 16px;
+  margin: 4px 0;
+}
+
+/* ============================================================
+   Emeği Geçenler — Contributors
+   ============================================================ */
+.contrib-section { padding: clamp(56px, 8vh, 96px) 0; }
+.contrib-group { margin-bottom: 64px; }
+.contrib-group:last-child { margin-bottom: 0; }
+.contrib-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.contrib-group-head h3 {
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.contrib-group-head .cg-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--accent-primary);
+  letter-spacing: 0.06em;
+}
+.contrib-group-head .cg-desc {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 40ch;
+  text-align: right;
+}
+@media (max-width: 700px) { .contrib-group-head .cg-desc { display: none; } }
+
+.contrib-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1000px) { .contrib-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) { .contrib-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 440px) { .contrib-grid { grid-template-columns: 1fr; } }
+
+.contrib-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 200ms ease, background-color 200ms ease;
+}
+.contrib-card:hover { border-color: var(--accent-primary); }
+.contrib-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background-size: cover; background-position: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.contrib-avatar.initials {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(249,115,22,0.12);
+  color: var(--accent-primary);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+.contrib-info { min-width: 0; }
+.contrib-name { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 15px; color: var(--text-primary); }
+.contrib-role { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.contrib-years {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent-primary);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* Honor / memoriam strip */
+.honor-band {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 700px) { .honor-band { flex-direction: column; text-align: center; } }
+.honor-band .topo-watermark { opacity: 0.04; }
+.honor-avatar {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background-size: cover; background-position: center;
+  flex-shrink: 0;
+  border: 2px solid var(--accent-primary);
+  filter: grayscale(0.3);
+  position: relative; z-index: 2;
+}
+.honor-text { position: relative; z-index: 2; }
+.honor-text .h-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+.honor-text h3 { font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 700; margin: 8px 0 6px; }
+.honor-text p { font-size: 15px; line-height: 1.6; color: var(--text-secondary); max-width: 60ch; }
+
+/* CTA join band */
+.join-band {
+  background: #0B1220;
+  color: #F4F6FA;
+  border-radius: 16px;
+  padding: clamp(40px, 6vw, 64px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.join-band .topo-watermark { opacity: 0.06; }
+.join-band > * { position: relative; z-index: 2; }
+.join-band h2 { color: #F4F6FA; margin-bottom: 14px; }
+.join-band p { color: #CBD5E1; max-width: 52ch; margin: 0 auto 28px; font-size: 16px; }
+
+/* ============================================================
+   Misyon & Vizyon
+   ============================================================ */
+.mv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 860px) { .mv-grid { grid-template-columns: 1fr; } }
+.mv-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+  transition: border-color 220ms ease, transform 220ms ease;
+}
+.mv-card:hover { border-color: var(--accent-primary); transform: translateY(-3px); }
+.mv-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('topo.svg');
+  background-size: 380px;
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  opacity: 0.04;
+  pointer-events: none;
+}
+.mv-card > * { position: relative; z-index: 1; }
+.mv-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  background: rgba(249,115,22,0.1);
+  color: var(--accent-primary);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+}
+.mv-icon svg { width: 26px; height: 26px; }
+.mv-card h2 { font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; }
+.mv-card p { font-size: 15px; line-height: 1.7; color: var(--text-secondary); text-wrap: pretty; }
+
+/* ============================================================
+   Geçmiş Yönetim Kurulları — Term accordion
+   ============================================================ */
+.terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.term-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-primary);
+  overflow: hidden;
+  transition: border-color 200ms ease;
+}
+.corp-section.alt .term-item { background: var(--bg-primary); }
+.term-item.is-open { border-color: var(--accent-primary); }
+.term-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 24px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  color: var(--text-primary);
+}
+.term-period {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: clamp(18px, 2.4vw, 24px);
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.term-item.is-open .term-period { color: var(--accent-primary); }
+.term-pres {
+  font-size: 14px;
+  color: var(--text-secondary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.term-pres strong { color: var(--text-primary); font-weight: 600; }
+.term-badges { display: flex; align-items: center; gap: 12px; }
+.term-current {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+  background: var(--accent-primary);
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+.term-chevron {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  transition: transform 240ms ease, border-color 200ms ease, color 200ms ease;
+  flex-shrink: 0;
+}
+.term-item.is-open .term-chevron {
+  transform: rotate(180deg);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.term-chevron svg { width: 16px; height: 16px; }
+.term-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 320ms ease;
+}
+.term-body-inner {
+  padding: 4px 24px 24px;
+  border-top: 1px solid var(--border);
+}
+.term-roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+.roster-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+.roster-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center top;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.roster-avatar.initials {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(249,115,22,0.12);
+  color: var(--accent-primary);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+}
+.roster-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.roster-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+.roster-name { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+
+/* Big A4 board photo slot */
+.term-board-photo {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  aspect-ratio: 1.414 / 1;
+  margin: 18px auto 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--surface);
+}
+.term-photo-caption {
+  max-width: 620px;
+  margin: 12px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.term-photo-caption .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-primary); }
+.term-pres-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(249,115,22,0.08);
+  border: 1px solid rgba(249,115,22,0.2);
+  margin-top: 18px;
+}
+.term-pres-card .roster-avatar { width: 56px; height: 56px; border-color: var(--accent-primary); }
+.term-pres-card .tp-role { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-primary); }
+.term-pres-card .tp-name { font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-primary); }
+@media (max-width: 560px) {
+  .term-head { grid-template-columns: 1fr auto; }
+  .term-pres { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* ============================================================
+   Sporcular & Antrenörler
+   ============================================================ */
+.athlete-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1000px) { .athlete-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .athlete-grid { grid-template-columns: 1fr; } }
+
+.athlete-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+.corp-section.alt .athlete-card { background: var(--bg-primary); }
+.athlete-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -18px rgba(249,115,22,0.3);
+}
+.athlete-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--surface);
+}
+.athlete-photo > div {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center top;
+  filter: grayscale(0.2);
+  transition: transform 600ms ease, filter 300ms ease;
+}
+.athlete-card:hover .athlete-photo > div { transform: scale(1.05); filter: grayscale(0); }
+.athlete-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(11,18,32,0.78));
+}
+.athlete-disc {
+  position: absolute;
+  top: 12px; left: 12px;
+  z-index: 2;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(11,18,32,0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 5px 9px;
+  border-radius: 8px;
+}
+.athlete-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 2;
+  padding: 16px;
+}
+.athlete-name {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #fff;
+}
+.athlete-role {
+  font-size: 12px;
+  color: rgba(244,246,250,0.8);
+  margin-top: 2px;
+}
+.athlete-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.athlete-achievement {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.athlete-achievement svg {
+  width: 14px; height: 14px;
+  color: var(--accent-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Yönetim Kurulu — portre ızgarası */
+.yk-lead{display:flex;justify-content:center;margin-bottom:24px}
+.yk-lead .yk-card{width:min(100%,300px)}
+.yk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+@media (max-width:960px){.yk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.yk-grid{gap:16px}}
+.yk-card{display:flex;flex-direction:column;align-items:center;gap:16px;padding:28px 20px 24px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;text-align:center;transition:border-color 200ms ease,box-shadow 200ms ease,transform 200ms ease}
+.yk-card:hover{border-color:var(--accent-primary);box-shadow:0 16px 40px -18px rgba(249,115,22,.3);transform:translateY(-3px)}
+.yk-photo{width:min(160px,70%);aspect-ratio:1/1;border-radius:999px;overflow:hidden;background:var(--surface);box-shadow:0 0 0 1px var(--border)}
+.yk-card.is-lead .yk-photo{width:min(200px,80%);box-shadow:0 0 0 2px var(--accent-primary)}
+.yk-photo img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.12);transition:transform 600ms ease}
+.yk-card:hover .yk-photo img{transform:scale(1.17)}
+.yk-body{display:flex;flex-direction:column;gap:6px;align-items:center}
+.yk-role{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-primary)}
+.yk-name{margin:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:19px;letter-spacing:-0.02em;color:var(--text-primary)}
+.yk-card.is-lead .yk-name{font-size:22px}
+.yk-photo.is-orig img{transform:none}.yk-card:hover .yk-photo.is-orig img{transform:scale(1.04)}

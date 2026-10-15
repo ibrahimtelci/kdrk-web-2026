@@ -1,0 +1,438 @@
+{
+ "activities": [
+  {
+   "title": "Şubat Skitur Kampı, Ovit Yaylası",
+   "category": "dag-kayagi",
+   "starts_on": "2026-02-01",
+   "difficulty": 2,
+   "location": "Rize / Ovit",
+   "summary": "Kış kampı tamamlandı; faaliyet raporu ve fotoğraflar yayında.",
+   "cover_image": "https://images.unsplash.com/photo-1551524559-8af4e6624178",
+   "quota": 0,
+   "taken": 0,
+   "manual_status": null,
+   "done": true
+  },
+  {
+   "title": "Verçenik Tepesi Bahar Tırmanışı",
+   "category": "dagcilik",
+   "starts_on": "2026-04-01",
+   "difficulty": 3,
+   "location": "Rize / İkizdere",
+   "summary": "Bahar tırmanışı tamamlandı; faaliyet raporu ve fotoğraflar yayında.",
+   "cover_image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99",
+   "quota": 0,
+   "taken": 0,
+   "manual_status": null,
+   "done": true
+  },
+  {
+   "title": "Temel İlk Yardım Eğitimi",
+   "category": "arama-kurtarma",
+   "starts_on": "2026-05-16",
+   "difficulty": 2,
+   "location": "Kulüp Lokali",
+   "summary": "Tüm üyelere açık; sertifikalı program.",
+   "cover_image": "https://images.unsplash.com/photo-1605540436563-5bca919ae766",
+   "quota": 20,
+   "taken": 14,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Pokut Yaylası Doğa Yürüyüşü",
+   "category": "gunubirlik",
+   "starts_on": "2026-05-18",
+   "difficulty": 1,
+   "location": "Rize / Çamlıhemşin",
+   "summary": "Bahar çiçekleri ve sis altında; yeni başlayanlara açık günübirlik yürüyüş.",
+   "cover_image": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429",
+   "quota": 15,
+   "taken": 8,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Tırmanışa Giriş Atölyesi",
+   "category": "spor-tirmanis",
+   "starts_on": "2026-05-22",
+   "difficulty": 1,
+   "location": "Kulüp Salonu",
+   "summary": "Hiç tırmanmadıysan ideal başlangıç. Ekipman dahil.",
+   "cover_image": "https://images.unsplash.com/photo-1522163182402-834f871fd851",
+   "quota": 14,
+   "taken": 9,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Avusor Yaylası Kamp",
+   "category": "gunubirlik",
+   "starts_on": "2026-05-25",
+   "difficulty": 2,
+   "location": "Rize / Çamlıhemşin",
+   "summary": "Bir gece kamp, sabah Avusor Buzul Gölü'ne orta tempolu yürüyüş.",
+   "cover_image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
+   "quota": 12,
+   "taken": 5,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Himalaya Gezisi Sunumu",
+   "category": "sosyal",
+   "starts_on": "2026-05-28",
+   "difficulty": 1,
+   "location": "Kulüp Lokali",
+   "summary": "8000 m deneyimini konuğumuzdan dinliyoruz.",
+   "cover_image": "https://images.unsplash.com/photo-1496080174650-637e3f22fa03",
+   "quota": 60,
+   "taken": 40,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Sedye Taşıma Tatbikatı",
+   "category": "arama-kurtarma",
+   "starts_on": "2026-05-30",
+   "difficulty": 2,
+   "location": "Kaçkar Eteği",
+   "summary": "Saha ekibi için arazi tahliye senaryosu.",
+   "cover_image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99",
+   "quota": 18,
+   "taken": 12,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Verçenik Tepesi Tırmanışı",
+   "category": "dagcilik",
+   "starts_on": "2026-06-01",
+   "difficulty": 3,
+   "location": "Rize / İkizdere",
+   "summary": "3.711 m. Teknik kar ve kaya geçişleri; deneyimli üyelere yönelik.",
+   "cover_image": "https://images.unsplash.com/photo-1551632811-561732d1e306",
+   "quota": 12,
+   "taken": 12,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Ayder Şelale Yürüyüşü",
+   "category": "gunubirlik",
+   "starts_on": "2026-06-08",
+   "difficulty": 1,
+   "location": "Rize / Ayder",
+   "summary": "Aile dostu, çocuklara da uygun; orman içi şelale rotası.",
+   "cover_image": "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9",
+   "quota": 20,
+   "taken": 6,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "İp Sistemiyle Kurtarma",
+   "category": "arama-kurtarma",
+   "starts_on": "2026-06-13",
+   "difficulty": 3,
+   "location": "İkizdere Kanyon",
+   "summary": "Yüksek açı teknik kurtarma tatbikatı.",
+   "cover_image": "https://images.unsplash.com/photo-1551632811-561732d1e306",
+   "quota": 10,
+   "taken": 8,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Doğal Kaya Günü",
+   "category": "spor-tirmanis",
+   "starts_on": "2026-06-14",
+   "difficulty": 2,
+   "location": "İkizdere Kaya Alanı",
+   "summary": "Salondan kayaya geçiş; öncü tırmanış pratiği.",
+   "cover_image": "https://images.unsplash.com/photo-1564769662533-4f00a87b4056",
+   "quota": 10,
+   "taken": 7,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Kavron Geçidi Trekking",
+   "category": "dagcilik",
+   "starts_on": "2026-06-15",
+   "difficulty": 3,
+   "location": "Rize / Çamlıhemşin",
+   "summary": "2 günlük rota; Yukarı Kavron'dan Aşağı Kavron'a sırt yürüyüşü.",
+   "cover_image": "https://images.unsplash.com/photo-1454496522488-7a8e488e8606",
+   "quota": 12,
+   "taken": 8,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Yaz Açılış Kampı",
+   "category": "sosyal",
+   "starts_on": "2026-06-21",
+   "difficulty": 1,
+   "location": "Pokut Yaylası",
+   "summary": "Ateş başı buluşma; müzik ve tanışma.",
+   "cover_image": "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+   "quota": 50,
+   "taken": 35,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Boulder Yarışması",
+   "category": "spor-tirmanis",
+   "starts_on": "2026-07-05",
+   "difficulty": 3,
+   "location": "Kulüp Salonu",
+   "summary": "İç saha boulder yarışması; tüm seviyeler.",
+   "cover_image": "https://images.unsplash.com/photo-1601224748946-91f08f0f8c5e",
+   "quota": 24,
+   "taken": 18,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Patika Temizlik Günü",
+   "category": "sosyal",
+   "starts_on": "2026-07-06",
+   "difficulty": 1,
+   "location": "Ayder",
+   "summary": "Rotalarımızı temiz tutuyoruz; herkes davetli.",
+   "cover_image": "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9",
+   "quota": 40,
+   "taken": 22,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Kaçkar Zirve Tırmanışı",
+   "category": "dagcilik",
+   "starts_on": "2026-07-12",
+   "difficulty": 3,
+   "location": "Çamlıhemşin · 3.937 m",
+   "summary": "4 gün, buzul aşması, 35° kar şutları. Yüksek irtifa deneyimi gerekli.",
+   "cover_image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99",
+   "quota": 10,
+   "taken": 7,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Yaz Dağcılık Eğitimi 2026",
+   "category": "egitim",
+   "starts_on": "2026-07-20",
+   "difficulty": 2,
+   "location": "Çamlıhemşin · 7 gün",
+   "summary": "TDF onaylı eğitmenlerle teknik kar, kaya ve ip eğitimleri.",
+   "cover_image": "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa",
+   "quota": 20,
+   "taken": 11,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Hazindak Yaylası Botanik Gezisi",
+   "category": "gunubirlik",
+   "starts_on": "2026-07-27",
+   "difficulty": 1,
+   "location": "Rize / Hemşin",
+   "summary": "Endemik bitkiler, çay molası ve fotoğraf; günübirlik tur.",
+   "cover_image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef",
+   "quota": 15,
+   "taken": 3,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Karagöl–Sahara Trekking",
+   "category": "gunubirlik",
+   "starts_on": "2026-08-03",
+   "difficulty": 2,
+   "location": "Artvin / Borçka",
+   "summary": "Karagöl Milli Parkı'nda göl çevresi tam günlük orta tempolu yürüyüş.",
+   "cover_image": "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+   "quota": 13,
+   "taken": 6,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "İp Teknikleri Atölyesi",
+   "category": "egitim",
+   "starts_on": "2026-09-12",
+   "difficulty": 2,
+   "location": "İkizdere Kaya Alanı",
+   "summary": "Tek ve çok ip boylu sistemlerde güvenlik.",
+   "cover_image": "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5",
+   "quota": 12,
+   "taken": 9,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Kış Dağcılık Eğitimi",
+   "category": "egitim",
+   "starts_on": "2026-12-18",
+   "difficulty": 2,
+   "location": "Erzurum / Palandöken",
+   "summary": "Krampon, balta ve çığ güvenliği; saha uygulamalı.",
+   "cover_image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99",
+   "quota": 20,
+   "taken": 7,
+   "manual_status": "closed",
+   "done": false
+  },
+  {
+   "title": "Ovit Yaylası Skitur Kampı",
+   "category": "dag-kayagi",
+   "starts_on": "2027-01-10",
+   "difficulty": 2,
+   "location": "Rize / Ovit",
+   "summary": "İki günlük tur kayağı kampı; bakir kar.",
+   "cover_image": "https://images.unsplash.com/photo-1551524559-8af4e6624178",
+   "quota": 12,
+   "taken": 8,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Kar Ayakkabısı Yürüyüşü",
+   "category": "dag-kayagi",
+   "starts_on": "2027-01-24",
+   "difficulty": 1,
+   "location": "Erzurum / Palandöken",
+   "summary": "Kış doğasına ilk adım; ekipman sağlanır.",
+   "cover_image": "https://images.unsplash.com/photo-1605540436563-5bca919ae766",
+   "quota": 16,
+   "taken": 5,
+   "manual_status": null,
+   "done": false
+  },
+  {
+   "title": "Kavron Zirve Turu",
+   "category": "dag-kayagi",
+   "starts_on": "2027-02-14",
+   "difficulty": 3,
+   "location": "Rize / Kavron",
+   "summary": "Dik yamaç, uzun tur; ileri seviye.",
+   "cover_image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99",
+   "quota": 8,
+   "taken": 6,
+   "manual_status": null,
+   "done": false
+  }
+ ],
+ "banners": [
+  {
+   "eyebrow": "EST. 1998 · RİZE",
+   "title": "Kaçkar'da dağcılık, tırmanış ve dağ kayağı kulübü.",
+   "text": "1998'den beri doğa yürüyüşleri, zirve tırmanışları, TDF onaylı eğitimler ve arama-kurtarma çalışmaları. Yeni başlayanlara da açığız.",
+   "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
+   "ctas": [
+    [
+     "Faaliyetler.html",
+     "Faaliyet Takvimi"
+    ],
+    [
+     "Kulup Uyeligi.html",
+     "Kulübe Üye Ol"
+    ]
+   ],
+   "stamps": [
+    "41°01'N · 40°31'E",
+    "KDRK · EST. 1998"
+   ]
+  },
+  {
+   "eyebrow": "EĞİTİM · TEM 2026",
+   "title": "Yaz Dağcılık Eğitimi 2026",
+   "text": "TDF onaylı eğitmenlerle 7 günlük teknik eğitim: kayalık geçişler, ip teknikleri, kamp. Kayıtlar başladı.",
+   "image": "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa",
+   "ctas": [
+    [
+     "Egitim.html",
+     "Programı İncele"
+    ],
+    [
+     "Faaliyetler.html?cat=egitim",
+     "Tüm Eğitimler"
+    ]
+   ],
+   "stamps": [
+    "40°50'N · 41°10'E",
+    "3.240 M · DENİZ GÖLÜ"
+   ]
+  },
+  {
+   "eyebrow": "TOPLULUK",
+   "title": "Birlikte yürür, beraber zirveye varırız.",
+   "text": "Yeni başlayandan deneyimli dağcıya, her seviyeye uygun bir faaliyet var. 28 yıldır aynı disiplinle.",
+   "image": "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+   "ctas": [
+    [
+     "Faaliyetler.html",
+     "Faaliyet Takvimi"
+    ],
+    [
+     "Iletisim.html",
+     "Bize Ulaş"
+    ]
+   ],
+   "stamps": [
+    "500+ ZİRVE",
+    "28 YIL · BİRLİKTE"
+   ]
+  }
+ ],
+ "news": [
+  {
+   "href": "Faaliyetler.html",
+   "featured": true,
+   "category": "Duyuru",
+   "title": "Yaz 2026 Programı Yayında",
+   "meta": "12 NİS 2026 · 4 DK OKUMA",
+   "excerpt": "Günübirlik yürüyüşler, zirve tırmanışları ve teknik eğitimlerle yaz programı yayında. Pokut, Verçenik, Kaçkar ve daha fazlası Faaliyet Takvimi'nde.",
+   "cover_image": "https://images.unsplash.com/photo-1519681393784-d120267933ba"
+  },
+  {
+   "href": "Galeri Detay.html",
+   "featured": false,
+   "category": "Faaliyet Raporu",
+   "title": "Verçenik Tepesi Bahar Tırmanışı tamamlandı",
+   "meta": "08 NİS 2026",
+   "excerpt": null,
+   "cover_image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99"
+  },
+  {
+   "href": "Egitim.html",
+   "featured": false,
+   "category": "Haber",
+   "title": "Kış Dağcılık Eğitimi 2026 başvuruları kapandı",
+   "meta": "02 NİS 2026",
+   "excerpt": null,
+   "cover_image": "https://images.unsplash.com/photo-1551632811-561732d1e306"
+  },
+  {
+   "href": "Arama Kurtarma.html",
+   "featured": false,
+   "category": "Haber",
+   "title": "KDRK Arama-Kurtarma birimi yeni sertifikalarını aldı",
+   "meta": "28 MAR 2026",
+   "excerpt": null,
+   "cover_image": "https://images.unsplash.com/photo-1605540436563-5bca919ae766"
+  },
+  {
+   "href": "Dag Kayagi.html",
+   "featured": false,
+   "category": "Faaliyet Raporu",
+   "title": "Şubat Skitur Kampı, Ovit Yaylası",
+   "meta": "21 MAR 2026",
+   "excerpt": null,
+   "cover_image": "https://images.unsplash.com/photo-1496080174650-637e3f22fa03"
+  }
+ ]
+}

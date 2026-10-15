@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KDRK · Ürün ve UX Denetimi · Ekim 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F6FA;--card:#FFFFFF;--ink:#0B1220;--mut:#475569;--line:#E2E8F0;--acc:#C2410C;--crit:#DC2626;--high:#D97706;--mid:#0284C7;--low:#64748B}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,sans-serif;text-wrap:pretty}
+a{color:var(--acc)}a:hover{color:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(24px,5vw,64px) clamp(16px,4vw,48px)}
+h1,h2,h3{font-family:Manrope,sans-serif;letter-spacing:-0.02em;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,4.5vw,52px);font-weight:800}h2{font-size:clamp(24px,3vw,34px);font-weight:800;margin:0 0 16px}h3{font-size:19px;font-weight:700;margin:24px 0 8px}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:10px}.eyebrow::before{content:"";width:28px;height:2px;background:var(--acc)}
+section{padding:48px 0;border-top:1px solid var(--line)}
+.lede{font-size:18px;color:var(--mut);max-width:760px;margin-top:16px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:24px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px}
+.panel h3{margin-top:0}
+ul,ol{padding-left:20px;margin:8px 0}li{margin:4px 0}
+.tbl{width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:14.5px;line-height:1.5}
+th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+th{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);background:#ECEFF5;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;white-space:nowrap}
+.p{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;white-space:nowrap}
+.p::before{content:"";width:8px;height:8px;border-radius:2px;background:currentColor}
+.k{color:var(--crit)}.y{color:var(--high)}.o{color:var(--mid)}.d{color:var(--low)}
+.group td{background:#F8FAFC;font-family:Manrope,sans-serif;font-weight:800;font-size:15px;white-space:normal}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.chip{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);font-size:14px}
+.chip .c{height:56px;display:flex;align-items:flex-end;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px}
+.chip .t{padding:10px 12px}.chip b{font-family:Manrope;display:block}
+.note{font-size:14px;color:var(--mut)}
+code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:#ECEFF5;padding:1px 5px;border-radius:4px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:12px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:0}
+.steps li::before{content:counter(s,decimal-leading-zero);font-family:Manrope;font-weight:800;font-size:22px;color:var(--acc)}
+.steps strong{display:block;font-family:Manrope}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="eyebrow">KDRK Web · Ürün ve UX denetimi</div>
+<h1>Mevcut tasarımın incelemesi ve öneriler</h1>
+<p class="lede">22 kamu sayfası, ortak CSS/JS dosyaları ve etkileşim kodu üzerinden hazırlandı. Bulgular dosya ve bileşen adlarıyla verilmiştir; ölçülen bulgular ile koddan çıkarılan riskler ayrı işaretlenmiştir.</p>
+<p class="mono" style="margin-top:20px">03 EKİ 2026 · Kapsam: site (admin paneli hariç)</p>
+</header>
+
+<section>
+<div class="eyebrow">Yöntem ve sınırlar</div>
+<h2>Ne incelendi, ne doğrulanamadı</h2>
+<div class="grid2">
+<div class="panel"><h3>İncelenen</h3><ul>
+<li>Kod satır satır: <code>Anasayfa</code>, <code>Faaliyetler</code>, <code>Faaliyet Detay</code> (başvuru modalı dahil), <code>system.css</code>, <code>nav-footer.css</code>, <code>site.js</code>.</li>
+<li>Arama ile tüm sayfalarda: menü yapısı, aktif menü sınıfı, footer varyantları, <code>href="#"</code>, odak stilleri, içerik iddiaları.</li>
+<li>Otomatik ölçüm (Chromium, iframe): 15 sayfa × 360/390/768/1024/1440 px'te yatay taşma, 14 px altı metin, 40 px altı dokunma alanı, h1 sayısı, alt metni eksik görseller.</li>
+</ul></div>
+<div class="panel"><h3>Doğrulanmayan</h3><ul>
+<li><code>Sosyal Kulturel</code>'den <code>Cok Ip Boylu</code>'ya kadar 7 sayfa ölçüm turunu tamamlamadı; şablonları aynı olduğundan bulgular büyük olasılıkla geçerli, ama ölçülmedi.</li>
+<li>Galeri, Galeri Detay, İletişim, kurumsal ve Bilgi Bankası sayfaları görsel olarak tek tek gezilmedi; yalnızca ölçüm ve kod araması yapıldı.</li>
+<li>Gerçek cihaz, ekran okuyucu ve klavye ile uçtan uca gezinme testi yapılmadı. Bu nedenle erişilebilirlik uyumluluğu iddia edilmiyor.</li>
+<li>Performans ölçülmedi (Lighthouse vb. yok); performans maddeleri koddan çıkarılan risklerdir.</li>
+<li>Kontrast değerleri token HEX'lerinden hesaplandı; fotoğraf üzeri metin kontrastı fotoğrafa bağlı olduğundan ölçülemedi.</li>
+<li>Admin paneli bu turun dışında.</li>
+</ul></div>
+</div>
+</section>
+
+<section>
+<div class="eyebrow">A · Genel değerlendirme</div>
+<h2>Güçlü yönler ve en önemli sorunlar</h2>
+<div class="grid2">
+<div class="panel"><h3>Korunması gerekenler</h3><ul>
+<li>Koyu lacivert + turuncu palet, topografya filigranı ve mono koordinat damgaları dağcılık kimliğini sıradan bir "doğa sitesi"nden ayırıyor.</li>
+<li>Manrope / Inter / JetBrains Mono üçlüsü net bir rol dağılımına sahip; Türkçe karakterler (İ, ş, ğ, ı) <code>lang="tr"</code> sayesinde büyük harfte doğru dönüşüyor.</li>
+<li>Faaliyet kartı doğru bilgi önceliğine sahip: tarih, zorluk, yer, başlık, doluluk.</li>
+<li>Faaliyet Detay'da program, malzeme listesi, sorumlu kişi ve ücret aynı sayfada; başvuru formu TC/telefon maskeleri ve satır içi hata mesajlarıyla çalışıyor.</li>
+<li>Faaliyetler listesinde arama, kategori filtresi, sıralama ve boş sonuç durumu mevcut.</li>
+</ul></div>
+<div class="panel"><h3>En önemli 6 sorun</h3><ol>
+<li><strong>Mobilde başvuru gömülü.</strong> 1024 px altında başvuru kartı (ücret, kontenjan, Katıl) tüm içeriğin sonuna düşüyor; nav CTA'sı da gizleniyor.</li>
+<li><strong>Faaliyet verisi sayfalar arasında çelişiyor.</strong> Aynı faaliyetin tarihi, zorluğu ve süresi Anasayfa, liste ve detayda farklı.</li>
+<li><strong>Faaliyet durumu eksik.</strong> Yaklaşan/geçmiş ayrımı, "başvuru kapandı", "iptal", "ertelendi" durumları yok; "Dolu" etiketi zorluk etiketinin yerine geçiyor.</li>
+<li><strong>Menü etiketleri çakışıyor ve 1024 px'te taşıyor.</strong> "Faaliyetlerimiz", "Faaliyet Takvimi", "Faaliyete Katıl" üç farklı yere gidiyor; aktif menü sınıfı var ama stili yok.</li>
+<li><strong>Turuncu buton beyaz metinle kontrast eşiğinin altında</strong> (koyu tema ≈2.8:1, açık tema ≈3.6:1).</li>
+<li><strong>Kimlik boşluğu:</strong> Kulüp adında "Rafting" var, sitede rafting içeriği yok; "Dağda, suda, karda" başlığı su faaliyeti vaat ediyor.</li>
+</ol></div>
+</div>
+</section>
+
+<section>
+<div class="eyebrow">B · Öncelikli sorunlar</div>
+<h2>Sorun tablosu</h2>
+<p class="note" style="margin-bottom:16px">Ölçülen = otomatik ölçümle doğrulandı. Kod = kaynak kodda görüldü. Risk = çıkarım, ölçülmedi.</p>
+<div class="tbl"><table>
+<thead><tr><th>Sayfa / bileşen</th><th>Somut sorun</th><th>Kullanıcıya etkisi</th><th>Önerilen çözüm</th><th>Öncelik</th></tr></thead>
+<tbody>
+<tr class="group"><td colspan="5">Kullanımı engelleyen veya güveni bozan sorunlar</td></tr>
+<tr><td>Faaliyet Detay · <code>.detail-sidebar</code></td><td>&lt;1024 px'te <code>.detail-grid</code> tek kolona iniyor, başvuru kartı 5 bloktan (14 malzeme, 6 foto) sonra geliyor. <code>.nav-cta-text</code> aynı kırılımda gizli. (Kod)</td><td>Telefonda ve tablette ücret, kontenjan ve Katıl butonu ancak uzun kaydırmadan sonra görülüyor; çoğu kullanıcı başvurmadan çıkar.</td><td>Mobilde hero altına özet şerit (tarih · süre · zorluk · ücret · kalan yer) + ekran altında sabit "Başvur" çubuğu. Başvuru kartını hero'dan hemen sonra göster.</td><td><span class="p k">Kritik</span></td></tr>
+<tr><td>Anasayfa ↔ Faaliyetler ↔ Detay</td><td>Verçenik: Anasayfa 25 MAY / "Dolu", liste 01 HAZ / Zor. Kaçkar: Anasayfa "iki günlük, Zor", liste "4 gün, Çok Zor", detay "Zor, 3 gece 4 gün". (Kod)</td><td>Tarih ve zorluk güvenlik kararını etkiler; çelişki kulübe güveni zedeler.</td><td>Tek veri kaynağı (admin → JSON/PHP). Kartlar ve detay aynı kayıttan üretilsin; elle yazılmış kopyalar kaldırılsın.</td><td><span class="p k">Kritik</span></td></tr>
+<tr><td>Faaliyet kartı · <code>.activity-difficulty</code></td><td>Durum ("Dolu") zorluk rozetinin yerine yazılıyor; iptal, ertelendi, başvuru kapandı, geçmiş durumu yok. Liste sayfasında dolu kart yalnızca gri çubukla ayrışıyor. (Kod)</td><td>Dolu bir faaliyetin zorluğu görünmüyor; kapanmış faaliyete başvurulmaya çalışılıyor.</td><td>Zorluk ve durum iki ayrı rozet. Durum seti: Başvuru açık · Son X yer · Dolu (yedek liste) · Başvuru kapandı · Ertelendi · İptal · Tamamlandı. Her durumda metin etiketi zorunlu.</td><td><span class="p k">Kritik</span></td></tr>
+<tr><td>Faaliyetler · başlık ve filtre</td><td>"23 FAALİYET" yazıyor, 9 kart var; "Spor Tırmanış 3" rozetine tıklanınca 0 sonuç. Sayfalama butonları işlevsiz. (Kod)</td><td>Kullanıcı filtreye güvenmiyor; boş sonuç hata gibi görünüyor.</td><td>Sayılar listeden hesaplansın. Sayfalama gerçek veri gelene kadar kaldırılsın veya "Daha fazla göster" ile değiştirilsin.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Faaliyetler · liste</td><td>Yalnızca yaklaşanlar var; geçmiş faaliyetlere ve raporlara giden yol yok. Bugün (Ekim 2026) itibarıyla listedeki tüm tarihler (May–Ağu 2026) geçmişte. (Kod)</td><td>"Yaklaşan" başlığı altında geçmiş faaliyetler görünüyor; geçmiş arşiv bulunamıyor.</td><td>Liste üstünde iki sekme: Yaklaşan / Geçmiş. Tarihi geçen kayıt backend'de otomatik "Tamamlandı"ya geçsin, rapor ve galeriye bağlansın.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Nav · tüm sayfalar</td><td>1024 px'te <code>.nav-right</code> 1044 px'e taşıyor, CTA kesiliyor (menü 1024'ten itibaren açılıyor). (Ölçülen, 15/15 sayfa)</td><td>iPad yatay ve küçük dizüstünde ana eylem butonu görünmüyor.</td><td>Masaüstü menü kırılımını 1200 px'e çek veya menüyü 5 üst öğeye indir (bkz. D).</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Nav · etiketler</td><td>"Faaliyetlerimiz" (disiplin sayfaları), "Faaliyet Takvimi" (liste; Anasayfa'da <code>#takvim</code>), "Faaliyete Katıl" (Anasayfa'da <code>#takvim</code>, Faaliyetler'de tek bir detay sayfası). Faaliyetler.html'de aynı dropdown <code>?cat=</code> filtrelerine, diğer sayfalarda disiplin sayfalarına gidiyor. Galeri Detay'da menü düz ve farklı. (Kod)</td><td>Aynı etiket sayfaya göre farklı yere gidiyor; kullanıcı nerede olduğunu kaybediyor.</td><td>Tek menü şablonu. "Faaliyetler" üst öğesi altında: Faaliyet Takvimi, Geçmiş Faaliyetler, disiplinler. CTA her sayfada <code>Faaliyetler.html</code>'e gitsin, metni "Takvimi Gör".</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Butonlar · <code>.btn-primary</code>, <code>.nav-cta</code></td><td>Beyaz metin / #F97316 ≈ 2.8:1, beyaz / #EA580C ≈ 3.6:1. 16 px yarı kalın metin için 4.5:1 gerekir. (Hesaplandı)</td><td>Ana eylem butonu özellikle güneşte telefonda zor okunur.</td><td>Koyu temada turuncu zemin + #0B1220 metin (≈6.7:1); açık temada zemin #C2410C + beyaz (≈5.2:1).</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Mobil drawer</td><td>Alt menüler yok (Kurumsal → yalnızca Hakkımızda, Bilgi Bankası → yalnızca Kulüp Üyeliği). Anasayfa linki yok. Kapalıyken <code>aria-hidden</code> güncellenmiyor, linkler klavyede odaklanabiliyor. (Kod)</td><td>Telefonda Yönetim Kurulu, Sporcu Lisansı ve eğitim notlarına menüden ulaşılamıyor.</td><td>Akordeon alt menüler; Anasayfa ilk sırada; açıkken odak drawer içinde tutulsun, kapalıyken <code>inert</code>.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Başvuru modalı</td><td>Odak modal içinde tutulmuyor, kapanınca butona dönmüyor. Hatalar <code>aria-describedby</code>/<code>aria-invalid</code> ile bağlı değil. KVKK hatası yalnızca kırmızı kenarlık, metin yok. Zorunlu alan işareti yok. Gönderiliyor / başarısız durumu yok. Başarı ekranı "e-posta gönderildi" diyor. (Kod)</td><td>KVKK'yı atlayan kullanıcı neden gönderilemediğini anlamıyor; ekran okuyucu kullanıcısı hataları duymuyor; ağ hatasında başvuru kaybolabilir.</td><td>Alan altına metinli hata + üstte hata özeti; "Gönderiliyor…" durumunda buton kilitli; hata ekranı (tekrar dene + telefon). Başarı metni yalnızca gerçekleşen işlemi söylesin.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Faaliyet Detay · bilgi</td><td>Buluşma yeri yalnızca program satırında ("06:30 Pazar otogarı"); son başvuru tarihi, katılım şartları listesi, ulaşım ayrıntısı ayrı alan değil. "İptal &amp; İade Koşulları" linki aidat tablosuna gidiyor. Sorumluya ulaşma yolu yok. (Kod)</td><td>Kullanıcı kritik bilgiyi paragraflarda arıyor veya telefonla soruyor.</td><td>"Bilmen gerekenler" bloğu: Buluşma · Son başvuru · Ulaşım · Ücrete dahil olanlar · Katılım şartı · İptal politikası · Hava durumu kuralı. Sorumlu kartına telefon/WhatsApp butonu. Değerler admin'den gelsin, uydurulmasın.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Anasayfa · Son Duyurular</td><td>Tüm haber linkleri <code>Anasayfa.html#haberler</code> (kendi bölümüne) gidiyor; haber detay sayfası yok. (Kod)</td><td>Tıklanan haber hiçbir şey açmıyor; kırık site izlenimi.</td><td>Haber detay şablonu (article.css yeniden kullanılabilir) veya faaliyet raporu ise ilgili Galeri Detay'a bağla.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr class="group"><td colspan="5">Kullanılabilirlik ve erişilebilirlik</td></tr>
+<tr><td>Hero slider</td><td>5 slayt, 6 sn otomatik geçiş; durdur butonu yok (yalnızca fare üstünde duruyor). Noktalar 32×2 px. Ok tuşları tüm sayfada dinleniyor. 5 ayrı h1. <code>prefers-reduced-motion</code> yalnızca CSS süresini kısaltıyor, JS otomatik geçiş devam ediyor. (Ölçülen + Kod)</td><td>Metin okunmadan değişiyor; telefonda nokta neredeyse dokunulamaz; ekran okuyucuda 5 ana başlık.</td><td>3 slayta in; görünür duraklat butonu; noktalar 44×44 dokunma alanı; tek h1 (diğerleri h2); azaltılmış harekette otomatik geçiş kapalı.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Aktif menü göstergesi</td><td><code>.is-current</code> 20 sayfada var, hiçbir CSS dosyasında stili yok. Anasayfa ve Faaliyet Detay'da hiç yok. (Kod)</td><td>Kullanıcı hangi bölümde olduğunu menüden göremiyor.</td><td><code>.nav-link.is-current</code> için kalıcı alt çizgi + <code>aria-current="page"</code>.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Odak göstergesi</td><td>Hiçbir CSS'te <code>:focus-visible</code> kuralı yok; form alanlarında <code>outline:none</code> + gölge kullanılıyor. Dropdown'lar Esc ile kapanmıyor, <code>aria-expanded</code> güncellenmiyor. (Kod)</td><td>Klavye kullanıcısı fotoğraf zeminlerde odağı kaybedebilir.</td><td>Global <code>:focus-visible{outline:2px solid var(--accent-primary);outline-offset:3px}</code>; dropdown'a Esc ve <code>aria-expanded</code>.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Küçük metin ve dokunma alanları</td><td>360 px'te zorluk rozeti ve ay etiketi 10 px, mono etiketler 11–12 px, eyebrow 12 px. 390 px'te footer linkleri 17 px yüksek, <code>.btn-text</code> 32 px, filtre hapları 38 px. (Ölçülen)</td><td>Tarih ve zorluk gibi kritik bilgiler en küçük puntoda.</td><td>Mono etiket tabanı 12 px, rozet ve tarih 12–13 px; tüm tıklanabilir öğelerde min 44 px yükseklik (padding ile).</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Faaliyet Detay · fotoğraflar</td><td><code>.photo-tile</code> div; klavyeyle açılamıyor. Lightbox'ta alt metin, ileri/geri yok. (Kod)</td><td>Klavye ve ekran okuyucu kullanıcıları galeriye erişemiyor.</td><td>Döşemeleri <code>&lt;button&gt;</code> yap; Galeri'deki <code>.lightbox</code> bileşenini (thumbnails + oklar) burada da kullan.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Bento · <code>.arrow-btn</code></td><td><code>&lt;a&gt;</code> içinde <code>&lt;button&gt;</code> (geçersiz iç içe etkileşim), 6/7'sinde etiket yok. (Kod)</td><td>Ekran okuyucuda etiketsiz buton; tıklama davranışı tarayıcıya göre değişebilir.</td><td>Butonu <code>&lt;span aria-hidden="true"&gt;</code> yap.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Footer</td><td>İki varyant: Anasayfa/Faaliyetler/Detay/Galeri'de sosyal ikonlar ve "GSB TESCİLLİ" var, Bilgi Bankası sayfalarında yok. E-posta ve telefon link değil. Sosyal linkler platform ana sayfalarına gidiyor. (Kod)</td><td>Telefonda numaraya dokunup arama yapılamıyor.</td><td>Tek footer şablonu; <code>mailto:</code> ve <code>tel:</code>; gerçek hesap adresleri gelene kadar sosyal ikonları gizle.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Faaliyet Detay · paylaş</td><td>Linkler <code>href="#"</code>; "X" ikonu kapat ikonuyla aynı çizim; Instagram'a link paylaşımı yapılamaz. (Kod)</td><td>Paylaş butonları çalışmıyor; X ikonu "kapat" gibi okunuyor.</td><td>WhatsApp + Linki Kopyala + mobilde <code>navigator.share</code>. Diğerlerini kaldır.</td><td><span class="p d">Düşük</span></td></tr>
+<tr><td>Faaliyet Detay · istatistik</td><td>Süre "3G 4G" yazıyor; malzeme listesinde dolu onay işaretleri. (Kod)</td><td>"3G 4G" mobil ağ gibi okunuyor; onay işareti "tamamlandı" anlamı veriyor.</td><td>"3 gece · 4 gün"; malzeme maddelerinde nötr madde işareti veya işaretlenebilir kontrol listesi.</td><td><span class="p d">Düşük</span></td></tr>
+<tr><td>404 / hata</td><td>Sayfa bulunamadı şablonu yok. (Kod)</td><td>Kırık linkte kullanıcı siteden düşüyor.</td><td>Mevcut <code>.empty-state</code> görünümüyle 404 sayfası: Anasayfa + Faaliyet Takvimi linkleri.</td><td><span class="p d">Düşük</span></td></tr>
+<tr class="group"><td colspan="5">İçerik ve kimlik</td></tr>
+<tr><td>Kimlik · Rafting</td><td>Kulüp adında "Rafting" var; menü, disiplinler ve faaliyetlerde rafting yok. Anasayfa başlığı "Dağda, suda, karda." (Kod)</td><td>Rafting için gelen kullanıcı aradığını bulamıyor; başlık karşılıksız vaat veriyor.</td><td>Kulübe sorulmalı: rafting aktifse disiplin sayfası; değilse başlık "Dağda ve karda" gibi gerçeğe uygun hale getirilsin.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Doğrulanmamış iddialar</td><td>"300+ aktif üye", "40+ eğitim programı", "Türkiye'nin en köklü…", "GSB tescilli" doğrulanmış rakamlar listesinde yok. "On beş yılı aşkın deneyim" 28 yıl ile çelişiyor. (Kod)</td><td>Yanlış rakam güveni zedeler.</td><td>Kulüpten teyit alınana kadar yalnızca CLAUDE.md'deki rakamlar kullanılsın; "on beş yıl" ifadesi düzeltilsin.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Anasayfa · ilk ekran</td><td>İlk slayt belirli bir yürüyüş ("Bu cumartesi…", 18 MAY). Kulübün ne olduğu ancak 2. slaytta. (Kod)</td><td>İlk kez gelen kullanıcı KDRK'nin bir dağcılık kulübü olduğunu ve neyle başlayacağını hemen göremiyor; tarih geçince slayt yanlış bilgi veriyor.</td><td>Sabit h1: kulübün ne yaptığını söyleyen tek cümle + "Faaliyet Takvimi" ve "Üye Ol" butonları; dönen içerik altına "Sıradaki faaliyet" kartı olarak taşınsın (tarihi geçince otomatik düşsün).</td><td><span class="p o">Orta</span></td></tr>
+<tr class="group"><td colspan="5">Performans (riskler — ölçülmedi)</td></tr>
+<tr><td>Anasayfa · scriptler</td><td>Yalnızca Tweaks paneli için React, ReactDOM (geliştirme sürümleri) ve Babel Standalone yükleniyor. (Kod)</td><td>Mobil veride ilk açılış belirgin yavaşlar.</td><td>Canlı sürümde Tweaks bloğu ve bu 3 script tamamen çıkarılsın.</td><td><span class="p y">Yüksek</span></td></tr>
+<tr><td>Görseller</td><td>5 hero görseli <code>w=2400</code> CSS arka planı olarak aynı anda yükleniyor; kart görselleri <code>w=1200</code>; tümü <code>background-image</code> (lazy-load, <code>srcset</code>, alt yok). (Kod)</td><td>Gereksiz veri; yavaş bağlantıda boş kutular.</td><td>Kartlarda <code>&lt;img loading="lazy" srcset&gt;</code> w=600/900; yalnızca aktif slaytı yükle; hero mobilde w=1200.</td><td><span class="p o">Orta</span></td></tr>
+<tr><td>Fontlar</td><td>3 aile, 13 ağırlık isteniyor (Manrope 400–800, Inter 400–700, Mono 400–600). (Kod)</td><td>Ek yükleme, metin kayması.</td><td>Manrope 700/800, Inter 400/500/600, Mono 500 → 6 dosya.</td><td><span class="p d">Düşük</span></td></tr>
+<tr><td>Bölüm yükseklikleri</td><td><code>.section</code> min-height 90vh + dolgu 100–180 px. CLAUDE.md 72–120 px diyor. (Kod)</td><td>Anasayfa gereksiz uzun; içerik az olan bölümler boş görünüyor.</td><td>min-height kaldır; <code>--section-pad: clamp(72px,10vh,120px)</code>.</td><td><span class="p d">Düşük</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section>
+<div class="eyebrow">C · Ortak tasarım sistemi</div>
+<h2>Önerilen sistem</h2>
+<p class="note" style="max-width:760px">Mevcut palet ve font üçlüsü korunuyor. Değişiklikler kontrast, durum renkleri ve CLAUDE.md ile kod arasındaki farkları kapatmaya yönelik.</p>
+<h3>Renkler</h3>
+<div class="sw">
+<div class="chip"><div class="c" style="background:#0B1220;color:#F4F6FA">#0B1220</div><div class="t"><b>Zemin (koyu)</b>Değişmez. Açık temada ana metin.</div></div>
+<div class="chip"><div class="c" style="background:#111B2C;color:#F4F6FA">#111B2C</div><div class="t"><b>İkincil zemin / kart</b>Değişmez.</div></div>
+<div class="chip"><div class="c" style="background:#F4F6FA;color:#0B1220;border-bottom:1px solid #E2E8F0">#F4F6FA</div><div class="t"><b>Zemin (açık)</b>Değişmez.</div></div>
+<div class="chip"><div class="c" style="background:#F97316;color:#0B1220">#F97316 + ink</div><div class="t"><b>Vurgu · koyu tema</b>Buton zemininde metin #0B1220 (≈6.7:1).</div></div>
+<div class="chip"><div class="c" style="background:#C2410C;color:#fff">#C2410C</div><div class="t"><b>Vurgu · açık tema</b>#EA580C yerine. Beyaz metin ≈5.2:1; açık zeminde link ≈4.8:1.</div></div>
+<div class="chip"><div class="c" style="background:#94A3B8;color:#0B1220">#94A3B8 / #475569</div><div class="t"><b>İkincil metin</b>Değişmez (koyu ≈7:1, açık ≈7:1). Opaklıkla soldurma yapılmasın.</div></div>
+<div class="chip"><div class="c" style="background:#38BDF8;color:#0B1220">#38BDF8 / #0284C7</div><div class="t"><b>Bilgi</b>İkincil vurgu yerine "bilgi" durumu ve Eğitim rozeti.</div></div>
+<div class="chip"><div class="c" style="background:#10B981;color:#0B1220">#10B981 / #059669</div><div class="t"><b>Başarı · Başvuru açık</b></div></div>
+<div class="chip"><div class="c" style="background:#F59E0B;color:#0B1220">#F59E0B / #B45309</div><div class="t"><b>Uyarı · Son yerler, Ertelendi</b>Açık temada metin olarak #B45309.</div></div>
+<div class="chip"><div class="c" style="background:#EF4444;color:#0B1220">#EF4444 / #DC2626</div><div class="t"><b>Hata · İptal</b></div></div>
+</div>
+<p class="note">Zorluk renkleri: "Orta" için kullanılan #FB923C marka turuncusuyla neredeyse aynı; zorluk rozeti CTA gibi görünüyor. Öneri: zorluk rozetleri koyu çip (#0B1220, %85) + renkli nokta + metin + seviye numarası ("2/4 · Orta"). Böylece fotoğraf üzerinde okunur ve bilgi yalnızca renge bağlı kalmaz. Ara seviye "Orta-Zor" ya resmi skalaya eklensin ya da kaldırılsın.</p>
+
+<h3>Tipografi</h3>
+<div class="tbl"><table style="min-width:640px"><thead><tr><th>Rol</th><th>Font</th><th>Boyut</th><th>Satır / harf aralığı</th></tr></thead><tbody>
+<tr><td>H1</td><td>Manrope 800</td><td><code>clamp(32px,5.5vw,76px)</code> (koddaki 40–88 düşürülsün)</td><td>1.05 / -0.02em</td></tr>
+<tr><td>H2</td><td>Manrope 700</td><td><code>clamp(26px,3.6vw,44px)</code></td><td>1.1 / -0.02em</td></tr>
+<tr><td>H3 / kart başlığı</td><td>Manrope 700</td><td>20px (mobil 18px)</td><td>1.25</td></tr>
+<tr><td>Gövde</td><td>Inter 400</td><td>16px, satır uzunluğu max 68ch</td><td>1.65</td></tr>
+<tr><td>Yardımcı metin</td><td>Inter 400/500</td><td>15px</td><td>1.6</td></tr>
+<tr><td>Buton</td><td>Inter 600</td><td>16px (küçük: 15px)</td><td>—</td></tr>
+<tr><td>Etiket / tarih / eyebrow</td><td>JetBrains Mono 500</td><td>12px taban, 13px kritik veri (tarih, zorluk)</td><td>0.12–0.18em, büyük harf</td></tr>
+</tbody></table></div>
+<p class="note">Eyebrow kodda Inter, CLAUDE.md'de mono tanımlı; tek karar verilsin (öneri: mono). 10–11 px kullanımları kaldırılsın.</p>
+
+<h3>Boşluk, genişlik, köşeler</h3>
+<ul>
+<li>Boşluk ölçeği: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 72 · 120. Bölüm dolgusu <code>clamp(72px,10vh,120px)</code>, min-height yok.</li>
+<li>İçerik: <code>.container</code> 1280px; uzun metin blokları 720px; nav iç genişliği de 1280px (şu an 1440px, içerikle hizasız).</li>
+<li>Köşe: buton/input 8px (kodda 4px), kart 12px, bant 16px, hap 999px.</li>
+</ul>
+
+<h3>Butonlar</h3>
+<ul>
+<li>Hiyerarşi: <strong>Primary</strong> (sayfada bir tane: Başvur / Takvimi Gör) · <strong>Secondary</strong> (çerçeveli) · <strong>Text</strong> (ok ile, liste altı "Tümünü gör").</li>
+<li>Yükseklik 48px (mobil sabit çubukta 52px), min dokunma 44×44.</li>
+<li>Durumlar: hover (renk koyulaşır, -2px), <code>:focus-visible</code> 2px turuncu halka + 3px boşluk, active (0px), disabled (#94A3B8 zemin, imleç yasak, metin açıklaması yanında), loading (metin "Gönderiliyor…" + kilit).</li>
+<li>"Yedek Liste" gibi pasif eylemler <code>opacity:.55</code> yerine secondary stil + açıklama.</li>
+</ul>
+
+<h3>Kartlar ve ikonlar</h3>
+<ul>
+<li>Faaliyet kartı tek bileşen; Anasayfa ve listede aynı alt bilgi ("Katıl →" ya listede de olsun ya hiçbir yerde). Durum rozeti sol üstte tarih altında, zorluk sağ üstte.</li>
+<li>Kart dışı düzenler: haber listesi satır düzeni (doğru), program zaman çizelgesi (doğru), malzeme listesi kart değil iki kolonlu liste olarak kalsın.</li>
+<li>İkonlar: 1.5px çizgi, 20/24px; tek başına anlam taşıyan ikonların yanında metin (paylaş, tema).</li>
+</ul>
+
+<h3>Form alanları</h3>
+<ul>
+<li>Etiket her zaman görünür; zorunlu alanlarda "*" ve formun başında "* zorunlu" notu; opsiyonel alan "(isteğe bağlı)".</li>
+<li>Hata: kırmızı kenarlık + ikon + metin; <code>aria-invalid</code>, <code>aria-describedby</code>; gönderimde ilk hatalı alana odak.</li>
+<li>TC Kimlik alanının altında neden istendiğini açıklayan kısa not (sigorta / federasyon kaydı — gerçek gerekçe kulüpten alınmalı).</li>
+</ul>
+</section>
+
+<section>
+<div class="eyebrow">D · Sayfa bazında</div>
+<h2>Sayfa bazında düzenleme önerileri</h2>
+<div class="grid2">
+<div class="panel"><h3>Ortak: Nav ve drawer</h3><ul>
+<li>Üst menü: Kurumsal ▾ · Faaliyetler ▾ (Takvim, Geçmiş Faaliyetler, 7 disiplin) · Galeri · Bilgi Bankası ▾ · İletişim. "Anasayfa" linki logoyla karşılanıyor; CLAUDE.md gereği kalacaksa drawer'da ilk sırada. → 1024 px taşmasını ve etiket çakışmasını çözer.</li>
+<li>CTA: "Takvimi Gör" → <code>Faaliyetler.html</code>, her sayfada aynı.</li>
+<li>Drawer: akordeon alt menüler, odak tuzağı, <code>inert</code>.</li>
+<li>TDF logosu nav'da KDRK amblemiyle yan yana iki yuvarlak logo oluşturuyor; marka okunurluğu için TDF footer'a ve Hakkımızda'ya taşınabilir.</li>
+</ul></div>
+<div class="panel"><h3>Anasayfa</h3><ul>
+<li>Hero: sabit h1 + iki buton; slider 3 slayta, durdur butonu. → İlk ekranın ne anlattığı netleşir.</li>
+<li>Yaklaşan Faaliyetler: dolu kartta zorluk rozeti geri gelsin, durum ayrı rozet.</li>
+<li>Faaliyetlerimiz (bento): başlık metni düzeltilsin; <code>.arrow-btn</code> dekoratif span.</li>
+<li>Rakamlar: yalnızca doğrulanmış 4 rakam (500+, 1000+, 25+, 28 yıl).</li>
+<li>Son Duyurular: gerçek hedef sayfalar.</li>
+<li>Bizi Takip Et: gerçek hesap linkleri gelene kadar bölüm gizlensin; footer'daki ikonlar yeterli.</li>
+<li>Tweaks scriptleri canlıdan çıkarılsın.</li>
+</ul></div>
+<div class="panel"><h3>Faaliyetler</h3><ul>
+<li>Yaklaşan / Geçmiş sekmesi; sayılar dinamik.</li>
+<li>Mobilde filtre hapları yatay kaydırılıyor ama ipucu yok: sağ kenarda solma veya "Kategori" select'ine dönüşüm.</li>
+<li><code>role="tab"</code> yerine <code>aria-pressed</code> butonlar (sekme paneli yok).</li>
+<li>Sayfalama gerçek veri gelene kadar kaldırılsın.</li>
+<li>Kartta durum rozeti + dolu kartta "Yedek listeye yazıl".</li>
+</ul></div>
+<div class="panel"><h3>Faaliyet Detay</h3><ul>
+<li>Hero altına özet şerit: Tarih · Süre · Zorluk · İrtifa · Ücret · Kalan yer. Mevcut "Zorluk &amp; Şartlar" kart dörtlüsü bununla birleşsin. → Tekrarı kaldırır.</li>
+<li>Mobilde sabit alt çubuk: ücret + "Başvur".</li>
+<li>"Bilmen gerekenler" bloğu (bkz. B). İptal linki gerçek politikaya.</li>
+<li>Breadcrumb: Anasayfa › Faaliyetler › [ad] (şu an <code>Anasayfa#faaliyetlerimiz</code>).</li>
+<li>Sorumlu kartına iletişim butonu.</li>
+<li>Fotoğraf döşemeleri buton; Galeri lightbox'ı yeniden kullanılsın.</li>
+<li>Modal: hata özeti, yükleniyor/başarısız durumları, odak yönetimi.</li>
+</ul></div>
+<div class="panel"><h3>Disiplin sayfaları (7)</h3><ul>
+<li>Her sayfada o disipline filtrelenmiş "Yaklaşan faaliyetler" listesi ve <code>Faaliyetler.html?cat=…</code> linki olsun; böylece menüdeki iki farklı davranış tek akışta birleşir.</li>
+<li>Rafting kararı verilince ilgili sayfa ya eklenir ya kimlik metinleri düzeltilir.</li>
+</ul></div>
+<div class="panel"><h3>Galeri ve Galeri Detay</h3><ul>
+<li>Galeri Detay menüsü diğer sayfalarla aynı şablona alınsın (şu an dropdown'sız ve farklı hedefler).</li>
+<li>Her albüm ilgili faaliyet raporuna, rapor albüme bağlansın (geçmiş faaliyet akışı).</li>
+<li>Görsel kontrol bu turda yapılmadı.</li>
+</ul></div>
+<div class="panel"><h3>Kurumsal (3)</h3><ul>
+<li>Hakkımızda: "Türkiye'nin en köklü dağ topluluğu olmak" ve "300+ üye" teyit edilsin.</li>
+<li>Yönetim Kurulu: kişi kartlarındaki 6 e-posta/Instagram linki <code>href="#"</code>; gerçek adres yoksa ikonlar kaldırılsın.</li>
+</ul></div>
+<div class="panel"><h3>Bilgi Bankası (6) ve İletişim</h3><ul>
+<li>Footer'ı tam şablona çek (sosyal + iletişim linkleri).</li>
+<li>Kulüp Üyeliği: KVKK aydınlatma metni için ayrı bölüm/sayfa; başvuru formu şu an buraya genel link veriyor.</li>
+<li>İletişim: telefon ve e-posta <code>tel:</code>/<code>mailto:</code>; çalışma saatleri kulüpten alınsın.</li>
+</ul></div>
+</div>
+</section>
+
+<section>
+<div class="eyebrow">E · Uygulama sırası</div>
+<h2>En etkili 10 düzenleme</h2>
+<div class="grid2">
+<div><p class="tag">Hızlı iyileştirmeler · 1–2 gün</p>
+<ol class="steps">
+<li><div><strong>Tweaks / React / Babel scriptlerini canlıdan çıkar</strong>Anasayfa ilk açılış yükü.</div></li>
+<li><div><strong>Buton kontrastı</strong>Koyu temada ink metin, açık temada #C2410C. İki satır CSS.</div></li>
+<li><div><strong>Faaliyet verisini eşitle</strong>Verçenik ve Kaçkar tarih/zorluk/süre; filtre sayıları; "on beş yıl".</div></li>
+<li><div><strong>CTA ve breadcrumb hedefleri</strong>"Takvimi Gör" → Faaliyetler.html her sayfada; detay breadcrumb'ı; haber linkleri.</div></li>
+<li><div><strong>Odak ve aktif menü stilleri</strong><code>:focus-visible</code>, <code>.is-current</code> + <code>aria-current</code>, tel/mailto.</div></li>
+</ol></div>
+<div><p class="tag">Kapsamlı düzenlemeler · tasarım + geliştirme</p>
+<ol class="steps" style="counter-reset:s 5">
+<li><div><strong>Faaliyet Detay mobil düzeni</strong>Özet şerit + sabit Başvur çubuğu + "Bilmen gerekenler" bloğu.</div></li>
+<li><div><strong>Faaliyet durum modeli</strong>Zorluk ve durum ayrı rozet; 7 durum; Yaklaşan/Geçmiş sekmeleri; admin'den otomatik geçiş.</div></li>
+<li><div><strong>Menü yeniden yapılandırma</strong>5 üst öğe, tek şablon, akordeon drawer; 1024 px taşması biter.</div></li>
+<li><div><strong>Başvuru formu durumları</strong>Hata özeti, KVKK metinli hata, yükleniyor/başarısız, odak yönetimi.</div></li>
+<li><div><strong>Anasayfa ilk ekranı</strong>Sabit kimlik başlığı, 3 slayt, durdur butonu; rafting kararına göre metinler.</div></li>
+</ol></div>
+</div>
+<p class="note" style="margin-top:24px">Kulüpten alınması gereken bilgiler: rafting faaliyeti olup olmadığı, üye sayısı, GSB tescil durumu, iptal/iade politikası, TC kimlik talebinin gerekçesi, sosyal medya hesap adresleri, faaliyet başına buluşma yeri ve son başvuru tarihi.</p>
+</section>
+</div>
+</body>
+</html>
