@@ -417,6 +417,29 @@ check((bool) preg_match('/input[^{]*\{[^}]*font-size:\s*(1[6-9]|[2-9]\d)px/s', $
 check(!preg_match('/font-size:\s*(\d|1[01])(\.\d+)?px/', $css), 'CSS’te 12px altı yazı yok');
 
 /* ------------------------------------------------------------------ */
+echo "\n7) KVKK saklama süresi (kdrk/cron/kvkk-purge.php, CLAUDE.md §15)\n";
+$days = max(30, \App\Core\Settings::int('kvkk_retention_days', 365));
+$mk = static fn (string $slug, string $date) => $db->insert('activities', ['slug' => $slug, 'title' => 'KVKK Test', 'category' => 'gunubirlik', 'starts_on' => $date]);
+$oldAct = $mk('kvkk-test-eski', date('Y-m-d', strtotime('-' . ($days + 5) . ' days')));
+$newAct = $mk('kvkk-test-yeni', date('Y-m-d', strtotime('-' . ($days - 5) . ' days')));
+$app = static fn (int $act) => $db->insert('applications', ['activity_id' => $act, 'name' => 'KVKK Test', 'phone' => '5320000000', 'email' => 'kvkk-test@example.invalid',
+    'tc_enc' => Crypto::encrypt('10000000146'), 'health_enc' => Crypto::encrypt('Astım'), 'kvkk_consent_at' => date('Y-m-d H:i:s')]);
+$oldApp = $app($oldAct);
+$newApp = $app($newAct);
+$cmd = escapeshellarg(PHP_BINARY) . ' -d extension=sodium ' . escapeshellarg(dirname(__DIR__) . '/kdrk/cron/kvkk-purge.php');
+exec("$cmd --dry-run", $out1, $rc1);
+check($rc1 === 0 && $db->value('SELECT tc_enc IS NOT NULL FROM applications WHERE id = ?', [$oldApp]) == 1, 'deneme modunda hiçbir şey silinmez');
+exec($cmd, $out2, $rc2);
+$o = $db->one('SELECT tc_enc, health_enc, purged_at, name, phone FROM applications WHERE id = ?', [$oldApp]);
+check($rc2 === 0 && $o['tc_enc'] === null && $o['health_enc'] === null && $o['purged_at'] !== null, 'süresi dolan başvuruda TC ve sağlık notu silindi');
+check($o['name'] === 'KVKK Test' && $o['phone'] === '5320000000', 'ad ve katılım kaydı kaldı');
+$n = $db->one('SELECT tc_enc, purged_at FROM applications WHERE id = ?', [$newApp]);
+check($n['tc_enc'] !== null && $n['purged_at'] === null && Crypto::decrypt($n['tc_enc']) === '10000000146', 'süresi dolmayan başvuruya dokunulmadı');
+$db->run("DELETE FROM applications WHERE email = 'kvkk-test@example.invalid'");
+$db->run("DELETE FROM activities WHERE slug IN ('kvkk-test-eski', 'kvkk-test-yeni')");
+$db->run("DELETE FROM audit_log WHERE action = 'purge' AND user_id IS NULL AND created_at > NOW() - INTERVAL 5 MINUTE");
+
+/* ------------------------------------------------------------------ */
 echo "\n" . str_repeat('─', 50) . "\n";
 printf("%d geçti, %d kaldı\n", $pass, count($fail));
 foreach ($fail as $f) {

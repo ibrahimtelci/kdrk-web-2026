@@ -10,6 +10,10 @@
 > 5. Testler: `php -d extension=sodium tools/test.php` ve `node tools/mobile-check.mjs`
 > 6. Panel: http://localhost:8000/yonetim. İlk admin hesabını aç: `php -d extension=sodium kdrk/database/create-user.php <e-posta> "<Ad Soyad>" admin`
 >
+> **Sunucuda cron (KVKK):** cPanel → Cron İşleri → günde bir (ör. `0 3 * * *`):
+> `/usr/local/bin/php /home/rizekdrk/kdrk-yeni/kdrk/cron/kvkk-purge.php > /dev/null 2>&1`
+> PHP yolu MultiPHP'de farklıysa (`/opt/cpanel/ea-php84/root/usr/bin/php`) onu yaz. Önce elle `--dry-run` ile dene.
+>
 > Git Bash'te `mobile-check.mjs`'e panel yolu verirken başına `MSYS_NO_PATHCONV=1` ekle; yoksa `/yonetim/...` yolu Windows yoluna çevrilir.
 
 Kaçkar Dağcılık Rafting Kayak İhtisas Spor Kulübü web sitesi ve yönetim paneli. Bu belge, projeyi yerelde kodlamaya devam edecek geliştirici için yazıldı.

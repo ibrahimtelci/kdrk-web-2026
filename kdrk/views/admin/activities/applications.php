@@ -66,7 +66,7 @@ $phoneFmt = static fn (?string $p): string => $p ? preg_replace('/^(\d{3})(\d{3}
             <div><dt>Acil durum</dt><dd><?= e($p['emer_name'] ?? '—') ?><?php if ($p['emer_phone']): ?> · <a href="tel:+90<?= e($p['emer_phone']) ?>" class="mono"><?= e($phoneFmt($p['emer_phone'])) ?></a><?php endif ?></dd></div>
 <?php if ($sensitive): ?>
             <div><dt>TC Kimlik No</dt><dd class="mono"><?= e($p['tc'] ?? ($p['purged_at'] ? 'Silindi (KVKK)' : '—')) ?></dd></div>
-            <div class="ar-full"><dt>Sağlık notu</dt><dd class="<?= $p['health'] ? 'warn' : '' ?>"><?= e($p['health'] ?? 'Belirtilmedi') ?></dd></div>
+            <div class="ar-full"><dt>Sağlık notu</dt><dd class="<?= $p['health'] ? 'warn' : '' ?>"><?= e($p['health'] ?? ($p['purged_at'] ? 'Silindi (KVKK)' : 'Belirtilmedi')) ?></dd></div>
 <?php endif ?>
           </dl>
 <?php if ($canEdit): ?>
