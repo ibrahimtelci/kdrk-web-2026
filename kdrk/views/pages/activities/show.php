@@ -39,7 +39,7 @@ $summary = array_filter([
 ]);
 ?>
 <section class="detail-hero always-dark">
-  <div class="detail-hero-img zoom" style="background-image:url('<?= e(img($a['cover_image'], 2400)) ?>')"></div>
+  <div class="detail-hero-img zoom"><?= img_tag($a['cover_image'], '100vw', 1600, '', false) ?></div>
   <div class="detail-hero-overlay"></div>
 
   <nav class="breadcrumb" aria-label="Breadcrumb">

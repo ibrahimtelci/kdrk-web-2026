@@ -14,7 +14,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
   <div class="hero-topo tl"></div><div class="hero-topo br"></div>
 <?php foreach ($banners as $i => $b): ?>
   <div class="hero-slide<?= $i === 0 ? ' is-active' : '' ?>" data-slide role="group" aria-roledescription="slayt" aria-label="<?= $i + 1 ?> / <?= $total ?>">
-    <div class="hero-slide-img" style="background-image:url('<?= e(img($b['image'], 2400)) ?>')"></div>
+    <div class="hero-slide-img"><?= img_tag($b['image'], '100vw', 1600, '', $i > 0) ?></div>
     <div class="hero-slide-overlay"></div>
     <div class="container hero-content">
       <div class="hero-text">
@@ -122,7 +122,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
     <div class="bento reveal">
       <!-- FEATURE: Günübirlik (2x2) -->
       <a href="<?= e(url('disiplin', ['slug' => 'gunubirlik'])) ?>" class="bento-tile feature">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1600&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
         </span>
@@ -135,7 +135,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
 
       <!-- Dağcılık -->
       <a href="<?= e(url('disiplin', ['slug' => 'dagcilik'])) ?>" class="bento-tile t-mountain">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=1200&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
         <div class="bento-tile-content">
           <h3>Dağcılık</h3>
@@ -145,7 +145,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
 
       <!-- Spor Tırmanış -->
       <a href="<?= e(url('disiplin', ['slug' => 'spor-tirmanis'])) ?>" class="bento-tile t-climb">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1522163182402-834f871fd851?w=1200&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1522163182402-834f871fd851', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
         <div class="bento-tile-content">
           <h3>Spor Tırmanış</h3>
@@ -155,7 +155,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
 
       <!-- Dağ Kayağı (geniş) -->
       <a href="<?= e(url('disiplin', ['slug' => 'dag-kayagi'])) ?>" class="bento-tile t-ski">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1551524559-8af4e6624178?w=1600&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1551524559-8af4e6624178', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
         <div class="bento-tile-content">
           <h3>Dağ Kayağı</h3>
@@ -165,7 +165,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
 
       <!-- Eğitim -->
       <a href="<?= e(url('disiplin', ['slug' => 'egitim'])) ?>" class="bento-tile t-edu">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1551632811-561732d1e306', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
         <div class="bento-tile-content">
           <h3>Eğitim Programı</h3>
@@ -175,7 +175,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
 
       <!-- Sosyal -->
       <a href="<?= e(url('disiplin', ['slug' => 'sosyal-kulturel'])) ?>" class="bento-tile t-social">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1496080174650-637e3f22fa03?w=1200&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1496080174650-637e3f22fa03', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
         <div class="bento-tile-content">
           <h3>Sosyal-Kültürel</h3>
@@ -185,7 +185,7 @@ $whatsapp = (string) setting('social_whatsapp', '');
 
       <!-- Arama Kurtarma (full-width) -->
       <a href="<?= e(url('disiplin', ['slug' => 'arama-kurtarma'])) ?>" class="bento-tile t-rescue">
-        <div class="bento-tile-img" style="background-image:url('https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=2000&q=80&auto=format&fit=crop')"></div>
+        <div class="bento-tile-img"><?= img_tag('https://images.unsplash.com/photo-1605540436563-5bca919ae766', '(min-width: 1024px) 50vw, 100vw') ?></div>
         <span class="arrow-btn" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></span>
         <div class="bento-tile-content">
           <span class="tile-eyebrow">07 · Sertifikalı Ekip</span>
@@ -252,7 +252,7 @@ $rest = array_slice($news, 1, 4);
     <div class="news-grid">
       <a href="<?= e($newsHref($feature)) ?>" class="news-feature reveal">
         <div class="news-feature-cover">
-          <div style="background-image:url('<?= e(img($feature['cover_image'], 1600)) ?>')"></div>
+          <div><?= img_tag($feature['cover_image'], '(min-width: 1280px) 700px, (min-width: 1024px) 55vw, 100vw') ?></div>
         </div>
         <div class="flex gap-12 items-center" style="flex-wrap:wrap">
           <span class="pill pill-accent"><?= e($newsCat[$feature['category']]) ?></span>
@@ -268,7 +268,7 @@ $rest = array_slice($news, 1, 4);
       <div class="news-list reveal">
 <?php foreach ($rest as $n): ?>
         <a href="<?= e($newsHref($n)) ?>" class="news-item">
-          <div class="news-thumb"><div style="background-image:url('<?= e(img($n['cover_image'], 400)) ?>')"></div></div>
+          <div class="news-thumb"><div><?= img_tag($n['cover_image'], '80px', 400) ?></div></div>
           <div class="news-item-body">
             <span class="pill pill-outline"><?= e($newsCat[$n['category']]) ?></span>
             <h4><?= e($n['title']) ?></h4>

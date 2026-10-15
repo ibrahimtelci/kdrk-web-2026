@@ -90,6 +90,19 @@ check(count($e) === 7, 'boş formda 7 alan hatası');
 check(Crypto::decrypt(Crypto::encrypt('10000000146')) === '10000000146', 'şifreleme geri çözülüyor');
 check(slugify('Kaçkar Zirve Tırmanışı 2027') === 'kackar-zirve-tirmanisi-2027', 'slugify Türkçe');
 check(tr_range('2026-07-12', '2026-07-15') === '12–15 TEM 2026', 'tarih aralığı biçimi');
+$ss = img_srcset('https://images.unsplash.com/photo-1');
+check(substr_count($ss, 'w, ') === 3 && str_contains($ss, '?w=2400&') && str_ends_with($ss, ' 2400w'), 'srcset: 4 genişlik (§16)');
+check(img_srcset('uploads/activities/olmayan') === '', 'srcset: diskte olmayan türev yazılmaz');
+
+// §16: tek bir statik dosya 300 KB'ı geçemez
+$heavy = [];
+$it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__DIR__) . '/public_html/assets', FilesystemIterator::SKIP_DOTS));
+foreach ($it as $f) {
+    if ($f->getSize() > 300 * 1024) {
+        $heavy[] = $f->getFilename() . ' (' . round($f->getSize() / 1024) . ' KB)';
+    }
+}
+check($heavy === [], 'assets içinde 300 KB üstü dosya yok' . ($heavy ? ': ' . implode(', ', $heavy) : ''));
 
 /* ------------------------------------------------------------------ */
 echo "\n2) Sayfalar, linkler ve iskelet kontrol listesi (CLAUDE.md §3, §10)\n";

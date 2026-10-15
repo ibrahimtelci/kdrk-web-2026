@@ -8,7 +8,7 @@ $buttons = ['open' => 'Katıl', 'few' => 'Katıl', 'full' => 'Yedek liste', 'don
 ?>
 <a href="<?= e($a['url']) ?>" class="activity-card reveal<?= $done ? ' is-past' : '' ?>" data-cat="<?= e($a['category']) ?>" data-date="<?= e($a['starts_on']) ?>" data-difficulty="<?= (int) $a['difficulty'] ?>" data-fill="<?= number_format($a['fill'], 2, '.', '') ?>" data-status="<?= e($a['status']) ?>">
   <div class="activity-img">
-    <div style="background-image:url('<?= e(img($a['cover_image'], 900)) ?>')"></div>
+    <div><?= img_tag($a['cover_image'], '(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 641px) 48vw, 100vw') ?></div>
     <div class="activity-date">
       <?php if ($done): ?>
         <span class="day"><?= e(tr_month($a['starts_on'])) ?></span><span class="month"><?= e(substr($a['starts_on'], 0, 4)) ?></span>

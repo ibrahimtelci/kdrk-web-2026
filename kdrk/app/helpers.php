@@ -48,6 +48,41 @@ function img(?string $src, int $width = 900): string
     return rtrim((string) App::config('base_url'), '/') . '/' . ltrim($src, '/');
 }
 
+/**
+ * srcset dizgesi (CLAUDE.md §16). Yüklenen görselde yalnızca diskte olan türevler,
+ * Unsplash'ta tüm genişlikler yazılır; başka tam URL'de boş döner.
+ */
+function img_srcset(?string $src): string
+{
+    if ($src === null || $src === '') {
+        return '';
+    }
+    $widths = [];
+    if (preg_match('#^https://images\.unsplash\.com/#', $src)) {
+        $widths = \App\Core\Image::WIDTHS;
+    } elseif (str_starts_with($src, 'uploads/') && !preg_match('/\.\w{3,4}$/', $src)) {
+        $root = App::config('public_path') . '/';
+        $widths = array_filter(\App\Core\Image::WIDTHS, static fn (int $w) => is_file("$root$src-$w.webp"));
+    }
+    return implode(', ', array_map(static fn (int $w) => img($src, $w) . " {$w}w", $widths));
+}
+
+/**
+ * Kutuyu dolduran <img> (.img-cover). Hero görselinde $lazy = false verilir.
+ * $sizes örnek: '(min-width: 1100px) 33vw, (min-width: 640px) 50vw, 100vw'
+ */
+function img_tag(?string $src, string $sizes, int $fallback = 900, string $alt = '', bool $lazy = true): string
+{
+    if ($src === null || $src === '') {
+        return '';
+    }
+    $srcset = img_srcset($src);
+    return '<img class="img-cover" src="' . e(img($src, $fallback)) . '"'
+        . ($srcset !== '' ? ' srcset="' . e($srcset) . '" sizes="' . e($sizes) . '"' : '')
+        . ' alt="' . e($alt) . '"'
+        . ($lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high"') . '>';
+}
+
 /** Panel ikonu (app/admin-icons.php). */
 function icon(string $name, int $size = 18): string
 {
