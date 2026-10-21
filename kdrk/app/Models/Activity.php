@@ -21,6 +21,9 @@ final class Activity
         'arama-kurtarma' => 'Arama Kurtarma',
     ];
 
+    /** Eski 4'lü seviyenin puan karşılığı (puanı girilmemiş eski kayıtlar için). */
+    private const LEVEL_SCORE = [1 => 2, 2 => 5, 3 => 7, 4 => 9];
+
     /** Kalan yer bu sayıya inince "Son X yer" gösterilir. */
     public const FEW_SEATS = 3;
 
@@ -56,6 +59,19 @@ final class Activity
         }
         $sql .= ' ORDER BY a.starts_on, a.id' . ($limit ? ' LIMIT ' . (int) $limit : '');
         return array_map([self::class, 'decorate'], App::db()->all($sql, $params));
+    }
+
+    /**
+     * Anasayfa slaytına eklenen faaliyetler: kapaklı, tarihi geçmemiş, iptal/ertelenmemiş; en yakın tarih önce.
+     * Tarihi geçen kendiliğinden düşer; panelde ayrıca kaldırmak gerekmez.
+     */
+    public static function forSlider(int $limit): array
+    {
+        $sql = self::SELECT . " AND a.in_slider = 1 AND a.cover_image IS NOT NULL
+            AND COALESCE(a.ends_on, a.starts_on) >= CURDATE()
+            AND (a.manual_status IS NULL OR a.manual_status = 'closed')
+            ORDER BY a.starts_on, a.id LIMIT " . $limit;
+        return array_map([self::class, 'decorate'], App::db()->all($sql));
     }
 
     /** Liste sayfası: yaklaşan + geçmiş birlikte; sekme ayrımı data-status ile yapılır. */
@@ -96,6 +112,24 @@ final class Activity
         return 'open';
     }
 
+    /** Zorluk puanı (1–10) → bant (1 kolay, 2 orta, 3 zor, 4 çok zor). Renk ve rozet sınıfı banttan gelir. */
+    public static function bandOf(int $score): int
+    {
+        return match (true) {
+            $score <= 3 => 1,
+            $score <= 6 => 2,
+            $score <= 8 => 3,
+            default => 4,
+        };
+    }
+
+    /** Kategoriye göre "Gerekli malzemeler ve kontroller" notu (Genel Ayarlar). Her satır bir madde. */
+    public static function gearNote(string $category): array
+    {
+        $text = (string) \App\Core\Settings::get('gear_' . $category, '');
+        return array_values(array_filter(array_map('trim', preg_split('/\R/', $text) ?: [])));
+    }
+
     /** @return array{0: string, 1: string} [rozet sınıfı, metin] — faaliyet ve galeri kartı aynı rozeti kullanır */
     public static function difficultyInfo(?int $difficulty, bool $isTraining): array
     {
@@ -121,7 +155,10 @@ final class Activity
         $a['url'] = url('faaliyet', ['slug' => $a['slug']]);
 
         [$a['difficulty_class'], $a['difficulty_text']] = self::difficultyInfo($a['difficulty'] !== null ? (int) $a['difficulty'] : null, (bool) $a['is_training']);
-        $a['difficulty_level'] = $a['difficulty'] !== null ? $a['difficulty'] . '/4' : null;
+        $score = isset($a['difficulty_score']) && $a['difficulty_score'] !== null ? (int) $a['difficulty_score'] : ($a['difficulty'] !== null ? self::LEVEL_SCORE[(int) $a['difficulty']] ?? null : null);
+        $a['score'] = $score;
+        $a['difficulty_level'] = $score !== null ? $score . '/10' : null;
+        $a['has_map'] = isset($a['lat'], $a['lng']) && $a['lat'] !== null && $a['lng'] !== null;
         $a['category_text'] = self::CATEGORIES[$a['category']] ?? $a['category'];
         $a['program'] = $a['program'] ? json_decode($a['program'], true) : [];
         $a['equipment'] = $a['equipment'] ? json_decode($a['equipment'], true) : [];

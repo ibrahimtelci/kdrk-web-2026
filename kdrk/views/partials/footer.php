@@ -39,6 +39,7 @@ $activityLinks = array_values(array_filter($menu[2]['items'], static fn ($i) => 
           <li><a href="<?= e(url('kulup-uyeligi')) ?>">Kulüp Üyeliği</a></li>
           <li><a href="<?= e(url('sporcu-lisansi')) ?>">Sporcu Lisansı</a></li>
           <li><a href="<?= e(url('galeri')) ?>">Fotoğraf Galerisi</a></li>
+          <li><a href="<?= e(url('duyurular')) ?>">Duyuru &amp; Haberler</a></li>
         </ul>
       </div>
       <div class="footer-col">

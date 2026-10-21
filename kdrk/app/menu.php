@@ -24,6 +24,7 @@ return [
         ['Arama Kurtarma', 'disiplin', ['slug' => 'arama-kurtarma']],
     ]],
     ['group' => 'galeri', 'label' => 'Fotoğraf Galerisi', 'route' => 'galeri'],
+    ['group' => 'duyuru', 'label' => 'Duyuru & Haber', 'route' => 'duyurular'],
     ['group' => 'bilgi', 'label' => 'Bilgi Bankası', 'items' => [
         ['Kulüp Üyeliği', 'kulup-uyeligi'],
         ['Sporcu Lisansı', 'sporcu-lisansi'],

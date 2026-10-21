@@ -1,7 +1,7 @@
 <?php
 /**
  * Anasayfa
- * @var array $banners  en fazla 3 aktif slayt
+ * @var array $banners  en fazla 3 slayt (Banner::visible); faaliyet slaytında $b['activity'] dolu
  * @var array $upcoming en yakın 3 faaliyet
  * @var array $news     yayındaki son duyurular (ilki öne çıkan)
  */
@@ -25,6 +25,12 @@ $whatsapp = (string) setting('social_whatsapp', '');
         <<?= $i === 0 ? 'h1' : 'h2' ?> class="hero-title"><?= e(fill_stats($b['title'])) ?></<?= $i === 0 ? 'h1' : 'h2' ?>>
 <?php if ($b['text']): ?>
         <p><?= e(fill_stats($b['text'])) ?></p>
+<?php endif ?>
+<?php if ($a = $b['activity']): ?>
+        <div class="hero-meta">
+          <span class="activity-difficulty <?= e($a['difficulty_class']) ?>"><?php if ($a['difficulty_level']): ?><span class="lv"><?= e($a['difficulty_level']) ?></span><?php endif ?><?= e($a['difficulty_text']) ?></span>
+          <span class="activity-status is-inline <?= e($a['status']) ?>"><?= e($a['status_text']) ?></span>
+        </div>
 <?php endif ?>
 <?php if ($b['cta_url'] || $b['cta2_url']): ?>
         <div class="hero-actions">
@@ -236,14 +242,17 @@ $rest = array_slice($news, 1, 4);
 ?>
 <?php if ($feature): ?>
 <!-- ============================================================
-     SECTION 4 — Duyurular & Haberler (LIGHT EDITORIAL)
+     SECTION 4 — Duyuru & Haberler (LIGHT EDITORIAL)
      ============================================================ -->
-<section class="section section-news force-light" id="haberler" data-screen-label="04 Duyurular">
+<section class="section section-news force-light" id="haberler" data-screen-label="04 Duyuru & Haberler">
   <div class="container">
     <div class="section-head reveal">
       <div class="section-head-left">
         <span class="eyebrow">Gündem</span>
-        <h2>Son Duyurular</h2>
+        <h2>Duyuru &amp; Haberler</h2>
+      </div>
+      <div class="section-head-right">
+        <a href="<?= e(url('duyurular')) ?>" class="btn-text">Tüm Duyuru &amp; Haberler <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
 

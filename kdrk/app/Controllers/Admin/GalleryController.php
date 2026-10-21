@@ -8,6 +8,7 @@ use App\Core\Audit;
 use App\Core\Image;
 use App\Core\Session;
 use App\Models\Activity;
+use App\Models\Gallery;
 
 /**
  * Fotoğraf galerisi: albümler ve fotoğraflar.
@@ -29,8 +30,9 @@ final class GalleryController extends BaseController
             $where[] = 'g.is_published = ' . ($filter === 'yayinda' ? 1 : 0);
         }
         if ($q !== '') {
-            $where[] = 'g.title LIKE ?';
-            $params[] = '%' . addcslashes($q, '%_\\') . '%';
+            $where[] = Gallery::SEARCH; // albüm adı, etiket, yer, faaliyet adı
+            $like = '%' . addcslashes($q, '%_\\') . '%';
+            array_push($params, $like, $like, $like, $like);
         }
         $rows = App::db()->all(
             'SELECT g.*, COALESCE(g.taken_on, ac.starts_on) AS shot_on, ac.title AS activity_title,
@@ -56,14 +58,23 @@ final class GalleryController extends BaseController
     public function create(): void
     {
         $this->requireRole('admin', 'editor');
-        // Faaliyet sayfasındaki "Albüm oluştur" kısayolu: ?faaliyet=ID
+        // Faaliyet sayfasındaki "Albüm oluştur" kısayolu: ?faaliyet=ID → ad, tarih, kategori, yer, açıklama ve etiketler faaliyetten
         $prefill = null;
         if (isset($_GET['faaliyet'])) {
-            $prefill = App::db()->one('SELECT id, title, starts_on FROM activities WHERE id = ?', [(int) $_GET['faaliyet']]);
+            $prefill = App::db()->one('SELECT id, title, starts_on, category, location, report_summary FROM activities WHERE id = ?', [(int) $_GET['faaliyet']]);
         }
         $old = Session::pull('admin_old', []);
         if (!$old && $prefill) {
-            $old = ['activity_id' => $prefill['id'], 'title' => $prefill['title'], 'is_published' => 1];
+            $old = [
+                'activity_id'  => $prefill['id'],
+                'title'        => $prefill['title'],
+                'taken_on'     => $prefill['starts_on'],
+                'category'     => $prefill['category'],
+                'location'     => $prefill['location'],
+                'description'  => (string) $prefill['report_summary'],
+                'tags'         => (string) Gallery::tagsFor($prefill),
+                'is_published' => 1,
+            ];
         }
         $this->render('gallery/form', 'Yeni Albüm', 'gallery', ['g' => null, 'photos' => [], 'activities' => $this->activityOptions(), 'old' => $old]);
     }
@@ -84,7 +95,7 @@ final class GalleryController extends BaseController
         $id = App::db()->insert('gallery_albums', $data);
         Audit::log('create', 'gallery_album', $id, ['title' => $data['title']]);
         $this->flash('Albüm oluşturuldu. Şimdi fotoğrafları yükle.');
-        redirect(url('admin.gallery.edit', ['id' => $id]) . '#fotograflar', 303);
+        $this->done(url('admin.gallery.edit', ['id' => $id]) . '#fotograflar');
     }
 
     public function update(string $id): void
@@ -231,6 +242,7 @@ final class GalleryController extends BaseController
             'taken_on'     => null,
             'category'     => isset(Activity::CATEGORIES[$_POST['category'] ?? '']) ? $_POST['category'] : null,
             'location'     => self::nullable('location', 160),
+            'tags'         => Gallery::cleanTags((string) ($_POST['tags'] ?? '')),
             'description'  => self::nullable('description', 2000),
             'is_published' => empty($_POST['is_published']) ? 0 : 1,
         ];

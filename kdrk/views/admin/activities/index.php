@@ -24,7 +24,7 @@ $chip = static fn (array $c, string $extra = ''): string => '<span class="chip '
   </nav>
   <div class="tb-spacer"></div>
 <?php if (Auth::canEdit()): ?>
-  <a class="btn btn-primary" href="<?= e(url('admin.activities.new')) ?>"><?= icon('plus') ?>Yeni Faaliyet</a>
+  <a class="btn btn-primary" href="<?= e(url('admin.activities.new')) ?>" data-modal-link><?= icon('plus') ?>Yeni Faaliyet</a>
 <?php endif ?>
 </div>
 
@@ -38,7 +38,7 @@ $chip = static fn (array $c, string $extra = ''): string => '<span class="chip '
         <td data-label="Faaliyet">
           <a class="cell-main" href="<?= e(url('admin.activities.edit', ['id' => $a['id']])) ?>">
             <?php if ($a['cover_image']): ?><img class="t-thumb" src="<?= e(img($a['cover_image'], 400)) ?>" alt="" loading="lazy"><?php else: ?><span class="t-thumb"></span><?php endif ?>
-            <span><span class="t-title"><?= e($a['title']) ?></span><span class="t-sub muted"><?= e(Activity::CATEGORIES[$a['category']]) ?> · <?= e($a['location']) ?><?= $a['is_published'] ? '' : ' · <b>Yayında değil</b>' ?></span></span>
+            <span><span class="t-title"><?= e($a['title']) ?></span><span class="t-sub muted"><?= e(Activity::CATEGORIES[$a['category']]) ?> · <?= e($a['location']) ?><?= $a['is_published'] ? '' : ' · <b>Yayında değil</b>' ?><?= $a['in_slider'] && $a['status'] !== 'done' ? ' · <b>Anasayfa slaytında</b>' : '' ?></span></span>
           </a>
         </td>
         <td data-label="Tarih" class="mono muted"><?= e(tr_range($a['starts_on'], $a['ends_on'])) ?></td>

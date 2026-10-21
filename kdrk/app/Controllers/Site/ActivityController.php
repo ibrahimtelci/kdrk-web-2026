@@ -106,7 +106,7 @@ final class ActivityController
             'page'    => [
                 'title'         => $a['title'] . ' · ' . tr_date_long($a['starts_on']),
                 'description'   => $a['summary'],
-                'css'           => ['detail.css'],
+                'css'           => $a['has_map'] ? ['detail.css', 'vendor/leaflet/leaflet.css'] : ['detail.css'],
                 'nav'           => 'faaliyetler',
                 'current'       => 'faaliyet',
                 'currentParams' => ['slug' => $a['slug']],

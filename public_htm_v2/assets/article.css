@@ -1,0 +1,140 @@
+/* ============================================================
+   Bilgi Bankası — Makale / Doc sayfaları
+   ============================================================ */
+.kb-hero {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 120px 0 40px;
+  position: relative;
+  overflow: hidden;
+}
+.kb-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url('topo.svg');
+  background-size: 520px; background-position: top right; background-repeat: no-repeat;
+  opacity: 0.04; pointer-events: none;
+}
+.kb-hero .container { position: relative; z-index: 1; }
+.kb-hero .breadcrumb { position: static; margin-bottom: 20px; color: var(--text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.kb-hero .breadcrumb a:hover { color: var(--accent-primary); }
+.kb-hero .breadcrumb .current { color: var(--text-primary); }
+.kb-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent-primary);
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.kb-kicker::before { content:''; width: 24px; height: 1px; background: var(--accent-primary); }
+.kb-hero h1 { margin: 14px 0 12px; font-size: clamp(32px, 5vw, 56px); }
+.kb-hero .kb-sub { font-size: 17px; color: var(--text-secondary); max-width: 64ch; line-height: 1.6; }
+.kb-hero .kb-meta {
+  margin-top: 20px; display: flex; gap: 18px; flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary); letter-spacing: 0.04em;
+}
+.kb-hero .kb-meta span { display: inline-flex; align-items: center; gap: 7px; }
+.kb-hero .kb-meta svg { width: 14px; height: 14px; color: var(--accent-primary); }
+
+.kb-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 56px;
+  padding: 56px 0 96px;
+  align-items: start;
+}
+@media (max-width: 900px) { .kb-layout { grid-template-columns: 1fr; gap: 32px; } }
+
+.kb-toc {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media (max-width: 900px) {
+  .kb-toc { position: static; border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg-secondary); }
+}
+.kb-toc .toc-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; padding-left: 14px;
+}
+.kb-toc a {
+  display: block; padding: 8px 14px; font-size: 14px; color: var(--text-secondary);
+  border-left: 2px solid var(--border); transition: color 160ms ease, border-color 160ms ease;
+}
+.kb-toc a:hover { color: var(--text-primary); }
+.kb-toc a.is-active { color: var(--accent-primary); border-left-color: var(--accent-primary); font-weight: 600; }
+
+.kb-article { max-width: 720px; }
+.kb-article > section { margin-bottom: 48px; scroll-margin-top: 100px; }
+.kb-article h2 {
+  font-family: 'Manrope', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -0.01em;
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: 12px;
+}
+.kb-article h2 .h-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-primary); font-weight: 600; }
+.kb-article h3 { font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: var(--text-primary); }
+.kb-article p { font-size: 16px; line-height: 1.75; color: var(--text-secondary); margin-bottom: 16px; text-wrap: pretty; }
+.kb-article strong { color: var(--text-primary); font-weight: 600; }
+.kb-article ul, .kb-article ol { margin: 0 0 16px; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.kb-article ul li { display: flex; gap: 12px; font-size: 16px; line-height: 1.6; color: var(--text-secondary); }
+.kb-article ul li svg { width: 18px; height: 18px; color: var(--accent-primary); flex-shrink: 0; margin-top: 3px; }
+.kb-article ol { counter-reset: step; }
+.kb-article ol li {
+  display: flex; gap: 14px; font-size: 16px; line-height: 1.6; color: var(--text-secondary);
+  counter-increment: step;
+}
+.kb-article ol li::before {
+  content: counter(step);
+  flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(249,115,22,0.12); color: var(--accent-primary);
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+
+/* Callout */
+.kb-callout {
+  display: flex; gap: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 8px; padding: 18px 20px; margin: 0 0 16px;
+}
+.kb-callout svg { width: 20px; height: 20px; color: var(--accent-primary); flex-shrink: 0; margin-top: 2px; }
+.kb-callout p { margin: 0; font-size: 15px; }
+.kb-callout strong { color: var(--text-primary); }
+.kb-callout.warn { border-left-color: var(--warning); }
+.kb-callout.warn svg { color: var(--warning); }
+
+/* Table */
+.kb-table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 15px; }
+.kb-table th, .kb-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.kb-table th { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
+.kb-table td { color: var(--text-secondary); }
+.kb-table td:first-child { color: var(--text-primary); font-weight: 500; }
+.kb-table tr:last-child td { border-bottom: none; }
+
+/* Article footer CTA */
+.kb-foot {
+  margin-top: 40px; padding: 28px; border-radius: 12px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+}
+.kb-foot .kf-text h4 { font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 4px; }
+.kb-foot .kf-text p { margin: 0; font-size: 14px; color: var(--text-secondary); }
+
+/* Related notes chips */
+.kb-related { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.kb-related a {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border: 1px solid var(--border); border-radius: 999px;
+  font-size: 13px; color: var(--text-primary); transition: border-color 160ms ease, color 160ms ease;
+}
+.kb-related a:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+/* Duyuru / haber sayfası */
+.news-article { margin: 40px auto 72px; }
+.news-article-cover { position: relative; aspect-ratio: 16 / 9; margin: 0 0 32px; border-radius: 12px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); }
+.news-others .news-list { max-width: 720px; }

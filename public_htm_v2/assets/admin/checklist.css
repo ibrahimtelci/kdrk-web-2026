@@ -1,0 +1,106 @@
+/* Faaliyet yoklaması (views/admin/activities/checklist.php). Panel token'ları: admin.css.
+   Telefon önceliklidir: rehber sahada tek elle kullanır; her dokunma hedefi en az 44 px.
+   Masaüstünde her katılımcı tek satır; telefonda isim+ara üstte, Geldi/Gelmedi + Ödedi altta. */
+
+/* ---------- Yapışkan çubuk: ilerleme + arama + süzgeç ---------- */
+.ck-bar { position: sticky; top: 64px; z-index: 15; display: flex; flex-direction: column; gap: 10px; margin: 0 -4px 12px; padding: 10px 4px; background: var(--bg); }
+@media (min-width: 861px) and (pointer: fine) { .ck-bar { top: 56px; } }
+.ck-progress { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.ck-meter { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px 10px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.ck-meter-label { display: inline-flex; align-items: center; gap: 6px; font: 600 11px/1.4 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
+.ck-meter-num { justify-self: end; font-size: 13px; color: var(--text-2); }
+.ck-meter-num b { font: 800 20px/1 Manrope, sans-serif; color: var(--text); }
+.ck-track { grid-column: 1 / -1; display: flex; height: 8px; overflow: hidden; border-radius: 999px; background: var(--surface-2); }
+.ck-track i { display: block; height: 100%; transition: width 240ms ease; }
+.ck-track .is-yes { background: var(--ok); }
+.ck-track .is-pay { background: var(--accent-2); }
+.ck-meter-sub { grid-column: 1 / -1; font-size: 13px; color: var(--text-2); }
+.ck-meter.is-pay .ck-meter-sub { color: var(--text); font-weight: 600; }
+
+.ck-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ck-tools[hidden] { display: none; }
+.ck-search { flex: 1 1 240px; min-width: 0; max-width: 100%; display: flex; }
+.ck-search input { width: 100%; min-width: 0; }
+.ck-filter { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.ck-filter::-webkit-scrollbar { display: none; }
+
+/* ---------- Satırlar ---------- */
+.ck-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.ck-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 8px 12px; padding: 10px 14px; border-top: 1px solid var(--border); box-shadow: inset 4px 0 0 transparent; transition: background-color 160ms ease, box-shadow 160ms ease; }
+.ck-row:first-child { border-top: 0; }
+.ck-row[hidden] { display: none; }
+.ck-row[data-attended="1"] { box-shadow: inset 4px 0 0 var(--ok); }
+.ck-row[data-attended="0"] { box-shadow: inset 4px 0 0 var(--danger); background: color-mix(in srgb, var(--danger) 4%, var(--surface)); }
+.ck-row:target { background: color-mix(in srgb, var(--accent-2) 7%, var(--surface)); }
+.ck-who { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ck-name { font: 700 15px/1.3 Manrope, sans-serif; color: var(--text); overflow-wrap: anywhere; }
+.ck-phone { align-self: flex-start; display: inline-flex; align-items: center; min-height: 28px; font: 600 14px 'JetBrains Mono', monospace; letter-spacing: .02em; color: var(--text); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--text-2) 45%, transparent); text-underline-offset: 3px; }
+.ck-phone:hover { color: var(--ok); }
+.ck-sub { font-size: 12.5px; color: var(--text-2); }
+.ck-sub a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 2px; }
+
+.ck-call { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: var(--ok); transition: background-color 160ms ease; }
+.ck-call:hover { background: color-mix(in srgb, var(--ok) 24%, var(--surface)); }
+.ck-call:focus-visible { outline: 2px solid var(--ok); outline-offset: 2px; }
+
+.ck-form { display: flex; align-items: center; gap: 8px; }
+
+/* Switch: Geldi (yeşil) ve Ödedi (mavi). Gerçek switch rolü; etiketiyle birlikte dokunma alanı ≥44 px. */
+.ck-switch { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 8px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text-2); font: 600 14px Inter, sans-serif; white-space: nowrap; cursor: pointer; transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease; }
+.ck-switch-track { position: relative; flex-shrink: 0; width: 42px; height: 24px; border-radius: 999px; background: color-mix(in srgb, var(--text-2) 28%, var(--surface-2)); transition: background-color 180ms ease; }
+.ck-switch-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(11, 18, 32, .3); transition: transform 180ms ease; }
+.ck-switch:hover { border-color: color-mix(in srgb, var(--text-2) 50%, var(--border)); color: var(--text); }
+.ck-switch:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.ck-switch[aria-checked="true"] { color: var(--text); }
+.ck-switch[aria-checked="true"] .ck-switch-knob { transform: translateX(18px); }
+.ck-switch.is-came[aria-checked="true"] { border-color: color-mix(in srgb, var(--ok) 45%, var(--border)); background: color-mix(in srgb, var(--ok) 9%, var(--surface)); }
+.ck-switch.is-came[aria-checked="true"] .ck-switch-track { background: var(--ok); }
+.ck-switch.is-paid[aria-checked="true"] { border-color: color-mix(in srgb, var(--accent-2) 45%, var(--border)); background: color-mix(in srgb, var(--accent-2) 9%, var(--surface)); }
+.ck-switch.is-paid[aria-checked="true"] .ck-switch-track { background: var(--accent-2); }
+@media (prefers-reduced-motion: reduce) { .ck-switch-knob, .ck-switch-track { transition: none; } }
+
+/* Alınan tutar: Ödedi açıkken aynı satırda; varsayılanı faaliyet ücreti */
+.ck-amount { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.ck-amount[hidden] { display: none; }
+.ck-amount-field { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 8px 0 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text-2); font-weight: 600; }
+.ck-amount-field:focus-within { border-color: var(--accent-2); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-2) 22%, transparent); }
+.ck-amount-field:has(input[aria-invalid="true"]) { border-color: var(--danger); }
+body .ck-amount-field input { width: 7ch; min-width: 0; height: 42px; min-height: 0; padding: 0; border: 0; background: transparent; box-shadow: none; color: var(--text); font: 600 16px 'JetBrains Mono', monospace; text-align: right; outline: none; }
+.ck-amount-save { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--ok); cursor: pointer; }
+.ck-amount-save:hover { border-color: var(--ok); }
+.ck-amount-msg { flex-basis: 100%; text-align: right; font-size: 12.5px; color: var(--ok); }
+.ck-amount-msg:empty { display: none; }
+.ck-amount-msg.is-error { color: var(--danger); }
+
+.ck-row.is-saving :is(.ck-form, .ck-amount) { opacity: .6; pointer-events: none; }
+.ck-state { display: flex; flex-wrap: wrap; gap: 6px; grid-column: 3 / -1; justify-content: flex-end; }
+.ck-empty-filter { margin: 16px 0; color: var(--text-2); text-align: center; }
+.ck-empty-filter[hidden] { display: none; }
+
+/* ---------- Telefon / tablet ---------- */
+@media (max-width: 860px) {
+  .ck-bar { margin-inline: -12px; padding-inline: 12px; }
+  .ck-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .ck-meter { padding: 8px 10px; }
+  .ck-meter-num b { font-size: 18px; }
+  /* Telefon: 1) isim + ara  2) Geldi (tam genişlik)  3) Ödedi + yanında tutar (ödediyse).
+     Form görsel olarak açılır (display: contents) ki switch'ler satır ızgarasına yerleşsin; gönderim aynı kalır. */
+  .ck-row { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "who who call" "came came came" "paid amount amount"; padding: 12px; }
+  .ck-who { grid-area: who; }
+  .ck-call { grid-area: call; align-self: start; }
+  .ck-form { display: contents; }
+  .ck-switch { justify-content: flex-start; }
+  .ck-switch.is-came { grid-area: came; }
+  .ck-switch.is-paid { grid-area: paid; }
+  .ck-row[data-paid="0"] .ck-switch.is-paid { grid-column: 1 / -1; }
+  .ck-amount { grid-area: amount; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .ck-amount[hidden] { display: none; }
+  body .ck-amount-field input { width: 100%; }
+  .ck-amount-msg { grid-column: 1 / -1; text-align: left; }
+  .ck-state { grid-column: 1 / -1; justify-content: flex-start; }
+}
+@media (max-width: 380px) {
+  .ck-progress { grid-template-columns: minmax(0, 1fr); }
+  .ck-switch { padding-right: 10px; gap: 8px; }
+  .ck-amount-field { padding-inline: 8px 6px; }
+}

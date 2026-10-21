@@ -45,14 +45,152 @@
     if (btn) { setTimeout(() => { btn.disabled = true; btn.lastChild.textContent = btn.dataset.busy; }, 0); }
   });
 
-  /* Kapak önizlemesi */
-  const coverInput = $('[data-cover-input]'), coverPrev = $('[data-cover-prev]');
-  if (coverInput && coverPrev) coverInput.addEventListener('change', () => {
-    const f = coverInput.files[0];
-    if (!f) return;
-    if (f.size > 15 * 1024 * 1024) { alert('Görsel en fazla 15 MB olabilir.'); coverInput.value = ''; return; }
-    coverPrev.style.backgroundImage = 'url(' + URL.createObjectURL(f) + ')';
-  });
+  /* Kapak: seçilince kırpma penceresi açılır (sürükle, yakınlaştır).
+     Seçilen alan 0–1 oranlarıyla gizli alana yazılır ("x,y,w,h"); sunucu özgün görselden kırpar (Image::parseCrop).
+     JS kapalıysa ya da <dialog> yoksa görsel kırpılmadan yüklenir. */
+  const coverInput = $('[data-cover-input]'), coverPrev = $('[data-cover-prev]'), cropValue = $('[data-crop-value]');
+  if (coverInput && coverPrev) {
+    const prevBg = coverPrev.style.backgroundImage;
+    const reset = () => { coverInput.value = ''; if (cropValue) cropValue.value = ''; coverPrev.style.backgroundImage = prevBg; };
+    coverInput.addEventListener('change', () => {
+      const f = coverInput.files[0];
+      if (!f) return;
+      if (f.size > 15 * 1024 * 1024) { alert('Görsel en fazla 15 MB olabilir.'); reset(); return; }
+      const url = URL.createObjectURL(f);
+      if (!cropValue || typeof HTMLDialogElement !== 'function') { coverPrev.style.backgroundImage = 'url(' + url + ')'; return; }
+      openCropper(url, coverInput.dataset.cropRatio, coverInput.dataset.cropLabel, (crop, preview) => {
+        cropValue.value = crop;
+        coverPrev.style.backgroundImage = 'url(' + preview + ')';
+      }, reset);
+    });
+  }
+
+  function openCropper(url, ratioText, label, onApply, onCancel) {
+    const [rw, rh] = (ratioText || '16/10').split('/').map(Number);
+    // Anasayfa slaytı tam ekrandır; telefonda (≈390×844) görselin yalnız ortadaki dikey şeridi görünür
+    const phone = Math.min(100, 100 * (390 / 844) / (rw / rh)).toFixed(1);
+    const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const dlg = document.createElement('dialog');
+    dlg.className = 'crop-dialog';
+    dlg.setAttribute('aria-labelledby', 'crop-title');
+    dlg.innerHTML =
+      '<div class="crop-head"><h2 id="crop-title">Kapağı ayarla</h2><span class="muted">' + esc(label) + '</span></div>' +
+      '<div class="crop-stage" tabindex="0" role="application" aria-label="Kırpma alanı. Ok tuşlarıyla kaydır, artı ve eksi ile yakınlaştır." style="aspect-ratio:' + rw + '/' + rh + '">' +
+        '<img alt="" draggable="false"><span class="crop-grid" aria-hidden="true"></span>' +
+        '<span class="crop-phone" style="width:' + phone + '%" aria-hidden="true"><span>Telefonda slayt</span></span></div>' +
+      '<div class="crop-zoom"><label for="crop-zoom">Yakınlaştır</label><input id="crop-zoom" type="range" min="1" max="4" step="0.01" value="1"></div>' +
+      '<p class="f-hint">Fotoğrafı sürükleyerek kaydır; kaydırıcı, fare tekerleği ya da iki parmakla yakınlaştır. Çerçevenin içi kapakta görünür. ' +
+        'Anasayfa slaytı ekranı kapladığı için telefonda yalnız kesik çizgili alan görünür; önemli kısmı oraya getir.</p>' +
+      '<div class="crop-foot"><button type="button" class="btn btn-ghost" data-crop-reset>Sıfırla</button><div class="tb-spacer"></div>' +
+        '<button type="button" class="btn btn-ghost" data-crop-cancel>Vazgeç</button><button type="button" class="btn btn-primary" data-crop-apply>Uygula</button></div>';
+    document.body.appendChild(dlg);
+    const stage = $('.crop-stage', dlg), img = $('img', dlg), zoomIn = $('#crop-zoom', dlg);
+    let nw = 0, nh = 0, sw = 0, sh = 0, base = 1, zoom = 1, ox = 0, oy = 0;
+    const scale = () => base * zoom;
+    const clamp = () => {
+      ox = Math.min(0, Math.max(sw - nw * scale(), ox));
+      oy = Math.min(0, Math.max(sh - nh * scale(), oy));
+    };
+    const draw = () => {
+      clamp();
+      img.style.width = (nw * scale()) + 'px';
+      img.style.transform = 'translate(' + ox + 'px,' + oy + 'px)';
+      zoomIn.value = zoom;
+    };
+    const zoomAt = (z, cx, cy) => {
+      const s0 = scale(), px = (cx - ox) / s0, py = (cy - oy) / s0;
+      zoom = Math.min(4, Math.max(1, z));
+      ox = cx - px * scale();
+      oy = cy - py * scale();
+      draw();
+    };
+    // Çerçeve boyutu değişince (döndürme, pencere) görünen alanın merkezi korunur
+    const layout = (center) => {
+      const r = stage.getBoundingClientRect();
+      const c = center || (sw ? [(sw / 2 - ox) / scale(), (sh / 2 - oy) / scale()] : [nw / 2, nh / 2]);
+      sw = r.width; sh = r.height;
+      base = Math.max(sw / nw, sh / nh);
+      ox = sw / 2 - c[0] * scale();
+      oy = sh / 2 - c[1] * scale();
+      draw();
+    };
+    const close = (apply) => {
+      if (apply) {
+        const s = scale(), f = n => Math.max(0, Math.min(1, n)).toFixed(4);
+        const x = -ox / s, y = -oy / s, w = sw / s, h = sh / s;
+        const cv = document.createElement('canvas');
+        cv.width = 480; cv.height = Math.round(480 * rh / rw);
+        cv.getContext('2d').drawImage(img, x, y, w, h, 0, 0, cv.width, cv.height);
+        onApply([f(x / nw), f(y / nh), f(w / nw), f(h / nh)].join(','), cv.toDataURL('image/jpeg', 0.85));
+      } else {
+        onCancel();
+      }
+      window.removeEventListener('resize', onResize);
+      dlg.close();
+      dlg.remove();
+      URL.revokeObjectURL(url);
+      coverInput.focus();
+    };
+    const onResize = () => layout();
+    window.addEventListener('resize', onResize);
+
+    // Sürükleme ve iki parmakla yakınlaştırma (Pointer Events: fare, dokunma, kalem)
+    const pts = new Map();
+    let pinch = null;
+    const local = e => { const r = stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    stage.addEventListener('pointerdown', e => {
+      stage.setPointerCapture(e.pointerId);
+      pts.set(e.pointerId, local(e));
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: zoom };
+      }
+    });
+    stage.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      const prev = pts.get(e.pointerId), cur = local(e);
+      pts.set(e.pointerId, cur);
+      if (pts.size === 1) {
+        ox += cur[0] - prev[0];
+        oy += cur[1] - prev[1];
+        draw();
+      } else if (pinch && pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        zoomAt(pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+      }
+    });
+    const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; };
+    stage.addEventListener('pointerup', up);
+    stage.addEventListener('pointercancel', up);
+    stage.addEventListener('wheel', e => {
+      e.preventDefault();
+      const [cx, cy] = local(e);
+      zoomAt(zoom * Math.exp(-e.deltaY * 0.0015), cx, cy);
+    }, { passive: false });
+    stage.addEventListener('keydown', e => {
+      const step = e.shiftKey ? 40 : 10;
+      const moves = { ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] };
+      if (moves[e.key]) { ox += moves[e.key][0]; oy += moves[e.key][1]; draw(); }
+      else if (e.key === '+' || e.key === '=') zoomAt(zoom * 1.1, sw / 2, sh / 2);
+      else if (e.key === '-') zoomAt(zoom / 1.1, sw / 2, sh / 2);
+      else return;
+      e.preventDefault();
+    });
+    zoomIn.addEventListener('input', () => zoomAt(parseFloat(zoomIn.value), sw / 2, sh / 2));
+    $('[data-crop-reset]', dlg).addEventListener('click', () => { zoom = 1; layout([nw / 2, nh / 2]); });
+    $('[data-crop-cancel]', dlg).addEventListener('click', () => close(false));
+    $('[data-crop-apply]', dlg).addEventListener('click', () => close(true));
+    dlg.addEventListener('cancel', e => { e.preventDefault(); close(false); }); // Esc
+
+    img.onload = () => {
+      nw = img.naturalWidth; nh = img.naturalHeight;
+      dlg.showModal();
+      layout([nw / 2, nh / 2]);
+      stage.focus();
+    };
+    img.onerror = () => { dlg.remove(); URL.revokeObjectURL(url); alert('Görsel açılamadı; JPG, PNG veya WebP seç.'); onCancel(); };
+    img.src = url;
+  }
 
   /* Galeri yükleyici: her dosya ayrı istekte gider (sunucunun toplam istek sınırına takılmaz) */
   const upForm = $('[data-photo-upload]');
@@ -111,65 +249,243 @@
     sel.addEventListener('change', () => { if (pick) pick.hidden = sel.value !== 'club'; });
   });
 
-  /* Program düzenleyici: gün başlığı + tarih + saatli maddeler → gizli JSON alanı */
-  const editor = $('[data-program-editor]'), store = $('[data-program-json]');
-  if (editor && store) {
-    const readonly = !!editor.closest('fieldset[disabled]');
-    let days;
-    try { days = JSON.parse(store.value || '[]'); } catch (_) { days = []; }
-    const el = (tag, attrs = {}, kids = []) => {
-      const n = document.createElement(tag);
-      Object.entries(attrs).forEach(([k, v]) => { if (k === 'text') n.textContent = v; else n.setAttribute(k, v); });
-      kids.forEach(k => n.appendChild(k));
-      return n;
-    };
-    const iconBtn = (label, onClick) => {
-      const b = el('button', { type: 'button', class: 'btn-icon del', 'aria-label': label, title: label });
-      b.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-      b.addEventListener('click', onClick);
-      if (readonly) b.disabled = true;
-      return b;
-    };
-    const save = () => { store.value = JSON.stringify(days); };
-    function draw() {
-      editor.innerHTML = '';
-      if (!days.length) {
-        editor.appendChild(el('p', { class: 'f-hint', text: 'Henüz program yok. Çok günlü faaliyetlerde her gün için ayrı blok ekle.' }));
-      }
-      days.forEach((d, di) => {
-        d.items = d.items || [];
-        const title = el('input', { type: 'text', placeholder: 'Günün başlığı (ör. Zirve tırmanışı)', 'aria-label': (di + 1) + '. gün başlığı', maxlength: '120' });
-        title.value = d.title || '';
-        title.addEventListener('input', () => { d.title = title.value; save(); });
-        const date = el('input', { type: 'date', 'aria-label': (di + 1) + '. gün tarihi' });
-        date.value = d.date || '';
-        date.addEventListener('input', () => { d.date = date.value || null; save(); });
-        const items = el('div', { class: 'pe-items' });
-        d.items.forEach((it, ii) => {
-          const t = el('input', { type: 'text', inputmode: 'numeric', placeholder: '06:30', 'aria-label': 'Saat', maxlength: '5' });
-          t.value = it.time || '';
-          t.addEventListener('input', () => { it.time = t.value; save(); });
-          const x = el('input', { type: 'text', placeholder: 'Ne yapılacak', 'aria-label': 'Açıklama', maxlength: '200' });
-          x.value = it.text || '';
-          x.addEventListener('input', () => { it.text = x.value; save(); });
-          items.appendChild(el('div', { class: 'pe-item' }, [t, x, iconBtn('Maddeyi sil', () => { d.items.splice(ii, 1); save(); draw(); })]));
-        });
-        const addItem = el('button', { type: 'button', class: 'btn btn-ghost btn-sm pe-add-item', text: '+ Saat ekle' });
-        addItem.addEventListener('click', () => { d.items.push({ time: '', text: '' }); save(); draw(); editor.querySelectorAll('.pe-day')[di].querySelector('.pe-item:last-child input').focus(); });
-        if (readonly) addItem.hidden = true;
-        editor.appendChild(el('div', { class: 'pe-day' }, [
-          el('div', { class: 'pe-day-head' }, [el('span', { class: 'pe-day-no', text: (di + 1) + '. GÜN' }), title, date, iconBtn((di + 1) + '. günü sil', () => { if (confirm((di + 1) + '. gün silinsin mi?')) { days.splice(di, 1); save(); draw(); } })]),
-          items, addItem,
-        ]));
-      });
+  /* Açılır pencere: [data-modal-link] düğmesi hedef formu ?pencere=1 ile bir <dialog> içindeki iframe'de açar.
+     Pencerede kayıt bitince sunucu (admin/_done) "go" mesajı yollar; ana sayfa yeni adrese gider.
+     JS kapalıyken ya da <dialog> yoksa bağlantı normal sayfa olarak açılır. */
+  const withModal = href => href + (href.includes('?') ? '&' : '?') + 'pencere=1';
+  let frameDlg = null;
+  const closeFrame = () => { if (frameDlg) { frameDlg.close(); frameDlg.remove(); frameDlg = null; } };
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-modal-link]');
+    if (!a || typeof HTMLDialogElement !== 'function' || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    e.preventDefault();
+    closeFrame();
+    const title = a.dataset.modalTitle || a.textContent.trim();
+    frameDlg = document.createElement('dialog');
+    frameDlg.className = 'frame-dialog';
+    frameDlg.setAttribute('aria-label', title);
+    frameDlg.innerHTML = '<div class="frame-head"><h2></h2><button type="button" class="btn-icon" data-frame-close aria-label="Pencereyi kapat">' +
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>' +
+      '<iframe></iframe>';
+    $('h2', frameDlg).textContent = title;
+    $('iframe', frameDlg).title = title;
+    document.body.appendChild(frameDlg);
+    $('[data-frame-close]', frameDlg).addEventListener('click', closeFrame);
+    frameDlg.addEventListener('cancel', ev => { ev.preventDefault(); closeFrame(); });
+    $('iframe', frameDlg).src = withModal(a.getAttribute('href'));
+    frameDlg.showModal();
+  });
+  window.addEventListener('message', e => {
+    if (e.origin !== location.origin || !e.data || !e.data.kdrk) return;
+    if (e.data.kdrk === 'close') closeFrame();
+    if (e.data.kdrk === 'go' && typeof e.data.url === 'string') {
+      const u = new URL(e.data.url, location.href);
+      if (u.origin === location.origin) location.href = u.href;
     }
-    const addDay = $('[data-add-day]');
-    if (addDay) addDay.addEventListener('click', () => {
-      days.push({ title: '', date: null, items: [{ time: '', text: '' }] });
-      save(); draw();
-      const all = editor.querySelectorAll('.pe-day');
-      all[all.length - 1].querySelector('input').focus();
+  });
+  // Pencerenin içi: formlar kipi korusun, "Vazgeç" pencereyi kapatsın
+  if (document.body.hasAttribute('data-modal-page')) {
+    $$('form').forEach(f => {
+      if (f.querySelector('input[name="_pencere"]')) return;
+      const h = document.createElement('input');
+      h.type = 'hidden'; h.name = '_pencere'; h.value = '1';
+      f.appendChild(h);
     });
+    $$('[data-modal-cancel], .save-bar a.btn-ghost, .page-head .back-link').forEach(a => a.addEventListener('click', e => {
+      if (window.parent === window) return;
+      e.preventDefault();
+      window.parent.postMessage({ kdrk: 'close' }, location.origin);
+    }));
+  }
+
+  /* Sekmeler ve sihirbaz: [data-steps] içindeki .step panelleri.
+     data-steps="tabs"   → üstteki sekmelerle serbest geçiş (düzenleme)
+     data-steps="wizard" → İleri/Geri; zorunlu alanlar dolmadan sonraki adıma geçilmez, son adımda Kaydet (yeni kayıt)
+     JS kapalıyken tüm paneller alt alta görünür. Sunucu hatası varsa hatalı alanın paneli açılır. */
+  $$('[data-steps]').forEach(box => {
+    const wizard = box.dataset.steps === 'wizard';
+    const steps = $$('.step', box);
+    const nav = $('.steps-nav', box);
+    if (!steps.length || !nav) return;
+    box.classList.add('is-js');
+    const tabs = steps.map((s, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'steps-tab';
+      b.id = 'tab-' + s.id;
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-controls', s.id);
+      b.innerHTML = (wizard ? '<span class="steps-no">' + (i + 1) + '</span>' : '') + '<span></span>';
+      b.lastChild.textContent = s.dataset.title;
+      s.setAttribute('role', 'tabpanel');
+      s.setAttribute('aria-labelledby', b.id);
+      nav.appendChild(b);
+      return b;
+    });
+    nav.setAttribute('role', 'tablist');
+    const prev = $('[data-step-prev]', box), next = $('[data-step-next]', box), submit = $('[data-step-submit]', box);
+    let cur = 0;
+    const valid = i => {
+      const bad = $$('input, select, textarea', steps[i]).find(el => !el.disabled && !el.checkValidity());
+      if (bad) { bad.reportValidity(); bad.focus(); return false; }
+      return true;
+    };
+    const show = (i, focus) => {
+      cur = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach((s, k) => { s.hidden = k !== cur; });
+      tabs.forEach((t, k) => {
+        t.setAttribute('aria-selected', k === cur ? 'true' : 'false');
+        t.tabIndex = k === cur ? 0 : -1;
+        t.classList.toggle('is-done', wizard && k < cur);
+      });
+      if (wizard) {
+        if (prev) prev.hidden = cur === 0;
+        if (next) next.hidden = cur === steps.length - 1;
+        if (submit) submit.hidden = cur !== steps.length - 1;
+      }
+      steps[cur].dispatchEvent(new CustomEvent('step:show', { bubbles: true }));
+      if (focus) { const f = $('input:not([type=hidden]):not([type=range]), select, textarea', steps[cur]); if (f) f.focus({ preventScroll: true }); }
+      try { if (!wizard) sessionStorage.setItem('kdrk-tab-' + location.pathname, String(cur)); } catch (e) {}
+    };
+    tabs.forEach((t, i) => t.addEventListener('click', () => {
+      if (wizard && i > cur) { for (let k = cur; k < i; k++) if (!valid(k)) { show(k); return; } }
+      show(i, true);
+    }));
+    nav.addEventListener('keydown', e => {
+      const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (!d) return;
+      e.preventDefault();
+      tabs[(cur + d + tabs.length) % tabs.length].click();
+      tabs[cur].focus();
+    });
+    if (prev) prev.addEventListener('click', () => show(cur - 1, true));
+    if (next) next.addEventListener('click', () => { if (valid(cur)) show(cur + 1, true); });
+    // Sunucu hatası → ilgili panel; yoksa düzenlemede son açılan sekme
+    const errAt = steps.findIndex(s => s.querySelector('[aria-invalid="true"]'));
+    let start = 0;
+    if (errAt >= 0) start = errAt;
+    else if (!wizard) { try { start = parseInt(sessionStorage.getItem('kdrk-tab-' + location.pathname) || '0', 10) || 0; } catch (e) {} }
+    show(start);
+    // Gönderimde gizli paneldeki geçersiz alan sessiz kalmasın
+    const form = box.closest('form');
+    if (form) form.addEventListener('invalid', e => {
+      const i = steps.findIndex(s => s.contains(e.target));
+      if (i >= 0 && i !== cur) show(i);
+    }, true);
+  });
+
+  /* Zorluk kaydırıcısı: 1–10 puan, bant rengi ve adı canlı güncellenir. "Zorluk yok" işaretliyse kaydırıcı kapanır. */
+  const BANDS = [[3, 'Kolay', 'easy'], [6, 'Orta', 'medium'], [8, 'Zor', 'hard'], [10, 'Çok zor', 'very-hard']];
+  $$('[data-score]').forEach(box => {
+    const range = $('input[type=range]', box), out = $('[data-score-out]', box), none = $('[data-score-none]', box);
+    const draw = () => {
+      const v = parseInt(range.value, 10);
+      const b = BANDS.find(x => v <= x[0]);
+      const off = !!(none && none.checked);
+      box.dataset.band = off ? 'none' : b[2];
+      out.textContent = off ? 'Zorluk derecesi yok' : b[1] + ' · ' + v + '/10';
+      range.style.setProperty('--fill', ((v - 1) / 9 * 100) + '%');
+      range.disabled = off;
+      range.setAttribute('aria-valuetext', out.textContent);
+    };
+    range.addEventListener('input', draw);
+    if (none) none.addEventListener('change', draw);
     draw();
+  });
+
+  /* Haritadan konum: Leaflet + OpenStreetMap. Tıklayınca ya da işaret sürüklenince nokta düşer, enlem-boylam gizli alanlara yazılır.
+     Harita yalnız panel görünür olunca kurulur (sekmeli formda gizli panelde boyut 0 olur). */
+  $$('[data-map-picker]').forEach(box => {
+    const lat = $('[data-map-lat]', box), lng = $('[data-map-lng]', box), el = $('.map-canvas', box), clear = $('[data-map-clear]', box), out = $('[data-map-out]', box);
+    let map = null, marker = null;
+    const set = ll => {
+      lat.value = ll.lat.toFixed(6); lng.value = ll.lng.toFixed(6);
+      if (!marker) { marker = L.marker(ll, { draggable: true, keyboard: true, title: 'Faaliyet konumu' }).addTo(map); marker.on('dragend', () => set(marker.getLatLng())); }
+      else marker.setLatLng(ll);
+      out.textContent = 'Seçilen konum: ' + ll.lat.toFixed(5) + ', ' + ll.lng.toFixed(5);
+      if (clear) clear.hidden = false;
+    };
+    const init = () => {
+      if (map) { map.invalidateSize(); return; }
+      if (!window.L || el.offsetWidth === 0) return;
+      const has = lat.value !== '' && lng.value !== '';
+      const start = has ? [parseFloat(lat.value), parseFloat(lng.value)] : [40.85, 41.05]; // Kaçkarlar
+      map = L.map(el, { scrollWheelZoom: false }).setView(start, has ? 13 : 9);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap katkıcıları' }).addTo(map);
+      map.on('click', e => set(e.latlng));
+      if (has) set(L.latLng(start[0], start[1]));
+      else out.textContent = 'Konumu seçmek için haritaya tıkla.';
+    };
+    if (clear) clear.addEventListener('click', () => {
+      lat.value = ''; lng.value = '';
+      if (marker) { marker.remove(); marker = null; }
+      out.textContent = 'Konum seçilmedi.';
+      clear.hidden = true;
+    });
+    const step = box.closest('.step');
+    if (step) step.addEventListener('step:show', () => setTimeout(init, 0));
+    if (document.readyState === 'complete') init(); else window.addEventListener('load', init);
+  });
+  /* Faaliyet formu: kategori seçilince malzeme notu; son adımda sitedeki kartın ve bilgilerin önizlemesi */
+  const actForm = $('[data-act-form]');
+  if (actForm) {
+    let gear = {};
+    try { gear = JSON.parse(actForm.dataset.gear || '{}'); } catch (e) {}
+    const payNote = actForm.dataset.payNote || '';
+    const field = n => actForm.elements[n];
+    const val = n => (field(n) && field(n).value || '').trim();
+    const MONTHS = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
+    const trDate = s => { if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return ''; const [y, m, d] = s.split('-'); return d + ' ' + MONTHS[+m - 1] + ' ' + y; };
+    const gearNote = $('[data-gear-note]', actForm);
+    const catSel = field('category');
+    const drawGear = () => {
+      if (!gearNote) return;
+      const items = gear[catSel.value] || [];
+      gearNote.textContent = !catSel.value ? 'Kategori seçince o kategorinin malzeme ve kontrol notu burada görünür.'
+        : items.length ? 'Sitede otomatik eklenecek: ' + items.join(' · ') : 'Bu kategori için Genel Ayarlar\'da not yazılmamış; sitede bu bölüm görünmez.';
+    };
+    if (catSel) { catSel.addEventListener('change', drawGear); drawGear(); }
+
+    const pv = $('[data-preview]', actForm);
+    const drawPreview = () => {
+      const scoreBox = $('[data-score]', actForm);
+      const none = $('[data-score-none]', actForm);
+      const score = none && none.checked ? null : parseInt(val('difficulty_score'), 10);
+      const band = score === null ? null : [[3, 'Kolay', '#34D399'], [6, 'Orta', '#FB923C'], [8, 'Zor', '#F87171'], [10, 'Çok zor', '#DC2626']].find(b => score <= b[0]);
+      const prev = $('[data-cover-prev]', actForm);
+      $('[data-pv-img]', pv).style.backgroundImage = prev ? prev.style.backgroundImage : '';
+      $('[data-pv-date]', pv).textContent = trDate(val('starts_on')) || 'Tarih yok';
+      const diff = $('[data-pv-diff]', pv);
+      diff.textContent = band ? band[1] + ' ' + score + '/10' : (catSel.value === 'egitim' ? 'Eğitim' : 'Herkese açık');
+      diff.style.setProperty('--band', band ? band[2] : '#38BDF8');
+      $('[data-pv-loc]', pv).textContent = val('location') || 'Yer yazılmadı';
+      $('[data-pv-title]', pv).textContent = val('title') || 'Faaliyet adı';
+      $('[data-pv-sum]', pv).textContent = val('summary');
+      const fee = val('fee').replace(',', '.');
+      const items = [
+        ['Kategori', catSel.selectedIndex > 0 ? catSel.options[catSel.selectedIndex].text : ''],
+        ['Tarih', trDate(val('starts_on')) + (val('ends_on') ? ' – ' + trDate(val('ends_on')) : '')],
+        ['Zorluk', band ? band[1] + ' · ' + score + '/10' : 'Yok'],
+        ['Mesafe', val('distance_km') ? val('distance_km') + ' km' : ''],
+        ['Konum', val('lat') ? 'Haritada işaretli' : ''],
+        ['Buluşma', val('meeting_text')],
+        ['Ücret', fee === '' ? '' : (parseFloat(fee) > 0 ? '₺' + fee : 'Ücretsiz') + (payNote ? '\n' + payNote : '')],
+        ['Kontenjan', val('quota') === '0' ? 'Sınır yok' : (val('quota') ? val('quota') + ' kişi' : '')],
+        ['Malzeme ve kontroller', (gear[catSel.value] || []).join('\n')],
+        ['Plan', val('body').length > 280 ? val('body').slice(0, 280) + '…' : val('body')],
+      ];
+      const dl = $('[data-pv-facts]', pv);
+      dl.textContent = '';
+      items.forEach(([k, v]) => {
+        const row = document.createElement('div');
+        const dt = document.createElement('dt'); dt.textContent = k;
+        const dd = document.createElement('dd');
+        if (v) dd.textContent = v; else { dd.textContent = 'Boş — sitede gösterilmez'; dd.className = 'pv-empty'; }
+        row.append(dt, dd);
+        dl.appendChild(row);
+      });
+      if (scoreBox) scoreBox.dispatchEvent(new Event('input'));
+    };
+    if (pv) pv.addEventListener('step:show', drawPreview);
   }
 })();

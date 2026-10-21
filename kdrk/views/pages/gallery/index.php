@@ -65,7 +65,7 @@ $chev = '<svg class="select-chev" viewBox="0 0 24 24" fill="none" stroke="curren
     <div class="filter-tools">
       <div class="search-input">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="search" name="q" value="<?= e($filters['q']) ?>" placeholder="Albüm veya yer ara…" aria-label="Albüm veya yer ara" maxlength="80" enterkeyhint="search">
+        <input type="search" name="q" value="<?= e($filters['q']) ?>" placeholder="Albüm, yer veya etiket ara…" aria-label="Albüm, yer veya etiket ara" maxlength="80" enterkeyhint="search">
       </div>
       <button type="submit" class="btn btn-ghost" data-filter-submit>Filtrele</button>
     </div>

@@ -1,0 +1,389 @@
+/* Canonical V2 admin components. See UI_STANDARDS_V2.md. */
+/* Desktop density uses real layout dimensions; browser zoom remains user-controlled.
+   Keep generous touch targets and 16px mobile form text. */
+.frame-dialog-compact { width:min(720px,calc(100vw - 32px));height:min(650px,calc(100dvh - 40px)); }
+@media (min-width:641px) and (pointer:fine) {
+  body { font-size:14px;line-height:1.5; }
+  body .btn, body .steps-tab, body .seg a, body .al-btn { min-height:36px;height:36px;font-size:13px; }
+  body .btn { padding-inline:12px;gap:6px; }
+  body .btn-sm { min-height:32px;height:32px;padding-inline:10px; }
+  body .btn-icon { min-width:32px;width:32px;min-height:32px;height:32px; }
+  body .field input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+  body .field select { min-height:38px;height:38px;font-size:14px; }
+  body .field input, body .field select { padding-inline:10px; }
+  body .field textarea { min-height:90px;font-size:14px; }
+  body .field { gap:5px;margin-bottom:12px; }
+  body .field label, body .field-label { letter-spacing:.04em; }
+  body .panel-head { padding:12px 16px; }
+  body .panel-body { padding:16px; }
+  body .panel-head h2, body .panel-head h3 { font-size:15px; }
+  body .toolbar { gap:10px;margin-bottom:14px; }
+  body .row-list a { min-height:58px;padding:10px 16px;gap:10px; }
+  body .row-list .mi-ava { width:32px;height:32px;font-size:13px;flex-shrink:0; }
+  body .row-list .rl-title { font-size:14px; }
+  body .row-list .rl-sub { font-size:12px; }
+  body .tbl td { padding:9px 12px;font-size:13px; }
+  body .tbl th { padding:10px 12px;font-size:11px; }
+  body .t-actions .btn, body .t-actions .btn-icon { margin-block:0; }
+  body .search-box input { height:36px;font-size:14px; }
+  body .save-bar { padding:10px 12px;gap:8px; }
+  body .is-js>.steps-nav { margin-bottom:12px; }
+  body .modal-content { padding:16px; }
+  body .frame-head { padding:8px 10px 8px 16px; }
+  body .frame-head h2 { font-size:16px; }
+  body .banner-workspace .btn, body .banner-workspace .btn-icon { min-height:36px; }
+  body .banner-workspace .btn-icon { min-width:36px;width:36px;height:36px; }
+}
+@media (min-width:861px) and (pointer:fine) {
+  :root, [data-theme] { --sidebar-w:232px; }
+  body .topbar { height:56px;padding-inline:20px;gap:12px; }
+  body .topbar .tb-title { font-size:18px; }
+  body .content { padding:20px; }
+  body .modal-content { padding:16px; }
+  body .sb-brand { padding:16px; }
+  body .sb-nav { padding:8px 10px 16px;gap:1px; }
+  body .sb-link { padding:8px 10px;font-size:13px;gap:9px;min-height:36px; }
+  body .sb-section-label { padding:12px 10px 5px;font-size:11px; }
+  body .sb-foot { padding:10px 12px; }
+}
+@media (max-width:640px) {
+  .frame-dialog-compact { width:100vw;height:100dvh; }
+}
+@media (any-pointer:coarse) {
+  body .btn, body .btn-sm, body .btn-icon, body .steps-tab, body .seg a, body .al-btn,
+  body .banner-workspace .btn, body .banner-workspace .btn-icon { min-height:44px; }
+  body .btn-icon, body .banner-workspace .btn-icon { min-width:44px; }
+  body .field input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), body .field select { min-height:44px;font-size:16px; }
+}
+
+/* Shared panel affordances. Background-only glyphs remain decorative;
+   native select semantics, focus, keyboard input and search clearing stay intact. */
+:root, [data-theme="dark"] {
+  --control-chevron: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394A3B8%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E");
+  --control-search: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394A3B8%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2210.8%22%20cy%3D%2210.8%22%20r%3D%226.8%22%2F%3E%3Cpath%20d%3D%22m16%2016%204.5%204.5%22%2F%3E%3C%2Fsvg%3E");
+}
+[data-theme="light"] {
+  --control-chevron: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748B%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E");
+  --control-search: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748B%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2210.8%22%20cy%3D%2210.8%22%20r%3D%226.8%22%2F%3E%3Cpath%20d%3D%22m16%2016%204.5%204.5%22%2F%3E%3C%2Fsvg%3E");
+}
+
+/* Theme backgrounds and page-specific shorthands must not erase these glyphs. */
+body select:not([multiple]):not([size]),
+body select:not([multiple])[size="1"],
+body select:not([multiple])[size="0"] {
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:var(--control-chevron) !important;
+  background-repeat:no-repeat !important;
+  background-position:right 10px center !important;
+  background-size:16px 16px !important;
+  padding-inline-end:36px !important;
+}
+body input[type="search"] {
+  background-image:var(--control-search) !important;
+  background-repeat:no-repeat !important;
+  background-position:left 11px center !important;
+  background-size:17px 17px !important;
+  padding-inline-start:36px !important;
+  padding-inline-end:28px;
+}
+/* Existing SVG wrappers use the same input glyph rather than drawing it twice. */
+.search-box>svg { display:none; }
+@media (forced-colors:active) {
+  body select:not([multiple]):not([size]), body select:not([multiple])[size="1"], body select:not([multiple])[size="0"] {
+    appearance:auto;
+    -webkit-appearance:auto;
+    background-image:none !important;
+  }
+}
+
+/* Semantic tokens. Components use existing admin theme colors. */
+:root,[data-theme]{
+ --ui-gap:12px;--ui-radius:10px;--ui-card-radius:12px;
+ --ui-control-h:36px;--ui-input-h:38px;--ui-icon-size:16px;
+ --ui-selected:color-mix(in srgb,var(--accent-2) 76%,var(--text));
+ --ui-on-selected:var(--bg);--ui-focus:var(--accent-2);
+ --ui-dialog-sm:480px;--ui-dialog-md:720px;--ui-dialog-lg:980px;
+}
+body .ui-icon,body .steps-tab>svg,body .seg a>svg{width:var(--ui-icon-size);height:var(--ui-icon-size);flex-shrink:0}
+/* Same locations on every list: helper/create header, then filters/search. */
+body .ui-list-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px}
+body .ui-list-heading>p{margin:0;font-size:13px;line-height:1.5;max-width:72ch}
+body .ui-heading-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+body .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;border:1px solid var(--border);border-radius:var(--ui-radius);background:var(--surface);margin-bottom:14px}
+body .toolbar>.seg{order:1;margin-right:auto}
+body .toolbar>.search-box{order:2;margin-left:auto;flex:0 1 280px;min-width:180px;max-width:320px}
+body .toolbar>.btn{order:3}
+body .toolbar>.tb-spacer{display:none}
+/* Tabs and filter navigation share a shape and an unmistakable active state. */
+body .steps-nav,body .is-js>.steps-nav,body .album-tabs{display:flex;gap:4px;padding:4px;border:1px solid var(--border);border-radius:var(--ui-radius);background:var(--surface);margin-bottom:14px;flex-wrap:wrap;overflow-x:auto}
+body .steps-nav[hidden]{display:none!important}
+body [data-steps]:not(.is-js)>.steps-nav{display:none}
+body .steps-nav .steps-tab,body .seg>a,body .seg>button{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:7px 12px;min-height:var(--ui-control-h);height:auto;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text-2);font:600 13px/1.35 Inter,system-ui,sans-serif;white-space:nowrap;text-decoration:none;cursor:pointer}
+body .seg{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:0;border:0;background:transparent}
+body .steps-nav .steps-tab:hover,body .seg>a:hover,body .seg>button:hover{background:var(--surface-2);color:var(--text)}
+body .steps-nav .steps-tab[aria-selected="true"],body .seg>a.is-active,body .seg>button.is-active,body .ui-view-switch>.btn:is([aria-pressed="true"],[aria-current="true"]){background:var(--ui-selected);color:var(--ui-on-selected);border-color:var(--ui-selected);box-shadow:0 2px 5px color-mix(in srgb,var(--text) 10%,transparent)}
+body .steps-tab[aria-selected="true"] .chip,body .steps-tab[aria-selected="true"] .steps-no{background:color-mix(in srgb,var(--ui-on-selected) 15%,transparent);color:inherit;border-color:currentColor}
+body :is(.steps-tab,.seg>a,.seg>button,.btn,.btn-icon):focus-visible{outline:2px solid var(--ui-focus);outline-offset:3px}
+/* Shared forms, panels, and persistent action location. */
+body .panel{border-radius:var(--ui-card-radius);border:1px solid var(--border);background:var(--surface)}
+body .panel-head{padding:12px 16px;min-height:48px}
+body .panel-head :is(h2,h3){font-size:15px;line-height:1.4}
+body .panel-body{padding:16px}
+body .form-grid{column-gap:16px}
+body .field{min-width:0;gap:5px}
+body .field :is(input,select,textarea){border-radius:8px;max-width:100%}
+body .field :is(input,select,textarea):focus{border-color:var(--ui-focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--ui-focus) 16%,transparent)}
+body .field [aria-invalid="true"],body .field [aria-invalid="true"]:focus{border-color:var(--danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 12%,transparent)}
+body .save-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--ui-card-radius);background:var(--surface);margin-top:14px;box-shadow:0 -6px 20px color-mix(in srgb,var(--bg) 20%,transparent)}
+body .save-bar:not(.save-bar-static){position:sticky;bottom:0;z-index:20}
+body .save-bar>.tb-spacer{flex:1}
+body .save-bar .btn{justify-content:center;white-space:nowrap}
+body .btn-icon{display:inline-grid;place-items:center;flex-shrink:0}
+body a.btn-icon[aria-label*="düzenle"],body .btn-edit{color:var(--ui-selected);border-color:color-mix(in srgb,var(--ui-selected) 30%,var(--border));background:color-mix(in srgb,var(--ui-selected) 9%,var(--surface))}
+body a.btn-icon[aria-label*="düzenle"]:hover,body .btn-edit:hover{background:var(--ui-selected);color:var(--ui-on-selected)}
+body .btn-danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 30%,var(--border));background:color-mix(in srgb,var(--danger) 9%,var(--surface))}
+body .btn-danger:hover{background:var(--danger);color:var(--bg)}
+/* All data views share spacing and action alignment, with media-specific ratios. */
+body .card-grid,body .album-grid{gap:var(--ui-gap)}
+body :is(.g-card,.album-tile){border-radius:var(--ui-card-radius);border-color:var(--border);background:var(--surface)}
+body .g-cover{aspect-ratio:16/9}
+body .g-body{padding:10px}
+body .g-title{font-size:14px;line-height:1.5}
+body .tbl th{font-size:11px;letter-spacing:.05em;padding:10px 12px;background:var(--surface-2)}
+body .tbl td{font-size:13px;padding:10px 12px}
+body .tbl .t-actions,body .tbl th:last-child{text-align:right}
+body .tbl .t-actions .btn-icon{vertical-align:middle}
+body .empty{padding:32px 20px;text-align:center}
+body .empty h4{font-size:16px}
+body .flash{border-radius:var(--ui-radius);padding:10px 14px;font-size:13px}
+body .ui-help{margin:0 0 14px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--ui-radius);background:var(--surface)}
+body .ui-help>summary{cursor:pointer;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;min-height:32px}
+body .ui-help>p{font-size:13px;line-height:1.6;color:var(--text-2);margin:8px 0 0}
+/* Modal sizes are semantic variants rather than per-page guesses. */
+body .frame-dialog{width:min(var(--ui-dialog-lg),calc(100vw - 32px))}
+body .frame-dialog-compact,body .bw-picker-dialog{width:min(var(--ui-dialog-md),calc(100vw - 32px))}
+body .guide-dialog,body .bw-confirm-dialog{width:min(var(--ui-dialog-sm),calc(100vw - 32px))}
+@media(hover:hover) and (pointer:fine){body .g-card:hover{transform:translateY(-3px);border-color:var(--ui-selected);box-shadow:0 10px 24px color-mix(in srgb,var(--text) 10%,transparent)}}
+@media(max-width:700px){
+ body .ui-list-heading{align-items:flex-start;flex-wrap:wrap;gap:10px}
+ body .ui-heading-actions{margin-left:auto;flex-wrap:wrap}
+ body .toolbar>.seg{flex:1 1 100%;flex-wrap:nowrap;max-width:100%;margin:0;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+ body .toolbar>.seg::-webkit-scrollbar{display:none}
+ body .toolbar>.seg>*{flex:0 0 auto}
+ body .steps-nav,body .is-js>.steps-nav,body .album-tabs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+ body .steps-nav::-webkit-scrollbar,body .album-tabs::-webkit-scrollbar{display:none}
+ body .steps-nav .steps-tab,body .album-tabs .steps-tab{flex:0 0 auto;min-height:44px}
+ body .toolbar>.search-box{flex:1 1 100%;max-width:none;margin:0}
+ body .toolbar{gap:8px;padding:10px}
+ body .ui-heading-actions>.btn{flex:1 1 auto;justify-content:center;min-height:44px}
+ body .save-bar{flex-wrap:wrap;padding:12px;gap:8px}
+ body .save-bar>.save-state{flex-basis:100%}
+ body .steps-nav .steps-tab{flex:1 1 auto;white-space:normal}
+ body .steps-nav .steps-tab,body .album-tabs .steps-tab{flex:0 0 auto;white-space:nowrap}
+ body .card-grid,body .album-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ body .frame-dialog{width:100vw;height:100dvh;border-radius:0}
+}
+@media(max-width:640px),(any-pointer:coarse){
+ :root,[data-theme]{--ui-control-h:44px;--ui-input-h:44px}
+ body .field input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),body .field select{min-height:var(--ui-input-h);font-size:16px}
+ body .seg>a,body .seg>button,body .ui-view-switch>.btn{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){body .g-card{transition:none}body .g-card:hover{transform:none;box-shadow:none}}
+
+/* Keep desktop table cells in the table formatting context. */
+@media(min-width:681px){body .tbl td.t-actions{display:table-cell;vertical-align:middle;white-space:nowrap}body .tbl td.t-actions>*+*{margin-left:6px}}
+
+/* Standard editing width; activity editor may show its dedicated preview aside. */
+body .content form:has(.save-bar):not(.quick-activity){width:100%;max-width:1120px;margin-inline:auto}
+
+
+/* Reference layout, KDRK corporate palette: cyan-blue selection, orange primary actions, soft neutral cards. */
+[data-theme="light"] {
+  --ui-selected: var(--accent-2);
+  --ui-on-selected: #fff;
+  --ui-focus: var(--accent-2);
+}
+[data-theme="light"] body .panel,
+[data-theme="light"] body .stat-card,
+[data-theme="light"] body .album-tile,
+[data-theme="light"] body .g-card {
+  box-shadow: 0 5px 18px rgba(11, 18, 32, .045);
+}
+/* Panel başlık bandı her iki temada aynı kuraldan gelir (aşağıda "Panel başlıkları"). */
+[data-theme="light"] body .toolbar,
+[data-theme="light"] body .steps-nav,
+[data-theme="light"] body .album-tabs { box-shadow: 0 3px 14px rgba(11, 18, 32, .035); }
+[data-theme="light"] body .seg>a.is-active,
+[data-theme="light"] body .seg>button.is-active { box-shadow: 0 3px 9px color-mix(in srgb, var(--accent-2) 18%, transparent); }
+.dashboard-welcome {
+  position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: center; justify-content: space-between;
+  min-height: 176px; margin: 0 0 18px; padding: 24px 30px; border: 1px solid color-mix(in srgb, var(--accent-2) 13%, var(--border));
+  border-radius: 18px; background: linear-gradient(110deg, var(--surface) 0%, color-mix(in srgb, var(--accent-2) 7%, var(--surface)) 62%, color-mix(in srgb, var(--accent) 7%, var(--surface)) 100%);
+}
+/* Arka plan: iki sıra yarı saydam dağ silueti (uzak sıra daha soluk). Renk temadan gelir; maske şekli verir. */
+.dashboard-welcome::before,
+.dashboard-welcome::after { content:""; position:absolute; z-index:-1; right:0; bottom:0; width:min(68%,620px); aspect-ratio:3/1; pointer-events:none; -webkit-mask:var(--ridge) right bottom/100% 100% no-repeat; mask:var(--ridge) right bottom/100% 100% no-repeat; }
+.dashboard-welcome::before { --ridge:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200' preserveAspectRatio='none'%3E%3Cpath d='M0 200 70 128l46 30 84-92 58 52 66-80 70 86 50-34 76 54 80-66v122Z'/%3E%3C/svg%3E"); background:color-mix(in srgb,var(--accent-2) 9%,transparent); }
+.dashboard-welcome::after { --ridge:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200' preserveAspectRatio='none'%3E%3Cpath d='M0 200 112 136l58 30 102-96 56 50 52-28 92 72 66-38 62 30v44Z'/%3E%3C/svg%3E"); background:color-mix(in srgb,var(--accent-2) 16%,transparent); width:min(58%,540px); }
+.dashboard-welcome-copy { min-width:0; }
+.dashboard-eyebrow { display:inline-flex; align-items:center; gap:7px; margin-bottom:10px; color:var(--accent-2); font:600 11px/1.4 'JetBrains Mono',monospace; letter-spacing:.1em; }
+.dashboard-eyebrow svg { width:16px;height:16px; }
+.dashboard-welcome h2 { font:800 clamp(22px,2.4vw,30px)/1.2 Manrope,sans-serif; letter-spacing:-.035em; }
+.dashboard-welcome h2 span { font-size:.78em; }
+.dashboard-welcome p { margin:8px 0 0; color:var(--text-2);font-size:14px; }
+.dashboard-welcome-art { display:grid; place-items:center; width:124px;height:124px; flex:0 0 124px; margin-inline:24px 4%; border:1px solid color-mix(in srgb,var(--accent-2) 15%,transparent);border-radius:32px;transform:rotate(-7deg);background:color-mix(in srgb,var(--accent-2) 8%,var(--surface));color:var(--accent-2); }
+.dashboard-welcome-art svg { width:64px;height:64px;stroke-width:1.2; }
+body .stat-card { border-radius:16px; }
+body .callout { border-radius:16px; }
+.callout-title { display:flex;align-items:center;gap:8px; }
+.callout-title svg { width:18px;height:18px;color:var(--accent-2); }
+.mobile-nav { display:none; }
+@media(max-width:1000px) {
+ body .stat-cards { gap:12px; }
+ .dashboard-welcome { min-height:158px; }
+}
+@media(max-width:860px) {
+ .mobile-nav { position:fixed;z-index:30;left:0;right:0;bottom:0;display:flex;justify-content:space-around;gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(16px); }
+ .mobile-nav-link { display:flex;min-width:0;flex:1;min-height:48px;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:11px;color:var(--text-2);font-size:10px;font-weight:600;white-space:nowrap; }
+ .mobile-nav-link svg { width:19px;height:19px; }
+ .mobile-nav-link.is-active { color:var(--accent-2);background:color-mix(in srgb,var(--accent-2) 9%,var(--surface)); }
+ .mobile-nav-link:focus-visible { outline:2px solid var(--ui-focus);outline-offset:-2px; }
+ body .content { padding-bottom:calc(78px + env(safe-area-inset-bottom)); }
+ .dashboard-welcome { min-height:140px;padding:20px 22px; }
+ .dashboard-welcome-art { width:92px;height:92px;flex-basis:92px;margin-inline:12px 0;border-radius:26px; }
+ .dashboard-welcome-art svg { width:48px;height:48px; }
+}
+@media(max-width:540px) {
+ .dashboard-welcome { padding:18px; }
+ .dashboard-welcome-art { width:56px;height:56px;flex-basis:56px;border-radius:18px;margin-left:8px; }
+ .dashboard-welcome-art svg { width:32px;height:32px; }
+ .dashboard-welcome h2 { font-size:23px; }
+ .dashboard-welcome p { max-width:36ch;font-size:13px; }
+ body .stat-card { padding:14px;border-radius:15px; }
+ body .stat-card .sc-num { font-size:30px; }
+}
+[data-theme="light"] body .mobile-nav { box-shadow:0 -6px 20px rgba(41,57,108,.06); }
+
+@media(max-width:860px) {
+ body:not(.is-modal) .save-bar:not(.save-bar-static) { bottom:calc(64px + env(safe-area-inset-bottom)); }
+}
+@media(max-width:420px) {
+ body .content { padding-inline:12px; }
+ .mobile-nav { padding-inline:6px; }
+ .mobile-nav-link { font-size:9px; }
+ .dashboard-welcome-art { display:none; }
+}
+@media(max-width:359px){body .card-grid,body .album-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Dokunma alanı ve dar ekran (CLAUDE.md §6, §6a): üst çubuk, liste araması ve yardım başlığı telefonda en az 44px.
+   Başlık kısalır; üst çubuk düğmeleri sıkışıp küçülmez. */
+@media(max-width:860px){
+ body .topbar .tb-title{flex:1 1 auto;min-width:0}
+ body .topbar :is(.tb-btn,.tb-notifications,.tb-profile,.tb-view-site){flex:0 0 44px;width:44px;height:44px;min-width:44px}
+ body .topbar .tb-profile{justify-content:center}
+}
+@media(max-width:640px),(any-pointer:coarse){
+ body .search-box input{height:44px;min-height:44px;font-size:16px}
+ body .ui-help>summary{min-height:44px}
+}
+/* Giriş kartı 320px'te taşmaz: ızgara sütunu içerik genişliğine göre büyümez. */
+.login-wrap{grid-template-columns:minmax(0,1fr)}
+@media(max-width:380px){.login-wrap{padding:16px}.login-card{padding:28px 20px}}
+
+/* ===== Kart / Tablo görünümü — tüm panel listeleri =====
+   Seçici: _view-switch.php (aramanın sağında, tek kopya). Kapsayıcı: .ui-list[data-view-key][data-list-view="tablo|kart"].
+   Aynı HTML iki görünümde de kullanılır; görünüm yalnızca yerleşimi değiştirir. */
+body .ui-view-switch{display:flex;gap:4px;flex-shrink:0}
+body .ui-view-switch>.btn{white-space:nowrap}
+body .toolbar>.ui-view-switch{order:3;margin-left:auto}
+body .toolbar>.search-box+.ui-view-switch{margin-left:0}
+@media(max-width:700px){
+ body .toolbar>.ui-view-switch{flex:1 1 100%;margin-left:0}
+ body .toolbar>.ui-view-switch>.btn{flex:1;justify-content:center}
+}
+
+/* Tablolar → kart ızgarası */
+body .ui-list[data-list-view="kart"]{border:0;border-radius:0;background:transparent;box-shadow:none}
+body .ui-list[data-list-view="kart"]>.empty{border:1px dashed var(--border);border-radius:var(--ui-card-radius);background:var(--surface)}
+body .ui-list[data-list-view="kart"] .tbl{display:block;width:auto}
+body .ui-list[data-list-view="kart"] .tbl thead{display:none}
+body .ui-list[data-list-view="kart"] .tbl tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:var(--ui-gap)}
+body .ui-list[data-list-view="kart"] .tbl tr{display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;border:1px solid var(--border);border-radius:var(--ui-card-radius);background:var(--surface);transition:border-color .18s ease}
+body .ui-list[data-list-view="kart"] .tbl tbody tr:hover{background:var(--surface);border-color:color-mix(in srgb,var(--ui-selected) 55%,var(--border))}
+body .ui-list[data-list-view="kart"] .tbl td{display:block;width:auto;min-width:0;padding:0;border:0;overflow-wrap:anywhere}
+body .ui-list[data-list-view="kart"] .tbl td[data-label]:not(:first-child)::before{content:attr(data-label);display:block;margin-bottom:2px;color:var(--text-2);font:600 11px/1.4 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
+body .ui-list[data-list-view="kart"] .tbl td:first-child::before{content:none}
+body .ui-list[data-list-view="kart"] .tbl td:first-child{font-weight:600;font-size:15px}
+body .ui-list[data-list-view="kart"] .tbl .cell-main{flex-direction:column;align-items:stretch;gap:10px}
+body .ui-list[data-list-view="kart"] .tbl .t-thumb{width:100%;height:auto;aspect-ratio:16/9;border-radius:8px}
+body .ui-list[data-list-view="kart"] .tbl .t-title{font-size:15px;line-height:1.4}
+body .ui-list[data-list-view="kart"] .tbl .t-sub{font-weight:400}
+body .ui-list[data-list-view="kart"] .tbl td.t-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid var(--border);text-align:left;white-space:normal}
+body .ui-list[data-list-view="kart"] .tbl td.t-actions>*+*{margin-left:0}
+
+/* Satır listeleri (mesaj, kullanıcı) → kart ızgarası */
+body .ui-list[data-list-view="kart"] .row-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:var(--ui-gap)}
+body .ui-list[data-list-view="kart"] .row-list>li,body .ui-list[data-list-view="kart"] .row-list>li+li{min-width:0;border:1px solid var(--border);border-radius:var(--ui-card-radius);background:var(--surface)}
+body .ui-list[data-list-view="kart"] .row-list a{height:100%;flex-wrap:wrap;align-items:flex-start;gap:8px 12px;padding:14px;border-radius:inherit}
+body .ui-list[data-list-view="kart"] .row-list .rl-main{flex:1 1 calc(100% - 56px)}
+body .ui-list[data-list-view="kart"] .row-list .rl-sub{white-space:normal;overflow-wrap:anywhere}
+body .ui-list[data-list-view="kart"] .row-list a>:nth-child(n+3){margin-left:44px}
+body .ui-list[data-list-view="kart"] .row-list a>:nth-child(n+3)~*{margin-left:0}
+
+/* Başvurular → kart ızgarası (ayrıntı ve işlemler kartın içinde açılır) */
+body .ui-list[data-list-view="kart"] .app-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:var(--ui-gap);align-items:start;border:0;overflow:visible}
+body .ui-list[data-list-view="kart"] .app-row,body .ui-list[data-list-view="kart"] .app-row:first-child{grid-template-columns:1fr;border:1px solid var(--border);border-radius:var(--ui-card-radius);background:var(--surface)}
+body .ui-list[data-list-view="kart"] .ar-grid{grid-template-columns:1fr}
+body .ui-list[data-list-view="kart"] .ar-actions{justify-content:flex-start;padding:0 20px 14px}
+
+/* Galeri → tablo satırları (kart görünümü galerinin kendi ızgarasıdır) */
+body .ui-list[data-list-view="tablo"] .card-grid{display:flex;flex-direction:column;gap:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--ui-card-radius);background:var(--surface)}
+body .ui-list[data-list-view="tablo"] .g-card,body .ui-list[data-list-view="tablo"] .g-card:hover{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;gap:14px;padding:10px 14px;border:0;border-top:1px solid var(--border);border-radius:0;transform:none;box-shadow:none}
+body .ui-list[data-list-view="tablo"] .g-card:first-child{border-top:0}
+body .ui-list[data-list-view="tablo"] .g-card:hover{background:var(--surface-2)}
+body .ui-list[data-list-view="tablo"] .g-cover{aspect-ratio:16/9;overflow:hidden;border-radius:8px}
+body .ui-list[data-list-view="tablo"] :is(.g-count,.g-src){font-size:11px;padding:2px 6px}
+body .ui-list[data-list-view="tablo"] .g-count{bottom:4px;left:4px}
+body .ui-list[data-list-view="tablo"] .g-src{top:4px;right:4px}
+body .ui-list[data-list-view="tablo"] .g-body{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:16px;row-gap:2px;padding:0}
+body .ui-list[data-list-view="tablo"] .g-meta{grid-column:2;grid-row:1/span 2;margin:0;padding:0}
+@media(max-width:600px){
+ body .ui-list[data-list-view="tablo"] .g-card,body .ui-list[data-list-view="tablo"] .g-card:hover{grid-template-columns:96px minmax(0,1fr);gap:10px;padding:10px}
+ body .ui-list[data-list-view="tablo"] .g-body{grid-template-columns:minmax(0,1fr)}
+ body .ui-list[data-list-view="tablo"] .g-meta{grid-column:1;grid-row:auto}
+}
+@media(prefers-reduced-motion:reduce){body .ui-list .tbl tr{transition:none}}
+/* Yalnız Kart/Tablo seçicisi olan araç çubuğu boş bir şerit gibi görünmesin. */
+body .toolbar:not(:has(.seg,.search-box,.btn:not(.ui-view-switch .btn))){padding:0;border:0;background:transparent;box-shadow:none;justify-content:flex-end}
+
+/* Panel başlıkları: içerik satırlarından ayrışır, kaydırırken bölüm sınırı kaybolmaz.
+   Zemin bandı + belirgin alt çizgi + Manrope 800 + (varsa) ikon rozeti. Her iki temada aynı kural. */
+body .panel-head{background:color-mix(in srgb,var(--accent-2) 7%,var(--surface));border-bottom:1px solid color-mix(in srgb,var(--accent-2) 22%,var(--border))}
+body .panel-head :is(h2,h3),body .callout-title{display:flex;align-items:center;gap:10px;margin:0;color:var(--text);font:800 16px/1.3 Manrope,sans-serif;letter-spacing:-.015em}
+body :is(.panel-head h2,.panel-head h3,.callout-title)>svg{flex:0 0 30px;width:30px;height:30px;padding:6px;border-radius:9px;background:color-mix(in srgb,var(--accent-2) 16%,var(--surface));color:var(--accent-2)}
+body .callout-title{margin-bottom:4px}
+body .panel-head .ph-sub{font-family:Inter,system-ui,sans-serif;font-size:12px;letter-spacing:0}
+/* Ana ekran ızgarası: yan yana paneller aynı hizada başlar; ızgaradan sonraki panel bitişik durmaz. */
+body .dash-grid{align-items:start}
+body .dash-grid>.panel+.panel{margin-top:0}
+body .dash-grid+.panel{margin-top:16px}
+
+/* Dışa aktar açılır menüsü (başvurular): liste başına PDF ve Excel, simgeli */
+.export-menu { position: relative; }
+.export-menu > summary { list-style: none; cursor: pointer; }
+.export-menu > summary::-webkit-details-marker { display: none; }
+.export-chev { display: inline-flex; margin-left: 2px; transition: transform 160ms ease; }
+.export-menu[open] .export-chev { transform: rotate(180deg); }
+.export-panel { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; width: min(300px, calc(100vw - 24px)); padding: 6px; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: 0 18px 40px -16px rgba(11, 18, 32, .35); }
+.export-group + .export-group { border-top: 1px solid var(--border); padding-top: 4px; }
+.export-label { display: flex; align-items: center; gap: 6px; padding: 8px 10px 4px; font: 600 11px/1.4 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
+.export-item { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 10px; border-radius: 10px; color: var(--text); }
+.export-item:hover, .export-item:focus-visible { background: var(--surface-2); }
+.export-item:focus-visible { outline: 2px solid var(--accent-2); outline-offset: -2px; }
+.export-item b { display: block; font-size: 14px; }
+.export-item small { display: block; font-size: 12px; color: var(--text-2); }
+.export-ico { display: inline-grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; }
+.export-ico.is-pdf { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
+.export-ico.is-xls { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+@media (max-width: 540px) { .export-panel { right: auto; left: 0; } }

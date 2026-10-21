@@ -19,7 +19,7 @@ Renkler **yalnızca CSS değişkenleriyle** kullanılır; hex değerini doğruda
 | `--accent-secondary` | `#38BDF8` | `#0284C7` | İkincil vurgu (seyrek) |
 | `--success` / `--warning` / `--danger` | `#10B981` / `#F59E0B` / `#EF4444` | `#059669` / `#D97706` / `#DC2626` | Durum |
 
-- Zorluk renkleri: kolay `#34D399`, orta `#FB923C`, zor `#F87171`, çok zor `#DC2626`, eğitim `#38BDF8`. Rozet: koyu çip + renkli nokta (`--lv`) + metin + seviye (`1/4`). Ara seviye ("Orta-Zor") kullanılmaz.
+- Zorluk **1–10 puandır** (panelde kaydırma çubuğu) ve **5 kademeye** ayrılır; kademe = ⌈puan / 2⌉. Ad ve renk her yerde aynıdır (kart, detay, galeri, takvim, panel, paylaşım görseli): 1–2 **Kolay** `#34D399` · 3–4 **Kolay-Orta** (`color-mix(in oklch, #34D399, #FB923C)`) · 5–6 **Orta** `#FB923C` · 7–8 **Orta-Zor** `#F87171` · 9–10 **Zor** `#DC2626`; eğitim `#38BDF8`. Tek kaynak `Activity::LEVELS` / `Activity::levelOf()`. Rozet: koyu çip + renkli nokta (`--lv`) + kademe adı + puan (`7/10`). İkonlu gösterge 5 dağ simgesidir; dolu dağ sayısı kademeye eşittir (10 ikon kullanılmaz).
 - **Durum rozeti zorluktan ayrıdır** (`.activity-status`): `open` Başvuru açık · `few` Son X yer · `full` Dolu · `closed` Başvuru kapandı · `postponed` Ertelendi · `cancelled` İptal · `done` Tamamlandı. Durum her zaman metinle yazılır, yalnız renkle verilmez.
 - **Yeni renk uydurma.** Gerekirse `oklch()` ile mevcut paletten türet.
 - Sayfa başına en fazla 2 zemin rengi (`--bg-primary` + `--bg-secondary`); bölümler `.corp-section` / `.corp-section.alt` ile alternatiflenir.
@@ -51,7 +51,7 @@ Her yeni sayfa **aynı sırayla** şunları içerir:
 **Kontrol listesi (her sayfada olmalı):**
 - `data-nav`, `data-drawer`, `data-theme-toggle`
 - `.kdrk-mark` (nav + footer + drawer), `.nav-tdf` (nav)
-- Menü (tek şablon, tüm sayfalarda aynı): Anasayfa · Kurumsal ▾ · Faaliyetler ▾ (Faaliyet Takvimi, Geçmiş Faaliyetler, 7 disiplin) · Fotoğraf Galerisi · Bilgi Bankası ▾ · İletişim. Nav CTA her sayfada "Takvimi Gör" → `Faaliyetler.html`.
+- Menü (tek şablon, tüm sayfalarda aynı): Anasayfa · Kurumsal ▾ · Faaliyetler ▾ (Faaliyet Takvimi, 7 disiplin; geçmiş faaliyetler takvim sayfasındaki sekmeden) · Fotoğraf Galerisi · Duyuru & Haber · Bilgi Bankası ▾ · İletişim. Menü öğeleri tek satırda kalır; 1180px'te sığmazsa yeni üst öğe eklenmez. Nav CTA her sayfada "Takvimi Gör" → `Faaliyetler.html`.
 - Aktif bölüm: üst öğeye `.is-current`, hedef linke `aria-current="page"`.
 - Masaüstü menü ≥1180px; altında burger + drawer (`<details>` grupları). CTA <600px'te gizlenir.
 - Footer tek şablon: e-posta `mailto:`, telefon `tel:`.
@@ -72,7 +72,9 @@ Her yeni sayfa **aynı sırayla** şunları içerir:
 
 Her hero'da: breadcrumb → eyebrow → h1 → lede → mono damga (`.corp-hero-stamp`).
 
-Slider: en fazla 3 slayt, yalnız ilk slaytta `h1` (diğerleri `h2.hero-title`), görünür duraklat butonu, azaltılmış harekette otomatik geçiş kapalı. İlk slayt kulübü tanıtır; tarihi geçebilecek duyuru ilk slayta konmaz.
+Slider: aktif slaytların tamamı kullanıcının belirlediği sırayla döner; sayı sınırı ve bekleme sırası yoktur. İlk slayt dahil tüm sıra panelden değiştirilebilir. Yalnız ilk slaytta `h1` (diğerleri `h2.hero-title`), görünür duraklat butonu, azaltılmış harekette otomatik geçiş kapalı.
+
+Slayt kaynakları (ayrı "slayt duyurusu" yazılmaz): **tanıtım slaytı** (panelde elle, tarihsiz), **faaliyet** ve **duyuru & haber** (kayıtta "Anasayfa slaytında göster"; metin, görsel ve butonlar kayıttan gelir). Sıra panelde kullanıcı tarafından belirlenir; aktif/pasif durumu slayt bazındadır. Faaliyet tarihi geçince, haber `slider_until` gelince slayttan kendiliğinden kalkar.
 
 Tweaks paneli (React/Babel) canlı sayfalara eklenmez.
 
@@ -144,7 +146,8 @@ Ziyaretçilerin çoğu telefondan gelir. Her sayfa **önce 360–430 px genişli
 
 - Türkçe, sade ve doğrudan. Abartı ve pazarlama dili yok.
 - Rakamlar `assets/site.js` içindeki `KDRK_STATS` tek kaynağından gelir; sayfada `data-stat="zirve|yuruyus|aramaKurtarma|yil|kurulus"` ile yazılır (sayaçta `data-odometer` ile birlikte). Elle rakam yazma. Yıl, kuruluştan otomatik hesaplanır.
-- Rakamlar: 500+ zirve, 1000+ doğa yürüyüşü, 25+ arama-kurtarma, 28 yıl, kuruluş **1998**. Bunların dışında rakam/iddia (üye sayısı, "en köklü", tescil) kulüp teyidi olmadan yazılmaz.
+- Rakamlar: 500+ zirve, 1000+ doğa yürüyüşü, 25+ arama-kurtarma, 28 yıl, kuruluş **1998**. Bunların dışında rakam/iddia (üye sayısı, tescil) kulüp teyidi olmadan yazılmaz.
+- Kulüp teyitli ifade: KDRK **Türkiye'nin en köklü dağcılık kulüplerinden biridir** (2026-10-21). "En köklü" tek başına (birinci olduğu iddiası) değil, "en köklü … biri" kalıbıyla yazılır.
 - Faaliyet verisi (tarih, zorluk, süre, kontenjan) tek kaynaktan gelir; Anasayfa, liste, disiplin ve detay sayfası aynı değeri gösterir.
 - Mono etiketler büyük harf: `EST. 1998`, `41°01'N · 40°31'E`, `12 TEM 2026`
 - Emoji kullanılmaz.
@@ -159,6 +162,8 @@ Ziyaretçilerin çoğu telefondan gelir. Her sayfa **önce 360–430 px genişli
 
 ## 11. Yönetim paneli (/yonetim)
 
+**V2 ortak bileşen sözleşmesi:** [UI_STANDARDS_V2.md](UI_STANDARDS_V2.md) bağlayıcıdır. Liste başlığı, filtre/arama konumu, simgeli sekmeler, aktif renk, kart/tablo/form ölçüleri ve kaydet çubuğu bu kaynaktan uygulanır. Ortak stiller `assets/admin/components.css`, simgeler `app/admin-icons.php` üzerinden kullanılır; sayfa bazında yeniden tasarlanmaz. Panelin masaüstü yoğunluğu bu belgedeki 14px / 36–38px ölçüleridir.
+
 Panel aynı paleti kullanır ama kendi token setiyle çalışır (`public_html/assets/admin/admin.css` + `panel.css`): `--surface`, `--surface-2`, `--accent`. Site CSS'lerini panele, panel CSS'ini siteye bağlama. Kökteki `admin/` klasörü eski prototiptir, kullanılmaz.
 
 - **Kod yeri:** controller'lar `kdrk/app/Controllers/Admin/`, görünümler `kdrk/views/admin/`. Her controller `BaseController`'dan türer ve erişebilecek rolleri `$roles` ile **açıkça** yazar.
@@ -172,6 +177,10 @@ Panel aynı paleti kullanır ama kendi token setiyle çalışır (`public_html/a
 - **İlk admin hesabı:** `php kdrk/database/create-user.php <e-posta> "<Ad Soyad>" admin`. Parola bir kez ekrana yazılır; ilk girişte değiştirilir.
 - **Panel de mobil önceliklidir (§6a):** tablolar telefonda karta dönüşür, uzun formlarda kaydet çubuğu altta sabit durur.
 - **Silme kuralı:** başvurusu olan faaliyet silinmez, yayından kaldırılır. Ayrılan kullanıcı silinmez, pasif yapılır.
+- **Yeni kayıt formları açılır penceredir:** liste sayfasındaki "Yeni …" düğmesi `data-modal-link` taşır; form `?pencere=1` ile kenar çubuksuz açılır (`layouts/admin-modal`), kayıt bitince controller `done($url)` çağırır. JS kapalıyken aynı form normal sayfadır.
+- **Uzun formlar bölünür:** `[data-steps="wizard"]` (yeni kayıt, son adım önizleme) ya da `[data-steps="tabs"]` (düzenleme). Sayfa aşağı doğru uzamaz.
+- **Faaliyet formu sadedir:** ad, kategori, tarih (+bitiş), kısa açıklama, zorluk puanı, mesafe, yer + haritadan konum, plan metni, buluşma, kapak, tahmini ücret, kontenjan. Ödeme açıklaması ve kategoriye göre "Gerekli malzemeler ve kontroller" faaliyete yazılmaz; Genel Ayarlar → Faaliyet notları'ndan otomatik gelir.
+- **Albüm faaliyetten açılır:** "Albüm oluştur" yalnız tamamlanan faaliyette görünür; ad, tarih, yer, kategori ve etiketler faaliyetten dolar. Albüm etiketleri panel ve site aramasında kullanılır.
 
 ---
 
@@ -231,6 +240,7 @@ public_html/                  ← web kökü
 | Faaliyet detayı | `/faaliyetler/{slug}` (ör. `/faaliyetler/kackar-zirve-2027`) |
 | Disiplinler | `/disiplin/gunubirlik`, `/disiplin/dagcilik`, `/disiplin/spor-tirmanis`, `/disiplin/dag-kayagi`, `/disiplin/egitim`, `/disiplin/sosyal-kulturel`, `/disiplin/arama-kurtarma` |
 | Galeri | `/galeri`, `/galeri/{slug}` |
+| Duyuru & Haber | `/duyurular`, `/duyurular?tur=duyuru\|rapor` (duyuru = duyuru + haber; eski `?tur=haber` → 301), `/duyurular/{slug}` |
 | Bilgi Bankası | `/bilgi-bankasi/{slug}` |
 | İletişim | `/iletisim` |
 | Yönetim paneli | `/yonetim` |
@@ -254,7 +264,7 @@ public_html/                  ← web kökü
 - **Şema yalnızca migration ile değişir.** Dosyalar `database/migrations/NNN_aciklama.sql` adıyla yazılır. Uygulanmış bir migration düzenlenmez, yenisi yazılır. Uygulananlar `schema_migrations` tablosunda tutulur.
 - Değer kümeleri tasarım kurallarıyla birebir aynıdır:
   - `status`: `open`, `few`, `full`, `closed`, `postponed`, `cancelled`, `done`
-  - `difficulty`: `1–4` (kolay → çok zor). Eğitimlerde `is_training = 1`; seviye girilmezse `NULL` olur ve rozet "Eğitim" yazar.
+  - `difficulty_score`: `1–10` (panelde kaydırma çubuğuyla girilen). `difficulty`: `1–5` kademe, puandan türetilir (`Activity::levelOf`, migration 006). Eğitim kategorisinde `is_training = 1`; "zorluk yok" seçilirse ikisi de `NULL` olur ve rozet "Eğitim" ya da "Herkese açık" yazar.
   - `category`: `gunubirlik`, `dagcilik`, `spor-tirmanis`, `dag-kayagi`, `egitim`, `sosyal`, `arama-kurtarma`
 - **Durum otomatik hesaplanır, elle tutulmaz:**
   - Tarihi geçen faaliyet `done` olur (yalnızca `cancelled` ve `postponed` korunur).

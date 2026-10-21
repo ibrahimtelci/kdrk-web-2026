@@ -7,6 +7,7 @@ namespace App\Core;
  * Görsel yükleme (CLAUDE.md §15, §16).
  * - Tür finfo ile doğrulanır (jpg/png/webp), en fazla 15 MB
  * - GD ile yeniden kodlanır: EXIF ve gömülü içerik atılır, telefon fotoğrafının yönü düzeltilir
+ * - Panelde kapak kırpıldıysa ($crop) özgün görsel önce o alana kırpılır, türevler kırpılmış hâlden üretilir
  * - WebP türevleri: 400 / 900 / 1600 / 2400 px genişlik (özgünden büyük türev üretilmez)
  * - Dosya adı rastgeledir; özgün ad diske yazılmaz
  * Veritabanına uzantısız temel yol yazılır: uploads/activities/3f9c… → img() uygun boyutu seçer.
@@ -18,11 +19,12 @@ final class Image
     private const TYPES = ['image/jpeg' => 'jpeg', 'image/png' => 'png', 'image/webp' => 'webp'];
 
     /**
-     * @param array $file $_FILES içindeki tek dosya
+     * @param array      $file $_FILES içindeki tek dosya
+     * @param array|null $crop parseCrop() çıktısı: yönü düzeltilmiş görselde 0–1 oranında [x, y, w, h]
      * @return string temel yol (uploads/<klasör>/<ad>)
      * @throws \RuntimeException kullanıcıya gösterilebilir Türkçe mesajla
      */
-    public static function store(array $file, string $folder): string
+    public static function store(array $file, string $folder, ?array $crop = null): string
     {
         if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             throw new \RuntimeException(match ($file['error'] ?? 0) {
@@ -44,6 +46,9 @@ final class Image
         }
         if ($mime === 'image/jpeg') {
             $src = self::orient($src, $file['tmp_name']);
+        }
+        if ($crop !== null) {
+            $src = self::crop($src, $crop);
         }
 
         $folder = trim(preg_replace('/[^a-z0-9-]/', '', $folder), '-') ?: 'misc';
@@ -106,6 +111,45 @@ final class Image
                 unlink($f);
             }
         }
+    }
+
+    /**
+     * Paneldeki kırpma penceresinin gönderdiği "x,y,w,h" (0–1 arası oranlar). Geçersizse null: görsel kırpılmadan saklanır.
+     * @return array{0: float, 1: float, 2: float, 3: float}|null
+     */
+    public static function parseCrop(mixed $value): ?array
+    {
+        // Her sayı ondalıklı olabilir: "1", "1.0000", "0.25", ".5" (panel toFixed(4) ile gönderir)
+        $num = '(?:\d(?:\.\d{1,8})?|\.\d{1,8})';
+        if (!is_string($value) || !preg_match("/^$num(?:,$num){3}$/", trim($value))) {
+            return null;
+        }
+        [$x, $y, $w, $h] = array_map('floatval', explode(',', trim($value)));
+        if ($w < 0.02 || $h < 0.02 || $w > 1.001 || $h > 1.001 || $x + $w > 1.001 || $y + $h > 1.001) {
+            return null;
+        }
+        return [$x, $y, min($w, 1 - $x), min($h, 1 - $y)];
+    }
+
+    private static function crop(\GdImage $img, array $crop): \GdImage
+    {
+        [$x, $y, $w, $h] = $crop;
+        $iw = imagesx($img);
+        $ih = imagesy($img);
+        $rect = [
+            'x'      => (int) round($x * $iw),
+            'y'      => (int) round($y * $ih),
+            'width'  => max(1, min($iw, (int) round($w * $iw))),
+            'height' => max(1, min($ih, (int) round($h * $ih))),
+        ];
+        $rect['width'] = min($rect['width'], $iw - $rect['x']);
+        $rect['height'] = min($rect['height'], $ih - $rect['y']);
+        $out = imagecrop($img, $rect);
+        if (!$out) {
+            return $img;
+        }
+        imagedestroy($img);
+        return $out;
     }
 
     private static function orient(\GdImage $img, string $path): \GdImage

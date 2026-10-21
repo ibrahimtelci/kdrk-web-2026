@@ -6,7 +6,10 @@ namespace App\Controllers\Admin;
 use App\Core\Audit;
 use App\Core\Settings;
 
-/** Genel ayarlar — yalnızca admin. Kulüp rakamları, iletişim, sosyal hesaplar, bakım modu, KVKK. */
+/**
+ * Genel ayarlar — yalnızca admin. Kulüp rakamları, iletişim, sosyal hesaplar, bakım modu, KVKK
+ * ve faaliyet notları (her faaliyette otomatik görünen ödeme açıklaması + kategoriye göre malzeme/kontrol listesi).
+ */
 final class SettingsController extends BaseController
 {
     protected array $roles = ['admin'];
@@ -28,7 +31,18 @@ final class SettingsController extends BaseController
         'maintenance_message' => ['text', 400],
         'maintenance_eta'     => ['datetime'],
         'kvkk_retention_days' => ['int', 30, 3650],
+        'payment_note'        => ['text', 800],
     ];
+
+    /** Kategori → ayar anahtarı (gear_<kategori>). Her satır sitede bir madde olur. */
+    public static function gearFields(): array
+    {
+        $out = [];
+        foreach (array_keys(\App\Models\Activity::CATEGORIES) as $k) {
+            $out['gear_' . $k] = ['text', 2000];
+        }
+        return $out;
+    }
 
     public function index(): void
     {
@@ -39,7 +53,7 @@ final class SettingsController extends BaseController
     {
         $e = [];
         $values = [];
-        foreach (self::FIELDS as $k => $rule) {
+        foreach (self::FIELDS + self::gearFields() as $k => $rule) {
             $raw = trim((string) ($_POST[$k] ?? ''));
             switch ($rule[0]) {
                 case 'int':

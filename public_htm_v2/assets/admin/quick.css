@@ -1,0 +1,66 @@
+/* KDRK V2 — mevcut panel renkleriyle daha okunaklı ve mobil bir çalışma alanı. */
+[hidden] { display: none !important; }
+.content { max-width: 1600px; margin-inline: auto; width: 100%; }
+.act-form { max-width: 1120px; margin-inline: auto; }
+.field label, .field-label { color: var(--text-2); font-size: 12px; }
+.f-hint, .muted, .steps-tab { color: var(--text-2); }
+.field input:not([type=checkbox]):not([type=range]), .field select, .field textarea { font-size: 16px; min-height: 48px; }
+.form-extra { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; min-width: 0; }
+.form-extra > summary { display: flex; align-items: center; gap: 8px; cursor: pointer; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--text); }
+.form-extra > summary::before { content: '+'; color: var(--accent); font-size: 20px; }
+.form-extra[open] > summary::before { content: '−'; }
+.form-extra[open] > summary { margin-bottom: 12px; }
+.save-bar { position: sticky; bottom: 0; z-index: 20; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: 0 -8px 30px color-mix(in srgb, var(--bg) 35%, transparent); gap: 12px; }
+.save-state { font-size: 12px; color: var(--text-2); }
+[data-dirty="1"] .save-state { color: var(--accent); }
+.live-slides { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.live-slide { position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.live-slide > img { position: static; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
+.live-slide > .chip { position: absolute; top: 8px; left: 8px; }
+.live-slide strong { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.quota-meter { display: block; width: 110px; max-width: 100%; height: 12px; accent-color: var(--accent); }
+.action-menu { position: relative; }
+.action-options { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 8px; }
+.ar-actions { align-items: flex-start; }
+.action-menu:not([open]) > .action-options { display: none; }
+.quick-start { display: flex; gap: 12px; flex-wrap: wrap; }
+.steps-nav { flex-wrap: wrap; }
+.steps-tab, .btn, .btn-sm, .btn-icon, .al-btn, .seg a { min-height: 44px; }
+.t-actions { white-space: normal; }
+.t-actions > * + * { margin-left: 0; }
+.t-actions .btn, .t-actions .btn-icon { margin-block: 4px; }
+.panel-head { gap: 12px; flex-wrap: wrap; }
+.panel-head .ph-sub { line-height: 1.6; }
+.activity-status.past { color: var(--text-secondary); }
+@media (max-width: 700px) {
+  .act-form { max-width: 100%; }
+  .live-slides { grid-template-columns: 1fr; }
+  .is-js > .steps-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
+  .steps-tab { white-space: normal; justify-content: center; font-size: 12px; }
+  .save-bar { padding: 12px; display: flex; flex-wrap: wrap; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .save-bar > .tb-spacer { display: none; }
+  .save-bar > .save-state { width: 100%; order: -1; }
+  .save-bar > .btn { flex: 1 1 35%; justify-content: center; }
+  .save-bar > .btn-danger { flex: 0 0 44px; }
+  .form-extra { padding: 10px 12px; }
+  .callout-body > .btn { width: 100%; justify-content: center; }
+  .page-head-actions { width: 100%; }
+  .page-head-actions > .btn { flex: 1 1 45%; justify-content: center; }
+  .ar-actions { flex-wrap: wrap; }
+  .action-menu { flex: 1; }
+  .action-options { flex-direction: column; }
+  .action-options > button { min-height: 44px; }
+  .row-list a { flex-wrap: wrap; }
+  .content { padding-bottom: 24px; }
+}
+
+.quick-preview { display: none; }
+@media (min-width: 1400px) {
+  body:not(.is-modal) .quick-activity { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; max-width: 1480px; align-items: start; }
+  body:not(.is-modal) .quick-activity > [data-steps] { min-width: 0; }
+  body:not(.is-modal) .quick-preview { display: block; position: sticky; top: 88px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+}
+
+.order-row { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.order-row > strong { flex: 1; min-width: 120px; font-size: 14px; }
+.order-row form { display: flex; gap: 8px; }

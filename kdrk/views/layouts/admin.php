@@ -18,7 +18,7 @@ $modules = [
     'İçerik'   => [
         ['activities', 'Faaliyetler', 'admin.activities', ['admin', 'editor', 'viewer'], $pending],
         ['gallery', 'Fotoğraf Galerisi', 'admin.gallery', ['admin', 'editor', 'viewer'], 0],
-        ['news', 'Duyurular', 'admin.news', ['admin', 'editor', 'viewer'], 0],
+        ['news', 'Duyuru & Haber', 'admin.news', ['admin', 'editor', 'viewer'], 0],
         ['banner', 'Anasayfa Slaytları', 'admin.banners', ['admin', 'editor', 'viewer'], 0],
     ],
     'İletişim' => [['messages', 'İletişim Mesajları', 'admin.messages', ['admin', 'editor'], $unread]],
@@ -43,6 +43,7 @@ $modules = [
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= e(asset('admin/admin.css')) ?>">
   <link rel="stylesheet" href="<?= e(asset('admin/panel.css')) ?>">
+<?= $this->yield('head') ?>
 </head>
 <body>
 <div class="app is-auth">

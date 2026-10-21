@@ -1,0 +1,95 @@
+/* Başvurular ve Yoklama: ortak faaliyet şeridi + başvuru satırları. Panel token'ları admin.css / components.css.
+   Ortak sekme, buton ve arama stilleri ezilmez (UI_STANDARDS_V2); burada yalnız içerik geometrisi var. */
+
+/* ---------- Ortak şerit ---------- */
+.pa-head { display: flex; flex-direction: column; gap: 12px; margin: 0 0 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.pa-head-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pa-head .back-link { margin: 0; }
+.pa-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.pa-meta > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pa-meta dt { font: 600 11px/1.4 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
+.pa-meta dd { margin: 0; font-size: 14px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.pa-quota dd { display: flex; align-items: center; gap: 8px; }
+.pa-quota dd b { font-size: 15px; }
+.pa-quota meter { width: 110px; height: 8px; }
+.pa-switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--border); }
+.pa-nav { min-width: 0; }
+.pa-nav a { gap: 8px; }
+.pa-count { padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, currentColor 12%, transparent); font-size: 12px; font-weight: 600; }
+
+/* ---------- Başvuru satırları ---------- */
+.pa-panel { padding: 0; overflow: visible; }
+.pa-list { list-style: none; margin: 0; padding: 0; }
+.pa-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 14px; padding: 12px 16px; border-top: 1px solid var(--border); }
+.pa-row:first-child { border-top: 0; }
+.pa-row:target { background: color-mix(in srgb, var(--accent-2) 7%, transparent); }
+.pa-row.st-pending { box-shadow: inset 3px 0 0 var(--accent); }
+.pa-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pa-avatar { display: inline-grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; background: color-mix(in srgb, var(--accent-2) 14%, var(--surface)); color: var(--accent-2); font: 800 15px Manrope, sans-serif; }
+.st-pending .pa-avatar { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); }
+.st-rejected .pa-avatar { background: var(--surface-2); color: var(--text-2); }
+.pa-who { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.pa-name { font-weight: 700; font-size: 15px; color: var(--text); overflow-wrap: anywhere; }
+.st-rejected .pa-name { text-decoration: line-through; color: var(--text-2); }
+.pa-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 13px; color: var(--text-2); }
+.pa-phone { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; color: var(--text); font-size: 13px; font-weight: 600; }
+.pa-phone svg { color: var(--ok); }
+.pa-phone:hover { color: var(--ok); }
+.pa-tag { padding: 1px 8px; border-radius: 999px; background: var(--surface-2); font-size: 12px; }
+.pa-status { flex-shrink: 0; }
+
+.pa-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.pa-approve { background: var(--ok); border-color: var(--ok); color: #fff; }
+.pa-approve:hover { filter: brightness(1.06); color: #fff; }
+.pa-reject:hover { color: var(--danger); border-color: var(--danger); }
+.pa-more { position: relative; }
+.pa-more > summary { list-style: none; cursor: pointer; }
+.pa-more > summary::-webkit-details-marker { display: none; }
+.pa-more-panel { position: absolute; z-index: 30; right: 0; top: calc(100% + 6px); min-width: 220px; padding: 6px; display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: 0 18px 40px -16px rgba(11, 18, 32, .35); }
+.pa-more-item { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--text); font: 600 14px Inter, sans-serif; text-align: left; cursor: pointer; }
+.pa-more-item:hover, .pa-more-item:focus-visible { background: var(--surface-2); }
+.pa-more-item.is-danger { color: var(--danger); }
+
+.pa-detail { grid-column: 1 / -1; }
+.pa-detail > summary { list-style: none; display: inline-flex; align-items: center; gap: 4px; min-height: 32px; color: var(--text-2); font-size: 13px; font-weight: 600; cursor: pointer; }
+.pa-detail > summary::-webkit-details-marker { display: none; }
+.pa-detail > summary svg { transition: transform 160ms ease; }
+.pa-detail[open] > summary svg { transform: rotate(180deg); }
+.pa-detail > summary:hover { color: var(--text); }
+.pa-detail-body { display: flex; flex-direction: column; gap: 12px; padding: 10px 0 4px 50px; }
+.pa-grid { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; }
+.pa-grid dt { font: 600 11px/1.4 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); margin-bottom: 2px; }
+.pa-grid dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+.pa-grid a { color: var(--accent-2); }
+.pa-grid .warn { color: var(--warn); font-weight: 600; }
+.pa-full { grid-column: 1 / -1; }
+.pa-transport { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.pa-transport .field { margin: 0; min-width: 170px; }
+
+/* ---------- Kart görünümü (ortak Kart/Tablo seçici) ---------- */
+body .ui-list[data-list-view="kart"].pa-panel { border: 0; background: transparent; box-shadow: none; }
+body .ui-list[data-list-view="kart"] .pa-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; align-items: start; }
+body .ui-list[data-list-view="kart"] .pa-row { grid-template-columns: minmax(0, 1fr); border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+body .ui-list[data-list-view="kart"] .pa-actions { justify-content: flex-start; }
+body .ui-list[data-list-view="kart"] .pa-detail-body { padding-left: 0; }
+body .ui-list[data-list-view="kart"] .pa-grid { grid-template-columns: minmax(0, 1fr); }
+
+/* ---------- Telefon / tablet ---------- */
+@media (max-width: 860px) {
+  .pa-head { padding: 12px; }
+  .pa-switch { flex-direction: column; align-items: stretch; }
+  body .pa-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  body .pa-nav > a { min-height: 44px; min-width: 0; flex-wrap: wrap; row-gap: 2px; white-space: normal; text-align: center; }
+  .pa-count { white-space: nowrap; }
+  .pa-switch .export-menu > summary { width: 100%; justify-content: center; min-height: 44px; }
+  .pa-switch .export-panel { left: 0; right: 0; width: auto; }
+  .pa-row { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .pa-actions { justify-content: stretch; }
+  .pa-actions > .btn { flex: 1 1 0; justify-content: center; min-height: 44px; }
+  .pa-actions .btn-icon, .pa-more > summary { min-width: 44px; min-height: 44px; }
+  .pa-detail-body { padding-left: 0; }
+  .pa-grid { grid-template-columns: minmax(0, 1fr); }
+  .pa-transport .field { flex: 1 1 100%; }
+  .pa-transport .btn { width: 100%; justify-content: center; min-height: 44px; }
+  .pa-phone { min-height: 44px; font-size: 14px; }
+}

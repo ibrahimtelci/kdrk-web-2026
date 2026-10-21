@@ -104,6 +104,11 @@
 .hero-slide.is-active .hero-text > *:nth-child(2) { transition-delay: 280ms; }
 .hero-slide.is-active .hero-text > *:nth-child(3) { transition-delay: 360ms; }
 .hero-slide.is-active .hero-text > *:nth-child(4) { transition-delay: 440ms; }
+.hero-slide.is-active .hero-text > *:nth-child(5) { transition-delay: 520ms; }
+
+/* Faaliyet slaytı: zorluk + durum rozeti (kartla aynı) */
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-meta .activity-difficulty { position: static; }
 
 /* Counter top right */
 .hero-counter {

@@ -21,6 +21,7 @@ return static function (Router $r): void {
 
     $r->get('/disiplin/{slug}', [DisciplineController::class, 'show'], 'disiplin');
 
+    $r->get('/duyurular', [NewsController::class, 'index'], 'duyurular');
     $r->get('/duyurular/{slug}', [NewsController::class, 'show'], 'duyuru');
 
     $r->get('/galeri', [GalleryController::class, 'index'], 'galeri');
@@ -71,6 +72,8 @@ return static function (Router $r): void {
     $r->get('/yonetim/slaytlar', [Admin\BannerController::class, 'index'], 'admin.banners');
     $r->get('/yonetim/slaytlar/yeni', [Admin\BannerController::class, 'create'], 'admin.banners.new');
     $r->post('/yonetim/slaytlar', [Admin\BannerController::class, 'store'], 'admin.banners.store');
+    $r->post('/yonetim/slaytlar/faaliyet', [Admin\BannerController::class, 'activity'], 'admin.banners.activity');
+    $r->post('/yonetim/slaytlar/haber', [Admin\BannerController::class, 'news'], 'admin.banners.news');
     $r->get('/yonetim/slaytlar/{id}', [Admin\BannerController::class, 'edit'], 'admin.banners.edit');
     $r->post('/yonetim/slaytlar/{id}', [Admin\BannerController::class, 'update'], 'admin.banners.update');
     $r->post('/yonetim/slaytlar/{id}/sil', [Admin\BannerController::class, 'delete'], 'admin.banners.delete');

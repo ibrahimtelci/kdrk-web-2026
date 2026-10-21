@@ -22,22 +22,16 @@ $err = static fn (string $f): string => $errors[$f] ?? '';
 $field = static function (string $f) use ($err): string {
     return ($err($f) !== '' ? ' class="is-error" aria-invalid="true"' : '') . ' aria-describedby="e-' . $f . '"';
 };
-$facts = array_filter([
-    'Buluşma'          => $a['meeting_text'],
-    'Dönüş'            => $a['return_text'],
-    'Ücrete dahil'     => $a['included_text'],
-    'Katılımcıya ait'  => $a['personal_text'],
-    'Katılım şartı'    => $a['requirement_text'],
-    'Hava durumu'      => $a['weather_text'],
-]);
+// Sade form (panel): plan metni, buluşma, ücret + genel ödeme notu, kategoriye göre malzeme/kontrol notu, harita
+$gear = \App\Models\Activity::gearNote($a['category']);
+$payNote = trim((string) setting('payment_note', ''));
 $summary = array_filter([
-    'Tarih'        => tr_range($a['starts_on'], $a['ends_on']),
-    'Süre'         => $a['duration_text'],
-    'Zorluk'       => $diffLabel,
-    'Zirve'        => $a['summit_m'] ? $num($a['summit_m']) . ' m' : null,
-    'Mesafe'       => $a['distance_km'] ? rtrim(rtrim(number_format((float) $a['distance_km'], 1, ',', '.'), '0'), ',') . ' km' : null,
-    'İrtifa farkı' => $a['elevation_gain_m'] ? $num($a['elevation_gain_m']) . ' m' : null,
+    'Tarih'   => tr_range($a['starts_on'], $a['ends_on']),
+    'Zorluk'  => $diffLabel,
+    'Mesafe'  => $a['distance_km'] ? rtrim(rtrim(number_format((float) $a['distance_km'], 1, ',', '.'), '0'), ',') . ' km' : null,
+    'Buluşma' => $a['meeting_text'],
 ]);
+$osm = $a['has_map'] ? 'https://www.openstreetmap.org/?mlat=' . rawurlencode((string) $a['lat']) . '&mlon=' . rawurlencode((string) $a['lng']) . '#map=14/' . $a['lat'] . '/' . $a['lng'] : null;
 ?>
 <section class="detail-hero always-dark">
   <div class="detail-hero-img zoom"><?= img_tag($a['cover_image'], '100vw', 1600, '', false) ?></div>
@@ -61,9 +55,6 @@ $summary = array_filter([
       <h1><?= e($a['title']) ?></h1>
       <div class="sub">
         <span><?= e($a['location']) ?></span>
-<?php if ($a['duration_text']): ?>
-        <span class="dot">•</span><span><?= e($a['duration_text']) ?></span>
-<?php endif ?>
       </div>
     </div>
   </div>
@@ -86,7 +77,7 @@ $summary = array_filter([
       <div class="detail-main">
 
         <article class="detail-block reveal" data-screen-label="01 Hakkında">
-          <span class="eyebrow">Faaliyet Hakkında</span>
+          <span class="eyebrow">Faaliyet Planı</span>
           <h2><?= e($a['summary']) ?></h2>
 <?php if ($a['body']): ?>
           <?= paragraphs($a['body']) /* düz metin; HTML kaçışlı */ ?>
@@ -96,48 +87,28 @@ $summary = array_filter([
 <?php endif ?>
         </article>
 
-<?php if ($facts): ?>
-        <article class="detail-block reveal" data-screen-label="02 Bilmen Gerekenler">
-          <span class="eyebrow">Bilmen Gerekenler</span>
+<?php if ($gear): ?>
+        <article class="detail-block reveal" data-screen-label="02 Malzemeler">
+          <span class="eyebrow">Gerekli Malzemeler ve Kontroller</span>
           <h2>Katılmadan önce.</h2>
-          <dl class="facts">
-<?php foreach ($facts as $k => $v): ?>
-            <div><dt><?= e($k) ?></dt><dd><?= e($v) ?></dd></div>
-<?php endforeach ?>
-            <div><dt>İptal ve iade</dt><dd>Koşullar için faaliyet sorumlusuna <a href="#basvuru">buradan</a> ulaş.</dd></div>
-          </dl>
-        </article>
-<?php endif ?>
-
-<?php if ($a['program']): ?>
-        <article class="detail-block reveal" data-screen-label="03 Program">
-          <span class="eyebrow">Program</span>
-          <h2><?= count($a['program']) > 1 ? count($a['program']) . ' günlük rota.' : 'Günün akışı.' ?></h2>
-          <div class="timeline">
-<?php foreach ($a['program'] as $i => $day): ?>
-            <div class="timeline-day">
-              <span class="day-label"><?= $i + 1 ?>. Gün<?= !empty($day['date']) ? ' — ' . e(mb_substr(tr_date_long($day['date']), 0, -5)) : '' ?></span>
-              <h3><?= e($day['title']) ?></h3>
-              <div class="timeline-events">
-<?php foreach ($day['items'] as $ev): ?>
-                <div class="timeline-event"><span class="time"><?= e($ev['time']) ?></span><span class="what"><?= e($ev['text']) ?></span></div>
-<?php endforeach ?>
-              </div>
-            </div>
-<?php endforeach ?>
-          </div>
-        </article>
-<?php endif ?>
-
-<?php if ($a['equipment']): ?>
-        <article class="detail-block reveal" data-screen-label="04 Malzemeler">
-          <span class="eyebrow">Gerekli Malzemeler</span>
-          <h2>Çantanda olması gerekenler.</h2>
           <div class="gear-list">
-<?php foreach ($a['equipment'] as $g): ?>
+<?php foreach ($gear as $g): ?>
             <div class="gear-item"><span class="gear-dot" aria-hidden="true"></span><?= e($g) ?></div>
 <?php endforeach ?>
           </div>
+        </article>
+<?php endif ?>
+
+<?php if ($a['has_map']): ?>
+        <article class="detail-block reveal" data-screen-label="03 Konum">
+          <div class="detail-block-head">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <span class="eyebrow">Konum</span>
+              <h2><?= e($a['location']) ?></h2>
+            </div>
+            <a href="<?= e($osm) ?>" class="btn-text" target="_blank" rel="noopener">Haritada aç <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+          <div class="detail-map" data-detail-map data-lat="<?= e((string) $a['lat']) ?>" data-lng="<?= e((string) $a['lng']) ?>" role="img" aria-label="<?= e($a['location']) ?> haritası"></div>
         </article>
 <?php endif ?>
 
@@ -173,8 +144,8 @@ $summary = array_filter([
           <div class="apply-price">
             <span class="eyebrow no-bar">Faaliyet ücreti</span>
             <div class="num"><?= e($fee) ?></div>
-<?php if ($a['fee_note']): ?>
-            <div class="desc"><?= e($a['fee_note']) ?></div>
+<?php if ($payNote !== ''): ?>
+            <div class="desc"><?= e($payNote) ?></div>
 <?php endif ?>
           </div>
 <?php endif ?>
@@ -197,15 +168,6 @@ $summary = array_filter([
 <?php endif ?>
 
           <div class="apply-divider"></div>
-<?php if ($a['leader_name']): ?>
-          <div class="organizer">
-            <span class="eyebrow no-bar">Faaliyet sorumlusu</span>
-            <div class="organizer-row">
-              <div class="organizer-avatar" aria-hidden="true"><?= e(mb_substr($a['leader_name'], 0, 1)) ?></div>
-              <div><div class="organizer-name"><?= e($a['leader_name']) ?></div><?php if ($a['leader_title']): ?><div class="organizer-bio"><?= e($a['leader_title']) ?></div><?php endif ?></div>
-            </div>
-          </div>
-<?php endif ?>
           <div class="organizer-actions">
 <?php if ($tel): ?>
             <a class="btn btn-ghost btn-sm" href="tel:<?= e($tel) ?>">Kulübü ara</a>
@@ -271,5 +233,8 @@ $summary = array_filter([
 <?php endif ?>
 
 <?php $this->section('scripts') ?>
+<?php if ($a['has_map']): ?>
+<script src="<?= e(asset('vendor/leaflet/leaflet.js')) ?>" defer></script>
+<?php endif ?>
 <script src="<?= e(asset('activity-detail.js')) ?>" defer></script>
 <?php $this->end() ?>

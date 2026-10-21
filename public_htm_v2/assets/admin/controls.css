@@ -1,0 +1,40 @@
+/* Shared panel affordances. Background-only glyphs remain decorative;
+   native select semantics, focus, keyboard input and search clearing stay intact. */
+:root, [data-theme="dark"] {
+  --control-chevron: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394A3B8%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E");
+  --control-search: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394A3B8%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2210.8%22%20cy%3D%2210.8%22%20r%3D%226.8%22%2F%3E%3Cpath%20d%3D%22m16%2016%204.5%204.5%22%2F%3E%3C%2Fsvg%3E");
+}
+[data-theme="light"] {
+  --control-chevron: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748B%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E");
+  --control-search: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748B%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2210.8%22%20cy%3D%2210.8%22%20r%3D%226.8%22%2F%3E%3Cpath%20d%3D%22m16%2016%204.5%204.5%22%2F%3E%3C%2Fsvg%3E");
+}
+
+/* Theme backgrounds and page-specific shorthands must not erase these glyphs. */
+body select:not([multiple]):not([size]),
+body select:not([multiple])[size="1"],
+body select:not([multiple])[size="0"] {
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:var(--control-chevron) !important;
+  background-repeat:no-repeat !important;
+  background-position:right 10px center !important;
+  background-size:16px 16px !important;
+  padding-inline-end:36px !important;
+}
+body input[type="search"] {
+  background-image:var(--control-search) !important;
+  background-repeat:no-repeat !important;
+  background-position:left 11px center !important;
+  background-size:17px 17px !important;
+  padding-inline-start:36px !important;
+  padding-inline-end:28px;
+}
+/* Existing SVG wrappers use the same input glyph rather than drawing it twice. */
+.search-box>svg, .bw-search>svg { display:none; }
+@media (forced-colors:active) {
+  body select:not([multiple]):not([size]), body select:not([multiple])[size="1"], body select:not([multiple])[size="0"] {
+    appearance:auto;
+    -webkit-appearance:auto;
+    background-image:none !important;
+  }
+}

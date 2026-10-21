@@ -79,6 +79,7 @@ $postMax = ini_get('post_max_size');
         </select><?= $err('category') ?>
       </div>
       <?= $input('location', 'Yer', 'text', ['span' => true, 'hint' => 'Faaliyete bağlıysa boş bırakabilirsin. Ör. Rize / İkizdere · 3.711 m', 'attrs' => ['maxlength' => 160]]) ?>
+      <?= $input('tags', 'Etiketler', 'text', ['span' => true, 'hint' => 'Virgülle ayır. Faaliyetten açılan albümde faaliyet adı, yer, kategori ve yıl hazır gelir. Panelde ve sitede aramada kullanılır.', 'attrs' => ['maxlength' => 500]]) ?>
       <div class="field col-span">
         <label for="f-description">Kısa açıklama</label>
         <textarea id="f-description" name="description" rows="3" maxlength="2000"><?= e($v('description')) ?></textarea>

@@ -1,0 +1,18 @@
+/* Flama kimliği: lacivert, beyaz, turuncu ve izohips. */
+:root { --brand-navy: #051F3D; --brand-orange: #FF5A14; --brand-white: #FFFFFF; }
+.list-header, .corp-hero, .detail-summary, .join-band { position: relative; isolation: isolate; }
+.list-header::before, .detail-summary::before { content: ''; position: absolute; inset: 0; background: url('brand-contours.svg') right center / 720px no-repeat; opacity: .1; pointer-events: none; z-index: -1; }
+.list-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: clamp(80px, 20vw, 260px); height: 5px; background: var(--brand-orange); clip-path: polygon(0 0,100% 0,94% 35%,98% 70%,90% 100%,0 100%); }
+.footer { background-image: url('brand-contours.svg'); background-size: 900px; background-position: right bottom; background-repeat: no-repeat; background-blend-mode: soft-light; }
+.footer-brand .kdrk-mark { width: 84px; height: 84px; }
+/* Kart deseni çok düşük kontrastta; metnin okunmasını zorlamaz. */
+.activity-card .activity-body { background-image: linear-gradient(color-mix(in srgb,var(--surface) 97%,transparent),color-mix(in srgb,var(--surface) 97%,transparent)),url('brand-contours.svg'); background-size: cover; }
+.activity-distance { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 14px; }
+.activity-distance svg { width: 18px; height: 18px; color: var(--accent-primary); }
+.difficulty-meter { display: inline-flex; align-items: center; gap: 5px; vertical-align: middle; }
+/* Zorluk basamağı: dolu dağ silueti + kar şapkası (5 basamak). Köşeler aynı renkte ince çizgiyle yumuşar. */
+.difficulty-meter svg { width: 24px; height: 20px; color: var(--text-secondary); opacity: .25; }
+.difficulty-meter svg .peak { fill: currentColor; stroke: currentColor; stroke-width: 1.2; stroke-linejoin: round; }
+.difficulty-meter svg .snow { fill: rgba(255, 255, 255, 0.95); }
+.difficulty-meter svg.is-filled { color: var(--accent-primary); opacity: 1; }
+.activity-body .difficulty-meter { padding-top: 2px; }

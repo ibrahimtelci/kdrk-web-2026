@@ -1,0 +1,308 @@
+/* Anasayfa görselleri — tablo + kart görünümü.
+   Ortak kontrol stilleri (buton, seg, arama, odak) components.css'ten gelir; burada yalnız bu ekranın geometrisi var.
+   Kırılımlar: 1200 (tablo ikincil sütunları), 860 (tablo → liste satırı, panel ortak sınırı), 600 (telefon), 360 (çok dar). */
+
+.banner-workspace {
+  --bw-radius: 12px;
+  --bw-radius-sm: 8px;
+  --bw-hit: 36px;
+  --bw-thumb: 112px;
+  --bw-hover: color-mix(in srgb, var(--accent-2) 5%, var(--surface));
+  --bw-selected: color-mix(in srgb, var(--accent-2) 10%, var(--surface));
+  --bw-shadow: none;
+  min-width: 0;
+}
+[data-theme="light"] .banner-workspace { --bw-shadow: 0 8px 24px color-mix(in srgb, var(--text) 9%, transparent); }
+@media (any-pointer: coarse) { .banner-workspace { --bw-hit: 44px; } }
+.banner-workspace [hidden] { display: none !important; }
+.banner-workspace form { margin: 0; }
+
+/* Ortak odak halkası: ekrana özel kontroller de aynı görünür halkayı taşır. */
+.banner-workspace :is(.bw-title, .bw-sort, .bw-menu-trigger, .bw-grip, .bw-menu-list a, .bw-menu-list button, .bw-search-clear, .bw-check input, .bw-create > summary):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Üst işlemler ---------- */
+.bw-create { position: relative; }
+.bw-create > summary { list-style: none; cursor: pointer; }
+.bw-create > summary::-webkit-details-marker { display: none; }
+.bw-create[open] > summary > svg:last-child { transform: rotate(180deg); }
+
+/* ---------- Araç çubuğu: kategori · arama · görünüm/filtre · açılır filtre paneli ---------- */
+.bw-toolbar { margin-bottom: 12px; }
+.bw-toolbar > .bw-groups { order: 1; }
+.banner-workspace .bw-toolbar > .bw-search { order: 2; position: relative; flex: 1 1 200px; min-width: 180px; max-width: 300px; }
+@media (max-width: 1365px) {
+  .bw-toolbar > .bw-groups { flex: 1 1 100%; margin-right: 0; }
+  .banner-workspace .bw-toolbar > .bw-search { flex: 1 1 220px; max-width: none; margin-left: 0; }
+}
+.bw-groups .bw-count {
+  min-width: 22px; padding: 1px 6px; border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font: 600 12px/1.4 'JetBrains Mono', monospace; text-align: center;
+}
+.bw-search input { width: 100%; min-height: var(--bw-hit); }
+@media (any-pointer: coarse) { .bw-search input { font-size: 16px; } }
+.bw-search input::-webkit-search-cancel-button { display: none; }
+.bw-search-clear {
+  position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 6px; color: var(--text-2);
+}
+.bw-search-clear:hover { color: var(--text); background: var(--surface-2); }
+
+/* ---------- Liste üst satırı: seçim, sayı, toplu işlem ---------- */
+.bw-listbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; min-height: 44px; margin-bottom: 8px; }
+.bw-summary, .bw-live { margin: 0; font-size: 13px; color: var(--text-2); }
+.bw-summary { display: flex; gap: 6px; }
+.bw-live:empty { display: none; }
+.bw-live.is-error { color: var(--danger); font-weight: 600; }
+.bw-bulk { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.bw-bulk-count { font-size: 13px; font-weight: 600; }
+.bw-check { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: var(--bw-hit); min-height: var(--bw-hit); cursor: pointer; }
+.bw-check input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent-2); cursor: pointer; }
+.bw-select-all { justify-content: flex-start; font-size: 13px; font-weight: 600; }
+@media (any-pointer: coarse) { .bw-check input { width: 22px; height: 22px; } }
+
+/* ---------- Ortak hücre parçaları ---------- */
+.bw-thumb { position: relative; display: block; flex: 0 0 var(--bw-thumb); width: var(--bw-thumb); aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--bw-radius-sm); background: var(--surface-2); }
+.bw-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bw-noimg { display: grid; place-items: center; align-content: center; gap: 2px; height: 100%; color: var(--text-2); font-size: 12px; }
+.bw-thumb-pos { display: none; }
+.is-off .bw-thumb img { opacity: .62; }
+.bw-title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  color: var(--text); font: 600 14px/1.4 Inter, system-ui, sans-serif; overflow-wrap: anywhere; text-wrap: pretty;
+}
+.bw-title:hover { color: var(--ui-selected); text-decoration: underline; text-underline-offset: 2px; }
+.bw-cat { --cat: var(--text-2); display: inline-flex; align-items: center; gap: 6px; max-width: 100%; color: var(--text); font-size: 13px; white-space: nowrap; }
+.bw-cat::before { content: ''; flex: 0 0 8px; height: 8px; border-radius: 50%; background: var(--cat); }
+.bw-cat[data-group="faaliyet"] { --cat: var(--accent); }
+.bw-cat[data-group="news"] { --cat: var(--accent-2); }
+.bw-cat[data-group="tanitim"] { --cat: var(--text); }
+.bw-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+.bw-status.is-live { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); }
+.bw-status.is-off { color: var(--text-2); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--border); }
+.bw-reason { display: block; margin-top: 4px; color: color-mix(in oklch, var(--warn) 62%, var(--text)); font-size: 12px; line-height: 1.4; }
+.bw-meta { display: none; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 4px; }
+.bw-date { color: var(--text-2); font-size: 12px; letter-spacing: .04em; }
+.bw-grip {
+  display: inline-grid; place-items: center; flex: 0 0 auto; width: var(--bw-hit); height: var(--bw-hit);
+  border-radius: var(--bw-radius-sm); color: var(--text-2); cursor: grab; touch-action: none;
+}
+.bw-grip:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+.bw-grip:active { cursor: grabbing; }
+.bw-grip:disabled { opacity: .35; cursor: not-allowed; }
+.is-dragging { opacity: .6; outline: 2px dashed var(--accent-2); outline-offset: -2px; }
+
+/* İşlem menüsü (details): klavye ve JS'siz kullanım tarayıcının kendi davranışıdır. */
+.bw-menu { position: relative; }
+.bw-menu-trigger {
+  display: grid; place-items: center; width: var(--bw-hit); height: var(--bw-hit); list-style: none; cursor: pointer;
+  border: 1px solid var(--border); border-radius: var(--bw-radius-sm); background: var(--surface); color: var(--text-2);
+}
+.bw-menu-trigger::-webkit-details-marker { display: none; }
+.bw-menu-trigger:hover, .bw-menu[open] > .bw-menu-trigger { color: var(--text); background: var(--surface-2); }
+.bw-menu-list {
+  position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; display: grid; gap: 2px;
+  width: max-content; min-width: 210px; max-width: min(280px, calc(100vw - 32px)); padding: 6px;
+  border: 1px solid var(--border); border-radius: var(--bw-radius); background: var(--surface); color: var(--text);
+  box-shadow: var(--bw-shadow); text-align: left;
+}
+.bw-menu.is-up > .bw-menu-list { top: auto; bottom: calc(100% + 6px); }
+.bw-menu-list form { display: grid; gap: 2px; }
+.bw-menu-list a, .bw-menu-list button {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 10px;
+  border-radius: 6px; font-size: 14px; font-weight: 500; text-align: left; white-space: nowrap; color: inherit;
+}
+.bw-menu-list a:hover, .bw-menu-list button:hover:not(:disabled) { background: var(--surface-2); }
+.bw-menu-list button:disabled { opacity: .4; cursor: not-allowed; }
+.bw-menu-list svg { flex-shrink: 0; color: var(--text-2); }
+.bw-menu-danger { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border); }
+.bw-menu-danger button, .bw-menu-danger button svg { color: var(--danger); }
+@media (any-pointer: coarse) { .bw-menu-list a, .bw-menu-list button { min-height: 44px; } }
+
+/* ---------- Tablo görünümü (masaüstü) ---------- */
+.bw-table-wrap { border: 1px solid var(--border); border-radius: var(--bw-radius); background: var(--surface); }
+.bw-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; }
+.bw-table th {
+  height: 42px; padding: 0 12px; background: var(--surface-2); border-bottom: 1px solid var(--border);
+  color: var(--text-2); font: 600 12px/1.3 Inter, system-ui, sans-serif; letter-spacing: .04em; text-align: left; text-transform: uppercase; white-space: nowrap;
+}
+.bw-table th:first-child { border-top-left-radius: var(--bw-radius); }
+.bw-table th:last-child { border-top-right-radius: var(--bw-radius); }
+.bw-sort { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; color: inherit; }
+.bw-sort:hover, th[aria-sort] .bw-sort { color: var(--text); }
+.bw-sort-icon { display: inline-grid; opacity: .55; }
+th[aria-sort] .bw-sort-icon { opacity: 1; color: var(--ui-selected); }
+.bw-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.bw-row:last-child td { border-bottom: 0; }
+.bw-row:last-child td:first-child { border-bottom-left-radius: var(--bw-radius); }
+.bw-row:last-child td:last-child { border-bottom-right-radius: var(--bw-radius); }
+.bw-row { transition: background-color 160ms ease; }
+.bw-row:hover { background: var(--bw-hover); }
+.bw-row:has([data-select]:checked) { background: var(--bw-selected); }
+.bw-col-select { width: 52px; }
+.bw-table .bw-col-select { padding-inline: 6px; text-align: center; }
+.bw-col-sira { width: 80px; }
+.bw-col-kategori { width: 150px; }
+.bw-col-durum { width: 140px; }
+.bw-col-guncelleme { width: 124px; }
+.bw-col-actions { width: 144px; }
+.bw-table td.bw-col-guncelleme { color: var(--text-2); font-size: 12px; letter-spacing: .04em; white-space: nowrap; }
+.bw-order { display: flex; align-items: center; gap: 4px; }
+.bw-pos { min-width: 24px; font: 600 13px/1 'JetBrains Mono', monospace; text-align: center; }
+.bw-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.bw-text { min-width: 0; flex: 1; }
+.bw-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+
+/* Başlık sütunu en geniş kalır: dar masaüstünde önce tarih, sonra kategori başlığın altına iner. */
+@media (max-width: 1365px) {
+  .bw-table .bw-col-guncelleme { display: none; }
+  .bw-table .bw-meta { display: flex; }
+  .bw-table .bw-meta .bw-cat { display: none; }
+}
+@media (max-width: 1199px) {
+  .banner-workspace { --bw-thumb: 96px; }
+  .bw-table .bw-col-kategori { display: none; }
+  .bw-table .bw-meta .bw-cat { display: inline-flex; }
+}
+
+/* ---------- Kart görünümü ---------- */
+.bw-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.bw-tile {
+  position: relative; display: flex; flex-direction: column; min-width: 0;
+  border: 1px solid var(--border); border-radius: var(--bw-radius); background: var(--surface);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.bw-tile:hover, .bw-tile:focus-within { border-color: color-mix(in srgb, var(--ui-selected) 55%, var(--border)); box-shadow: var(--bw-shadow); }
+.bw-tile:has([data-select]:checked) { border-color: var(--ui-selected); background: var(--bw-selected); }
+.bw-tile-media { position: relative; }
+.bw-tile .bw-thumb { width: 100%; border-radius: var(--bw-radius) var(--bw-radius) 0 0; }
+.bw-tile .bw-thumb img { transition: transform 500ms ease; }
+.bw-tile:hover .bw-thumb img { transform: scale(1.04); }
+.bw-tile-pos {
+  position: absolute; left: 8px; bottom: 8px; display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 8px;
+  border-radius: 999px; background: var(--surface); color: var(--text); font: 600 12px/1 'JetBrains Mono', monospace;
+  box-shadow: 0 0 0 1px var(--border);
+}
+.bw-tile-check, .bw-tile .bw-grip { position: absolute; top: 8px; border-radius: var(--bw-radius-sm); background: var(--surface); box-shadow: 0 0 0 1px var(--border); }
+.bw-tile-check { left: 8px; }
+.bw-tile .bw-grip { right: 8px; }
+.bw-tile .bw-grip:disabled { display: none; }
+.bw-tile-body { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px; }
+.bw-tile-title { margin: 0; font-size: inherit; letter-spacing: 0; }
+.bw-tile-title .bw-title { min-height: 2.8em; font-size: 15px; }
+.bw-tile-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.bw-tile-meta .bw-reason { flex-basis: 100%; margin: 0; }
+.bw-tile-actions { display: flex; gap: 8px; margin-top: auto; padding: 0 12px 12px; }
+.bw-tile-actions .bw-edit-btn { flex: 1; justify-content: center; }
+
+/* ---------- Boş / sonuç yok ---------- */
+.bw-empty { border: 1px dashed var(--border); border-radius: var(--bw-radius); background: var(--surface); }
+.bw-empty .btn { margin-top: 12px; }
+
+/* ---------- 860 ve altı: tablo satırları kompakt liste satırına dönüşür ---------- */
+@media (max-width: 860px) {
+  .banner-workspace { --bw-thumb: 96px; }
+  .bw-table-wrap { border: 0; background: transparent; }
+  .bw-table, .bw-table tbody, .bw-table tr, .bw-table td { display: block; width: auto; }
+  /* Sıralama filtre panelindedir; görünmeyen başlık bağlantıları odak almasın. */
+  .bw-table thead { display: none; }
+  /* Satırın görsel + metin alanının tamamı düzenlemeye götürür; menü ayrı kalır. */
+  .bw-table .bw-col-baslik { position: relative; }
+  .bw-table .bw-col-baslik .bw-title::after { content: ''; position: absolute; inset: -4px; }
+  .bw-table tbody { display: grid; gap: 8px; }
+  .bw-table .bw-row {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "sel main act" "sel state act";
+    align-items: center; column-gap: 10px; row-gap: 6px; padding: 10px;
+    border: 1px solid var(--border); border-radius: var(--bw-radius); background: var(--surface);
+  }
+  .bw-table td { padding: 0; border: 0; }
+  .bw-table .bw-row td { border-radius: 0; }
+  .bw-table .bw-col-select { grid-area: sel; width: auto; padding: 0; }
+  .bw-table .bw-col-sira { display: none; }
+  .bw-table .bw-col-baslik { grid-area: main; }
+  .bw-table .bw-col-durum { grid-area: state; padding-left: calc(var(--bw-thumb) + 12px); }
+  .bw-table .bw-col-actions { grid-area: act; align-self: start; }
+  .bw-table .bw-meta { display: flex; }
+  .bw-table .bw-edit-btn { display: none; }
+  .bw-table .bw-main { align-items: flex-start; }
+  .bw-thumb-pos {
+    position: absolute; left: 4px; top: 4px; display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px;
+    border-radius: 999px; background: var(--surface); color: var(--text); font: 600 12px/1 'JetBrains Mono', monospace;
+  }
+}
+
+/* ---------- Telefon ---------- */
+@media (max-width: 700px) {
+  /* İki üst işlem telefonda alt alta, tam genişlikte (CLAUDE.md §6a). */
+  .bw-heading-actions { width: 100%; }
+  .bw-heading-actions > .btn, .bw-create, .bw-create > summary { flex: 1 1 100%; width: 100%; min-width: 0; justify-content: center; }
+  .bw-create-list { left: 0; right: 0; width: auto; max-width: none; }
+  .bw-toolbar > .bw-groups { order: 1; }
+  .bw-toolbar > .bw-search { order: 2; }
+}
+@media (max-width: 600px) {
+  .banner-workspace { --bw-thumb: 88px; }
+  .bw-select-all, .bw-col-select, .bw-tile-check, .bw-tile .bw-grip, .bw-bulk { display: none !important; }
+  .bw-table .bw-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main act" "state act"; }
+  .bw-table .bw-col-durum { padding-left: calc(var(--bw-thumb) + 12px); }
+  .bw-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .bw-tile-body { padding: 10px 10px 8px; gap: 6px; }
+  .bw-tile-title .bw-title { font-size: 14px; }
+  .bw-tile-actions { padding: 0 10px 10px; }
+  .bw-tile-actions .bw-edit-btn { flex: 1; min-width: 44px; padding: 0; }
+  .bw-tile-actions .bw-edit-btn > span { display: none; }
+  .bw-tile .bw-status { padding-inline: 6px 8px; }
+  .bw-menu-list { min-width: 220px; }
+}
+@media (max-width: 359px) {
+  .banner-workspace { --bw-thumb: 72px; }
+  .bw-tiles { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bw-row, .bw-tile, .bw-tile .bw-thumb img { transition: none; }
+  .bw-tile:hover .bw-thumb img { transform: none; }
+}
+
+/* ---------- Ekleme penceresi (picker) ve onay penceresi — davranış değişmedi ---------- */
+.bw-picker-fallback { margin-top: 24px; }
+.bw-picker-dialog { max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text); }
+.bw-picker-dialog::backdrop, .bw-confirm-dialog::backdrop { background: color-mix(in srgb, var(--bg) 65%, transparent); }
+.bw-picker-dialog [hidden] { display: none !important; }
+.bw-picker-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
+.bw-picker-head h2 { font-size: 22px; }
+.bw-picker-head p { margin: 6px 0 0; }
+.bw-picker-head .btn-icon { min-width: 44px; min-height: 44px; }
+.bw-picker-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 20px; }
+.bw-picker-filters input, .bw-picker-filters select { width: 100%; }
+.bw-picker-list { display: grid; gap: 8px; padding: 0 20px 16px; max-height: 45vh; overflow-y: auto; }
+.bw-picker-option { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
+.bw-picker-option:has(:checked) { background: var(--bw-selected, color-mix(in srgb, var(--accent-2) 10%, var(--surface))); border-color: var(--accent-2); }
+.bw-picker-option:has(:disabled) { opacity: .6; cursor: not-allowed; }
+.bw-picker-option input { flex-shrink: 0; width: 20px; height: 20px; }
+.bw-picker-option img { width: 96px; height: 64px; object-fit: cover; border-radius: 8px; }
+.bw-picker-option strong, .bw-picker-option small { display: block; overflow-wrap: anywhere; }
+.bw-picker-option strong { font-size: 16px; }
+.bw-picker-option small { margin-top: 4px; color: var(--text-2); font-size: 13px; }
+.bw-picker-footer { position: sticky; bottom: 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); }
+.bw-picker-footer .f-hint { flex: 1; }
+.bw-picker-footer .btn { flex-shrink: 0; }
+.bw-picker-body > form > [data-picker-empty] { padding: 12px 20px; }
+.bw-confirm-dialog { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text); padding: 24px; }
+.bw-confirm-dialog h2 { font-size: 20px; margin: 0 0 14px; }
+.bw-confirm-dialog [data-confirm-name] { font-weight: 700; overflow-wrap: anywhere; }
+.bw-confirm-dialog p { margin: 10px 0; color: var(--text-2); }
+.bw-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+@media (max-width: 600px) {
+  .bw-picker-filters { grid-template-columns: 1fr; }
+  .bw-picker-option { gap: 8px; padding: 10px; }
+  .bw-picker-option img { width: 60px; height: 50px; }
+  .bw-picker-footer { flex-wrap: wrap; }
+  .bw-picker-footer > .btn { width: 100%; justify-content: center; }
+  .bw-picker-footer .f-hint { flex-basis: 100%; }
+  .bw-confirm-actions { flex-direction: column-reverse; }
+  .bw-confirm-actions .btn { width: 100%; justify-content: center; }
+}

@@ -486,3 +486,17 @@
 @media (max-width: 600px) {
   .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
 }
+
+/* Menü öğeleri tek satırda kalır; dar masaüstünde (1180–1365px) aralıklar sıkışır */
+.nav-link, .nav-cta { white-space: nowrap; }
+@media (min-width: 1180px) and (max-width: 1365px) {
+  .nav-inner { gap: 16px; }
+  .nav-menu { gap: 18px; }
+  .nav-cta { padding: 0 14px; }
+}
+.brand-cluster { flex-shrink: 0; }
+@media (min-width: 1180px) and (max-width: 1279px) {
+  .nav-inner { gap: 12px; }
+  .nav-menu { gap: 13px; }
+  .nav-cta { padding: 0 12px; }
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Slayt ekle / düzenle.
+ * Tanıtım slaytı ekle / düzenle (duyuru ve faaliyet slaytları kendi kayıtlarından üretilir).
  * @var array|null $b
  * @var array      $old
  * @var array      $errors
@@ -49,10 +49,10 @@ $tokens = 'Rakamlar için {yil}, {zirve}, {yuruyus}, {aramaKurtarma}, {kurulus} 
         <div class="cover-ctrl">
           <div class="cover-prev" data-cover-prev<?= !$isNew ? ' style="background-image:url(\'' . e(img($b['image'], 900)) . '\')"' : '' ?>></div>
           <div class="cover-btns">
-            <label class="btn btn-ghost btn-sm file-btn"><?= icon('upload', 14) ?><?= $isNew ? 'Görsel seç' : 'Görseli değiştir' ?><input type="file" name="image" accept="image/jpeg,image/png,image/webp" data-cover-input<?= $inv('image') ?>></label>
+            <label class="btn btn-ghost btn-sm file-btn"><?= icon('upload', 14) ?><?= $isNew ? 'Görsel seç' : 'Görseli değiştir' ?><input type="file" name="image" accept="image/jpeg,image/png,image/webp" data-cover-input data-crop-ratio="16/9" data-crop-label="Anasayfa slaytı (16:9)"<?= $inv('image') ?>></label><input type="hidden" name="image_crop" value="" data-crop-value>
           </div>
         </div>
-        <span class="f-hint">Yatay fotoğraf, en az 1600 px genişlik. Üstüne koyu katman eklenir; metin her zaman okunur.</span><?= $err('image') ?>
+        <span class="f-hint">Yatay fotoğraf, en az 1600 px genişlik. Seçince kırpma penceresi açılır. Üstüne koyu katman eklenir; metin her zaman okunur.</span><?= $err('image') ?>
       </div>
     </div>
   </section>
@@ -60,9 +60,10 @@ $tokens = 'Rakamlar için {yil}, {zirve}, {yuruyus}, {aramaKurtarma}, {kurulus} 
   <section class="panel">
     <div class="panel-head"><h2>Yayın</h2></div>
     <div class="panel-body form-grid">
-      <?= $input('show_from', 'Gösterim başlangıcı', 'date', ['hint' => 'Boşsa hemen.']) ?>
-      <?= $input('show_until', 'Gösterim bitişi', 'date', ['hint' => 'Duyuru slaytında doldur; tarih geçince kendiliğinden kalkar. Bitişi olan slayt ilk sıraya konmaz.']) ?>
-      <div class="field col-span"><label class="check"><input type="checkbox" name="is_active" value="1"<?= $active ? ' checked' : '' ?>><span>Etkin</span></label></div>
+      <div class="field col-span"><label class="check"><input type="checkbox" name="is_active" value="1"<?= $active ? ' checked' : '' ?>><span>Etkin</span></label><span class="f-hint">Tanıtım slaytı kulübü anlatır; tarihi yoktur. Duyuru veya haberi slayta koymak için Duyuru &amp; Haber'de kaydı açıp "Anasayfa slaytında göster" kutusunu işaretle.</span></div>
+<?php if (!$isNew && ($b['show_from'] || $b['show_until'])): ?>
+      <p class="f-hint col-span">Bu slayt eski düzende tarih sınırıyla eklenmiş (<?= $b['show_from'] ? e(tr_date($b['show_from'])) : '…' ?> → <?= $b['show_until'] ? e(tr_date($b['show_until'])) : '…' ?>). Bir duyuruysa Duyuru &amp; Haber'e taşıyıp bu slaytı silebilirsin.</p>
+<?php endif ?>
     </div>
   </section>
   </fieldset>

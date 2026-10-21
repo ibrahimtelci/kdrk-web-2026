@@ -8,7 +8,7 @@ use App\Core\Audit;
 use App\Core\Image;
 use App\Models\News;
 
-/** Duyurular ve haberler (Anasayfa "Son Duyurular" + /duyurular/{slug}). */
+/** Duyuru & Haber (Anasayfa bölümü, /duyurular listesi, /duyurular/{slug}, isteğe bağlı Anasayfa slaytı). */
 final class NewsController extends BaseController
 {
     protected array $roles = ['admin', 'editor', 'viewer'];
@@ -39,13 +39,13 @@ final class NewsController extends BaseController
         $onHome = array_map('intval', array_column(App::db()->all(
             "SELECT id FROM news WHERE status = 'published' AND published_on <= CURDATE() ORDER BY is_featured DESC, published_on DESC, id DESC LIMIT 5"
         ), 'id'));
-        $this->render('news/index', 'Duyurular', 'news', ['rows' => $rows, 'onHome' => $onHome, 'filter' => $filter, 'filters' => self::FILTERS, 'q' => $q]);
+        $this->render('news/index', 'Duyuru & Haber', 'news', ['rows' => $rows, 'onHome' => $onHome, 'filter' => $filter, 'filters' => self::FILTERS, 'q' => $q]);
     }
 
     public function create(): void
     {
         $this->requireRole('admin', 'editor');
-        $this->render('news/form', 'Yeni Duyuru', 'news', ['n' => null, 'activities' => $this->activityOptions()]);
+        $this->render('news/form', 'Yeni Duyuru / Haber', 'news', ['n' => null, 'activities' => $this->activityOptions()]);
     }
 
     public function edit(string $id): void
@@ -64,8 +64,8 @@ final class NewsController extends BaseController
         $this->replaceImage($data, 'cover', 'cover_image', null, 'news', url('admin.news.new'));
         $id = App::db()->insert('news', $data);
         Audit::log('create', 'news', $id, ['title' => $data['title']]);
-        $this->flash($data['status'] === 'published' ? 'Duyuru yayınlandı.' : 'Duyuru taslak olarak kaydedildi.');
-        redirect(url('admin.news.edit', ['id' => $id]), 303);
+        $this->flash($data['status'] === 'published' ? 'Yayınlandı.' : 'Taslak olarak kaydedildi.');
+        $this->done(url('admin.news.edit', ['id' => $id]));
     }
 
     public function update(string $id): void
@@ -90,7 +90,7 @@ final class NewsController extends BaseController
         App::db()->run('DELETE FROM news WHERE id = ?', [$n['id']]);
         Image::delete($n['cover_image']);
         Audit::log('delete', 'news', (int) $n['id'], ['title' => $n['title']]);
-        $this->flash('Duyuru silindi.');
+        $this->flash('Silindi.');
         redirect(url('admin.news'), 303);
     }
 
@@ -126,6 +126,8 @@ final class NewsController extends BaseController
             'link_url'     => $link,
             'read_minutes' => null,
             'is_featured'  => empty($_POST['is_featured']) ? 0 : 1,
+            'in_slider'    => empty($_POST['in_slider']) ? 0 : 1,
+            'slider_until' => null,
             'status'       => ($_POST['status'] ?? '') === 'published' ? 'published' : 'draft',
             'published_on' => null,
         ];
@@ -140,6 +142,21 @@ final class NewsController extends BaseController
             } else {
                 $d['published_on'] = $date;
             }
+        }
+        $until = trim((string) ($_POST['slider_until'] ?? ''));
+        if ($until !== '') {
+            $dt = \DateTime::createFromFormat('!Y-m-d', $until);
+            if (!$dt || $dt->format('Y-m-d') !== $until) {
+                $e['slider_until'] = 'Geçerli bir tarih seç.';
+            } else {
+                $d['slider_until'] = $until;
+            }
+        }
+        // Slayt görseli kapaktan gelir
+        $hasCover = (!empty($_FILES['cover']['name']) && ($_FILES['cover']['error'] ?? 0) !== UPLOAD_ERR_NO_FILE)
+            || (!empty($current['cover_image']) && empty($_POST['remove_cover']));
+        if ($d['in_slider'] && !$hasCover) {
+            $e['in_slider'] = 'Slaytta göstermek için kapak görseli yükle.';
         }
         if ($d['status'] === 'published' && $d['published_on'] === null && !isset($e['published_on'])) {
             $d['published_on'] = date('Y-m-d'); // yayınlanırken tarih boşsa bugün

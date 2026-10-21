@@ -14,7 +14,7 @@ const SHOTS = process.argv.includes('--shots');
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const PAGES = ['/', '/faaliyetler', '/faaliyetler/ovit-yaylasi-skitur-kampi-2027', '/faaliyetler/kackar-zirve-tirmanisi-2026',
   '/disiplin/dagcilik', '/disiplin/egitim', '/kurumsal/hakkimizda', '/kurumsal/yonetim-kurulu', '/kurumsal/emegi-gecenler',
-  '/galeri', '/galeri?yil=2024', '/galeri/kackar-zirve-tirmanisi-2026', '/duyurular/vercenik-tepesi-bahar-tirmanisi-tamamlandi', '/bilgi-bankasi/kulup-uyeligi', '/bilgi-bankasi/yaz-dagcilik', '/iletisim', '/olmayan-sayfa',
+  '/galeri', '/duyurular', '/galeri?yil=2024', '/galeri/kackar-zirve-tirmanisi-2026', '/duyurular/vercenik-tepesi-bahar-tirmanisi-tamamlandi', '/bilgi-bankasi/kulup-uyeligi', '/bilgi-bankasi/yaz-dagcilik', '/iletisim', '/olmayan-sayfa',
   // '|' sonrası: ölçmeden önce tıklanacak öğe (açık modal denetimi)
   '/faaliyetler/ovit-yaylasi-skitur-kampi-2027|[data-open-apply]'];
 const SIZES = [[390, 844], [360, 740]];
@@ -99,8 +99,8 @@ for (const [w, h] of SIZES) {
 // Panel: KDRK_ADMIN="eposta:parola" verilirse giriş yapıp panel sayfalarını da denetler
 if (process.env.KDRK_ADMIN) {
   const [email, pass] = process.env.KDRK_ADMIN.split(':');
-  const ADMIN = ['/yonetim', '/yonetim/faaliyetler', '/yonetim/faaliyetler/yeni', process.env.KDRK_ADMIN_ACT || '/yonetim/faaliyetler/1',
-    (process.env.KDRK_ADMIN_ACT || '/yonetim/faaliyetler/1') + '/basvurular', '/yonetim/galeri', '/yonetim/galeri/yeni', '/yonetim/duyurular', '/yonetim/duyurular/yeni', '/yonetim/duyurular/1', '/yonetim/slaytlar', '/yonetim/slaytlar/yeni', '/yonetim/slaytlar/1', process.env.KDRK_ADMIN_ALBUM || '/yonetim/galeri/1',
+  const ADMIN = ['/yonetim', '/yonetim/faaliyetler', '/yonetim/faaliyetler/yeni', '/yonetim/faaliyetler/yeni?pencere=1', '/yonetim/galeri/yeni?pencere=1', process.env.KDRK_ADMIN_ACT || '/yonetim/faaliyetler/1',
+    (process.env.KDRK_ADMIN_ACT || '/yonetim/faaliyetler/1') + '/basvurular', '/yonetim/galeri', '/yonetim/galeri/yeni', '/yonetim/duyurular', '/yonetim/duyurular/yeni', '/yonetim/duyurular/1', '/yonetim/slaytlar', '/yonetim/slaytlar?sekme=faaliyet', '/yonetim/slaytlar?sekme=haber', '/yonetim/slaytlar/yeni', '/yonetim/slaytlar/1', process.env.KDRK_ADMIN_ALBUM || '/yonetim/galeri/1',
     '/yonetim/mesajlar', '/yonetim/ayarlar', '/yonetim/kullanicilar', '/yonetim/hesap',
     '/yonetim|[data-menu]'];
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });

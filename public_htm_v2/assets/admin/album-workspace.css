@@ -1,0 +1,42 @@
+.album-workspace { min-width: 0; }
+.album-workspace [hidden] { display: none !important; }
+.album-tabs { margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+.album-tabs .steps-tab { min-height: 48px; display: inline-flex; align-items: center; gap: 8px; }
+.album-tabs [aria-selected="true"] { background: var(--surface-2); color: var(--accent); border-color: var(--accent); }
+.album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 20px 0 0; }
+.album-tile { min-width: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.album-tile:target { outline: 2px solid var(--accent); outline-offset: 3px; }
+.album-thumb { display: block; aspect-ratio: 1; position: relative; cursor: pointer; list-style: none; overflow: hidden; background: var(--surface-2); }
+.album-thumb::-webkit-details-marker { display: none; }
+.album-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.album-number, .album-open { position: absolute; padding: 4px 8px; border-radius: 8px; background: var(--surface); color: var(--text); font-size: 12px; }
+.album-number { top: 8px; left: 8px; }
+.album-open { right: 8px; bottom: 8px; }
+.album-cover { position: absolute; top: 8px; right: 8px; }
+.album-tile-footer { display: flex; align-items: center; gap: 8px; padding: 4px 8px; min-height: 48px; }
+.album-caption { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex: 1; font-size: 14px; }
+.album-tile-footer form { margin: 0; }
+.album-tile-footer .btn-icon { width: 44px; height: 44px; }
+.album-photo-detail { padding: 16px; }
+.album-photo-fields { display: grid; gap: 16px; margin: 0 0 16px; padding: 0; border: 0; min-width: 0; }
+.album-photo-fields input, .album-photo-fields textarea { width: 100%; font-size: 16px; }
+.album-detail-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.album-detail-actions .btn-icon { min-width: 44px; min-height: 44px; }
+.album-preview { display: block; width: 100%; max-height: 54vh; object-fit: contain; border-radius: 8px; background: var(--surface-2); margin-bottom: 20px; }
+.album-dialog { width: min(900px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); }
+.album-dialog::backdrop { background: color-mix(in srgb, var(--bg) 75%, transparent); }
+.album-dialog-head { position: sticky; top: 0; z-index: 1; display: flex; gap: 8px; align-items: center; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.album-dialog-head h2 { font-size: 18px; margin: 0; flex: 1; }
+.album-dialog-head button { min-height: 44px; min-width: 44px; }
+.album-workspace .up-dropzone { padding: 16px; min-height: 0; }
+@media (min-width: 760px) {
+  .album-dialog .album-photo-detail { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(240px, 1fr); gap: 24px; }
+  .album-dialog .album-preview { margin: 0; max-height: 65vh; }
+}
+@media (max-width: 480px) {
+  .album-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .album-tabs .steps-tab { flex: 1; justify-content: center; padding: 8px; }
+  .album-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .album-dialog-head { padding: 8px; }
+  .album-detail-actions .btn { flex: 1 1 100%; justify-content: center; }
+}

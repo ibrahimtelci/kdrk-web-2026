@@ -1,6 +1,6 @@
 <?php
 /**
- * Duyuru ekle / düzenle.
+ * Duyuru / haber ekle / düzenle.
  * @var array|null $n
  * @var array      $activities
  * @var string|null $siteUrl yayındaysa sitedeki adresi
@@ -15,13 +15,14 @@ $isNew = $n === null;
 $ro = !Auth::canEdit();
 $posted = array_key_exists('title', $old);
 $featured = $posted ? !empty($old['is_featured']) : (bool) ($n['is_featured'] ?? 0);
+$inSlider = $posted ? !empty($old['in_slider']) : (bool) ($n['in_slider'] ?? 0);
 $actChoices = ['' => 'Faaliyete bağlı değil'];
 foreach ($activities as $a) {
     $actChoices[$a['id']] = tr_date($a['starts_on']) . ' · ' . $a['title'];
 }
 ?>
 <div class="page-head">
-  <a class="back-link" href="<?= e(url('admin.news')) ?>"><?= icon('back', 16) ?>Duyurular</a>
+  <a class="back-link" href="<?= e(url('admin.news')) ?>"><?= icon('back', 16) ?>Duyuru &amp; Haber</a>
 <?php if (!empty($siteUrl)): ?>
   <div class="page-head-actions">
     <a class="btn btn-ghost btn-sm" href="<?= e($siteUrl) ?>" target="_blank" rel="noopener"><?= icon('ext', 14) ?>Sitede gör</a>
@@ -58,13 +59,13 @@ foreach ($activities as $a) {
         <div class="cover-ctrl">
           <div class="cover-prev" data-cover-prev<?= !$isNew && $n['cover_image'] ? ' style="background-image:url(\'' . e(img($n['cover_image'], 900)) . '\')"' : '' ?>></div>
           <div class="cover-btns">
-            <label class="btn btn-ghost btn-sm file-btn"><?= icon('upload', 14) ?>Görsel seç<input type="file" name="cover" accept="image/jpeg,image/png,image/webp" data-cover-input<?= $inv('cover') ?>></label>
+            <label class="btn btn-ghost btn-sm file-btn"><?= icon('upload', 14) ?>Görsel seç<input type="file" name="cover" accept="image/jpeg,image/png,image/webp" data-cover-input data-crop-ratio="16/10" data-crop-label="Kart ve slayt kapağı (16:10)"<?= $inv('cover') ?>></label><input type="hidden" name="cover_crop" value="" data-crop-value>
 <?php if (!$isNew && $n['cover_image']): ?>
             <label class="check"><input type="checkbox" name="remove_cover" value="1"><span>Kapağı kaldır</span></label>
 <?php endif ?>
           </div>
         </div>
-        <span class="f-hint">JPG, PNG veya WebP · en fazla 15 MB. Yatay (16:9) fotoğraf en iyi sonucu verir.</span><?= $err('cover') ?>
+        <span class="f-hint">JPG, PNG veya WebP · en fazla 15 MB. Seçince kırpma penceresi açılır; kapakta görünecek alanı ayarlarsın.</span><?= $err('cover') ?>
       </div>
     </div>
   </section>
@@ -75,6 +76,8 @@ foreach ($activities as $a) {
       <?= $select('status', 'Durum', ['draft' => 'Taslak (sitede görünmez)', 'published' => 'Yayında'], ['default' => 'draft']) ?>
       <?= $input('published_on', 'Yayın tarihi', 'date', ['hint' => 'İleri bir tarih seçersen o gün yayına girer. Boşsa bugün.']) ?>
       <div class="field col-span"><label class="check"><input type="checkbox" name="is_featured" value="1"<?= $featured ? ' checked' : '' ?>><span>Öne çıkan (Anasayfada büyük kart)</span></label></div>
+      <div class="field col-span"><label class="check"><input type="checkbox" name="in_slider" value="1"<?= $inSlider ? ' checked' : '' ?><?= $inv('in_slider') ?>><span>Anasayfa slaytında göster</span></label><span class="f-hint">Kapak görseli, başlık ve özetle slayt olur; "Devamını Oku" butonu kendiliğinden eklenir. Kapak görseli gerekli. Sırayı "Anasayfa Slaytları" sayfasında görürsün.</span><?= $err('in_slider') ?></div>
+      <?= $input('slider_until', 'Slaytta gösterim bitişi', 'date', ['hint' => 'Tarihi geçebilecek duyuruda doldur; o günden sonra slayttan kalkar, haber sitede kalır. Boşsa sen kaldırana kadar slaytta.']) ?>
       <?= $input('slug', 'Sayfa adresi', 'text', ['span' => true, 'hint' => $isNew ? 'Boş bırakırsan başlıktan üretilir.' : 'Değiştirirsen eski link çalışmaz; paylaşılmışsa dokunma.', 'attrs' => ['pattern' => '[a-z0-9-]*', 'autocapitalize' => 'off']]) ?>
     </div>
   </section>
@@ -83,11 +86,11 @@ foreach ($activities as $a) {
 <?php if (!$ro): ?>
   <div class="save-bar">
 <?php if (!$isNew): ?>
-    <button type="submit" class="btn btn-danger btn-sm" form="delete-form" data-confirm="Bu duyuru silinsin mi? Bu işlem geri alınamaz."><?= icon('trash', 14) ?>Sil</button>
+    <button type="submit" class="btn btn-danger btn-sm" form="delete-form" data-confirm="Bu kayıt silinsin mi? Bu işlem geri alınamaz."><?= icon('trash', 14) ?>Sil</button>
 <?php endif ?>
     <div class="tb-spacer"></div>
     <a class="btn btn-ghost" href="<?= e(url('admin.news')) ?>">Vazgeç</a>
-    <button type="submit" class="btn btn-primary" data-busy="Kaydediliyor…"><?= icon('check') ?><?= $isNew ? 'Duyuruyu Kaydet' : 'Kaydet' ?></button>
+    <button type="submit" class="btn btn-primary" data-busy="Kaydediliyor…"><?= icon('check') ?>Kaydet</button>
   </div>
 <?php endif ?>
 </form>

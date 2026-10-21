@@ -29,6 +29,48 @@ final class Gallery
 
     private const PUBLIC = 'g.is_published = 1 AND EXISTS (SELECT 1 FROM gallery_photos x WHERE x.album_id = g.id)';
 
+    /** Aramada bakılan alanlar: albüm adı, etiketler, yer ve bağlı faaliyetin adı. */
+    public const SEARCH = '(g.title LIKE ? OR g.tags LIKE ? OR COALESCE(g.location, ac.location) LIKE ? OR ac.title LIKE ?)';
+
+    /** Faaliyetten albüm etiketleri: faaliyet adı, yer, kategori, yıl. */
+    public static function tagsFor(array $activity): ?string
+    {
+        $place = trim(explode('·', (string) $activity['location'])[0]);
+        return self::cleanTags(implode(',', array_filter([
+            $activity['title'],
+            $place,
+            Activity::CATEGORIES[$activity['category']] ?? null,
+            substr((string) $activity['starts_on'], 0, 4),
+        ])));
+    }
+
+    /** "a, b ,a" → "a, b": virgülle ayrılır, boşluk kırpılır, tekrar atılır, en fazla 500 karakter. */
+    public static function cleanTags(string $raw): ?string
+    {
+        $seen = [];
+        foreach (explode(',', $raw) as $t) {
+            $t = mb_substr(trim((string) preg_replace('/\s+/u', ' ', $t)), 0, 80);
+            if ($t !== '' && !isset($seen[mb_strtolower($t)])) {
+                $seen[mb_strtolower($t)] = $t;
+            }
+        }
+        $out = '';
+        foreach ($seen as $t) {
+            $next = $out === '' ? $t : $out . ', ' . $t;
+            if (mb_strlen($next) > 500) {
+                break;
+            }
+            $out = $next;
+        }
+        return $out === '' ? null : $out;
+    }
+
+    /** @return string[] */
+    public static function tagList(?string $tags): array
+    {
+        return array_values(array_filter(array_map('trim', explode(',', (string) $tags))));
+    }
+
     /**
      * Liste sayfası: filtre + sayfalama.
      * @param array{yil?: ?int, kategori?: ?string, q?: string} $f
@@ -153,10 +195,9 @@ final class Gallery
             $params[] = $f['kategori'];
         }
         if (($f['q'] ?? '') !== '') {
-            $where[] = '(g.title LIKE ? OR COALESCE(g.location, ac.location) LIKE ?)';
+            $where[] = self::SEARCH;
             $like = '%' . addcslashes($f['q'], '%_\\') . '%';
-            $params[] = $like;
-            $params[] = $like;
+            array_push($params, $like, $like, $like, $like);
         }
         return [implode(' AND ', $where), $params];
     }

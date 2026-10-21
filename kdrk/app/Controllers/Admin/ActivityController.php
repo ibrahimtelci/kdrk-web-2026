@@ -72,8 +72,8 @@ final class ActivityController extends BaseController
         $this->handleCover($data, null);
         $id = App::db()->insert('activities', $data);
         Audit::log('create', 'activity', $id, ['title' => $data['title']]);
-        $this->flash('Faaliyet eklendi. Sitede yayında.');
-        redirect(url('admin.activities.edit', ['id' => $id]), 303);
+        $this->flash($data['is_published'] ? 'Faaliyet eklendi. Sitede yayında.' : 'Faaliyet eklendi; yayında değil.');
+        $this->done(url('admin.activities.edit', ['id' => $id]));
     }
 
     public function update(string $id): void
@@ -148,36 +148,38 @@ final class ActivityController extends BaseController
             return $v;
         };
 
+        // Sade form: program, malzeme listesi, sorumlu ve "bilmen gerekenler" alanları artık formda yok;
+        // eski değerleri veritabanında kalır ama sitede gösterilmez. Malzeme notu kategoriden, ödeme notu genel ayardan gelir.
+        $noScore = !empty($_POST['no_difficulty']);
+        $score = $noScore ? null : $int('difficulty_score', 1, 10);
+        $category = (string) ($_POST['category'] ?? '');
         $d = [
-            'title'            => self::str('title', 160),
-            'category'         => (string) ($_POST['category'] ?? ''),
-            'starts_on'        => $date('starts_on', true),
-            'ends_on'          => $date('ends_on', false),
-            'location'         => self::str('location', 160),
-            'summary'          => self::str('summary', 300),
-            'body'             => self::nullable('body', 20000),
-            'difficulty'       => $int('difficulty', 1, 4),
-            'is_training'      => empty($_POST['is_training']) ? 0 : 1,
-            'duration_text'    => self::nullable('duration_text', 60),
-            'summit_m'         => $int('summit_m', 1, 9000),
-            'distance_km'      => null,
-            'elevation_gain_m' => $int('elevation_gain_m', 1, 9000),
-            'quota'            => $int('quota', 0, 5000) ?? 0,
-            'fee'              => null,
-            'fee_note'         => self::nullable('fee_note'),
-            'meeting_text'     => self::nullable('meeting_text'),
-            'return_text'      => self::nullable('return_text'),
-            'included_text'    => self::nullable('included_text'),
-            'personal_text'    => self::nullable('personal_text'),
-            'requirement_text' => self::nullable('requirement_text', 2000),
-            'weather_text'     => self::nullable('weather_text'),
-            'leader_name'      => self::nullable('leader_name', 120),
-            'leader_title'     => self::nullable('leader_title', 160),
-            'manual_status'    => in_array($_POST['manual_status'] ?? '', ['closed', 'postponed', 'cancelled'], true) ? $_POST['manual_status'] : null,
-            'report_summary'   => self::nullable('report_summary', 5000),
+            'title'               => self::str('title', 160),
+            'category'            => $category,
+            'starts_on'           => $date('starts_on', true),
+            'ends_on'             => $date('ends_on', false),
+            'location'            => self::str('location', 160),
+            'lat'                 => null,
+            'lng'                 => null,
+            'summary'             => self::str('summary', 300),
+            'body'                => self::nullable('body', 20000),
+            'difficulty_score'    => $score,
+            'difficulty'          => $score !== null ? Activity::bandOf($score) : null,
+            'is_training'         => $category === 'egitim' ? 1 : 0,
+            'distance_km'         => null,
+            'quota'               => $int('quota', 0, 5000) ?? 0,
+            'fee'                 => null,
+            'meeting_text'        => self::nullable('meeting_text'),
+            'manual_status'       => in_array($_POST['manual_status'] ?? '', ['closed', 'postponed', 'cancelled'], true) ? $_POST['manual_status'] : null,
+            'report_summary'      => self::nullable('report_summary', 5000),
             'report_participants' => $int('report_participants', 0, 5000),
-            'is_published'     => empty($_POST['is_published']) ? 0 : 1,
+            'is_published'        => empty($_POST['is_published']) ? 0 : 1,
+            'in_slider'           => empty($_POST['in_slider']) ? 0 : 1,
         ];
+        if ($current !== null && !array_key_exists('manual_status', $_POST)) {
+            // Sihirbazda durum/rapor alanları yok; olanlar korunur
+            unset($d['manual_status'], $d['report_summary'], $d['report_participants']);
+        }
 
         if (mb_strlen($d['title']) < 3) {
             $e['title'] = 'Faaliyet adını yaz.';
@@ -197,8 +199,8 @@ final class ActivityController extends BaseController
         if ($d['ends_on'] === $d['starts_on']) {
             $d['ends_on'] = null;
         }
-        if ($d['difficulty'] === null && !$d['is_training'] && !isset($e['difficulty'])) {
-            $e['difficulty'] = 'Zorluk seç (eğitimlerde boş bırakılabilir).';
+        if (!$noScore && $score === null && !isset($e['difficulty_score'])) {
+            $e['difficulty_score'] = 'Zorluk derecesini seç ya da "Zorluk derecesi yok" kutusunu işaretle.';
         }
         foreach (['distance_km' => [0.1, 999], 'fee' => [0, 1000000]] as $k => [$min, $max]) {
             $v = str_replace(',', '.', trim((string) ($_POST[$k] ?? '')));
@@ -211,44 +213,32 @@ final class ActivityController extends BaseController
                 $d[$k] = round((float) $v, $k === 'fee' ? 2 : 1);
             }
         }
-
-        // Program: panel.js gün/saat düzenleyicisinden JSON gelir
-        $program = json_decode((string) ($_POST['program'] ?? '[]'), true);
-        $clean = [];
-        if (is_array($program)) {
-            foreach ($program as $day) {
-                $items = [];
-                foreach ((array) ($day['items'] ?? []) as $it) {
-                    $text = mb_substr(trim((string) ($it['text'] ?? '')), 0, 200);
-                    $time = preg_match('/^\d{1,2}[:.]\d{2}$/', trim((string) ($it['time'] ?? ''))) ? str_replace('.', ':', trim($it['time'])) : '';
-                    if ($text !== '') {
-                        $items[] = ['time' => $time, 'text' => $text];
-                    }
-                }
-                $title = mb_substr(trim((string) ($day['title'] ?? '')), 0, 120);
-                $dayDate = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($day['date'] ?? '')) ? $day['date'] : null;
-                if ($title !== '' || $items) {
-                    $clean[] = ['title' => $title, 'date' => $dayDate, 'items' => $items];
-                }
+        // Haritadan konum: ikisi birlikte gelir ya da hiç gelmez
+        $lat = trim((string) ($_POST['lat'] ?? ''));
+        $lng = trim((string) ($_POST['lng'] ?? ''));
+        if ($lat !== '' || $lng !== '') {
+            if (!is_numeric($lat) || !is_numeric($lng) || abs((float) $lat) > 90 || abs((float) $lng) > 180) {
+                $e['lat'] = 'Haritadaki konum okunamadı; yeniden seç ya da kaldır.';
+            } else {
+                $d['lat'] = round((float) $lat, 6);
+                $d['lng'] = round((float) $lng, 6);
             }
         }
-        $d['program'] = $clean ? json_encode($clean, JSON_UNESCAPED_UNICODE) : null;
-
-        // Malzeme listesi: her satır bir madde
-        $gear = array_values(array_filter(array_map(
-            static fn ($l) => mb_substr(trim($l), 0, 120),
-            preg_split('/\R/', (string) ($_POST['equipment'] ?? '')) ?: []
-        )));
-        $d['equipment'] = $gear ? json_encode($gear, JSON_UNESCAPED_UNICODE) : null;
 
         // Adres: yeni faaliyette başlıktan + yıl; düzenlemede elle değiştirilebilir
         $slug = slugify(self::str('slug', 160));
-        if ($slug === '') {
+        $auto = $slug === '';
+        if ($auto) {
             $year = $d['starts_on'] ? substr($d['starts_on'], 0, 4) : date('Y');
             $slug = slugify(str_contains($d['title'], $year) ? $d['title'] : $d['title'] . ' ' . $year);
         }
-        $taken = App::db()->value('SELECT COUNT(*) FROM activities WHERE slug = ? AND id <> ?', [$slug, $current['id'] ?? 0]);
-        if ($taken) {
+        $taken = static fn (string $s): bool => (bool) App::db()->value('SELECT COUNT(*) FROM activities WHERE slug = ? AND id <> ?', [$s, $current['id'] ?? 0]);
+        if ($auto && $slug !== '') {
+            // Kendiliğinden üretilen adres çakışırsa sona -2, -3… eklenir (sihirbazda adres alanı yok)
+            for ($n = 2, $base = $slug; $taken($slug); $n++) {
+                $slug = mb_substr($base, 0, 150) . '-' . $n;
+            }
+        } elseif ($taken($slug)) {
             $e['slug'] = 'Bu adres başka bir faaliyette kullanılıyor; farklı bir adres yaz.';
         }
         $d['slug'] = $slug;
@@ -258,6 +248,12 @@ final class ActivityController extends BaseController
                 $e['cover'] = 'Kapak görseli en fazla 15 MB olabilir.';
             }
         }
+        // Slayt görseli kapaktan gelir
+        $hasCover = (!empty($_FILES['cover']['name']) && ($_FILES['cover']['error'] ?? 0) !== UPLOAD_ERR_NO_FILE)
+            || (!empty($current['cover_image']) && empty($_POST['remove_cover']));
+        if ($d['in_slider'] && !$hasCover) {
+            $e['in_slider'] = 'Slaytta göstermek için kapak görseli yükle.';
+        }
         return [$d, $e];
     }
 
@@ -266,7 +262,7 @@ final class ActivityController extends BaseController
         $old = $current['cover_image'] ?? null;
         if (!empty($_FILES['cover']['name']) && ($_FILES['cover']['error'] ?? 0) !== UPLOAD_ERR_NO_FILE) {
             try {
-                $d['cover_image'] = Image::store($_FILES['cover'], 'activities');
+                $d['cover_image'] = Image::store($_FILES['cover'], 'activities', Image::parseCrop($_POST['cover_crop'] ?? null));
             } catch (\RuntimeException $ex) {
                 $back = $current ? url('admin.activities.edit', ['id' => $current['id']]) : url('admin.activities.new');
                 $this->back($back, ['cover' => $ex->getMessage()], $_POST);

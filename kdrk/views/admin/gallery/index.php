@@ -13,7 +13,7 @@ use App\Core\Auth;
   <form class="search-box" method="get" action="<?= e(url('admin.gallery')) ?>" role="search">
     <?= icon('search') ?>
     <input type="hidden" name="durum" value="<?= e($filter) ?>">
-    <input type="search" name="q" value="<?= e($q) ?>" placeholder="Albüm ara…" aria-label="Albüm ara">
+    <input type="search" name="q" value="<?= e($q) ?>" placeholder="Albüm, etiket veya faaliyet ara…" aria-label="Albüm, etiket veya faaliyet ara">
   </form>
   <nav class="seg" aria-label="Albüm filtresi">
 <?php foreach ($filters as $k => $label): ?>
@@ -22,7 +22,7 @@ use App\Core\Auth;
   </nav>
   <div class="tb-spacer"></div>
 <?php if (Auth::canEdit()): ?>
-  <a class="btn btn-primary" href="<?= e(url('admin.gallery.new')) ?>"><?= icon('plus') ?>Yeni Albüm</a>
+  <a class="btn btn-primary" href="<?= e(url('admin.gallery.new')) ?>" data-modal-link><?= icon('plus') ?>Yeni Albüm</a>
 <?php endif ?>
 </div>
 

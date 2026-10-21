@@ -26,7 +26,7 @@ $cards = [
 <div class="panel callout">
   <div class="panel-body callout-body">
     <div><div class="callout-title">Yeni faaliyet</div><div class="muted">Faaliyeti ekle, sitede kartı ve başvuru formu kendiliğinden açılır. Tarihi geçince "Tamamlandı" olur.</div></div>
-    <a class="btn btn-primary" href="<?= e(url('admin.activities.new')) ?>"><?= icon('plus') ?>Yeni Faaliyet</a>
+    <a class="btn btn-primary" href="<?= e(url('admin.activities.new')) ?>" data-modal-link><?= icon('plus') ?>Yeni Faaliyet</a>
   </div>
 </div>
 <?php endif ?>

@@ -21,6 +21,10 @@ $eta = $eta !== '' ? substr(str_replace(' ', 'T', $eta), 0, 16) : '';
 ?>
 <form method="post" action="<?= e(url('admin.settings.update')) ?>" novalidate>
   <?= csrf_field() ?>
+  <div data-steps="tabs">
+  <div class="steps-nav" aria-label="Ayar bölümleri"></div>
+
+  <div class="step" id="ay-genel" data-title="Genel">
 
   <section class="panel<?= $maintenance ? ' panel-alert' : '' ?>">
     <div class="panel-head"><h2>Bakım modu</h2><?php if ($maintenance): ?><span class="chip red dot">Açık</span><?php else: ?><span class="chip green dot">Kapalı · site yayında</span><?php endif ?></div>
@@ -71,9 +75,30 @@ $eta = $eta !== '' ? substr(str_replace(' ', 'T', $eta), 0, 16) : '';
       <?= $field('kvkk_retention_days', 'Başvuru verisi saklama süresi (gün)', 'number', 'Faaliyet bittikten bu kadar gün sonra TC kimlik ve sağlık notu silinir; ad ve katılım kaydı kalır. Kulüp kararıyla belirlenir.', ['inputmode' => 'numeric', 'min' => 30]) ?>
     </div>
   </section>
+  </div>
+
+  <div class="step" id="ay-faaliyet" data-title="Faaliyet notları">
+  <section class="panel">
+    <div class="panel-head"><h2>Ödeme açıklaması</h2><span class="ph-sub">Ücreti girilen her faaliyette, ücretin altında otomatik görünür</span></div>
+    <div class="panel-body form-grid">
+      <div class="field col-span"><label for="s-payment_note">Genel ödeme açıklaması</label><textarea id="s-payment_note" name="payment_note" rows="3" maxlength="800"><?= e($v('payment_note')) ?></textarea><span class="f-hint">Ör. Ücret ulaşım ve kamp giderini kapsar. Ödeme, başvurun onaylandıktan sonra kulüp hesabına yapılır.</span></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Gerekli malzemeler ve kontroller</h2><span class="ph-sub">Faaliyetin kategorisine göre detay sayfasında otomatik görünür</span></div>
+    <div class="panel-body form-grid">
+<?php foreach (\App\Models\Activity::CATEGORIES as $k => $label): ?>
+      <div class="field"><label for="s-gear_<?= e($k) ?>"><?= e($label) ?></label><textarea id="s-gear_<?= e($k) ?>" name="gear_<?= e($k) ?>" rows="5" maxlength="2000"><?= e($v('gear_' . $k)) ?></textarea></div>
+<?php endforeach ?>
+      <p class="f-hint col-span">Her satıra bir madde yaz. Boş bırakılan kategoride bu bölüm sitede görünmez.</p>
+    </div>
+  </section>
+  </div>
 
   <div class="save-bar">
     <div class="tb-spacer"></div>
     <button type="submit" class="btn btn-primary" data-busy="Kaydediliyor…"><?= icon('check') ?>Ayarları Kaydet</button>
+  </div>
   </div>
 </form>

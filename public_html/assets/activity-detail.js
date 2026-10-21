@@ -44,6 +44,9 @@
       document.body.style.overflow = 'hidden';
       const first = form.querySelector('.is-error');
       if (first) first.focus();
+    } else if (location.hash === '#basvuru') {
+      // Anasayfa slaytındaki "Faaliyete Başvur" buraya gelir; JS kapalıysa yalnız başvuru kutusuna kayar
+      openModal();
     }
 
     /* Girdi biçimlendirme */
@@ -202,4 +205,19 @@
       sx = null;
     });
   }
+})();
+
+/* Konum haritası (Leaflet + OpenStreetMap). Harita yalnız görünür olunca yüklenir; JS kapalıyken "Haritada aç" bağlantısı kalır. */
+(function () {
+  const el = document.querySelector('[data-detail-map]');
+  if (!el || !window.L) return;
+  const init = () => {
+    const ll = [parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)];
+    const map = L.map(el, { scrollWheelZoom: false, dragging: !L.Browser.mobile, tap: false }).setView(ll, 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap katkıcıları' }).addTo(map);
+    L.marker(ll, { keyboard: false }).addTo(map);
+  };
+  if (!('IntersectionObserver' in window)) { init(); return; }
+  const io = new IntersectionObserver(entries => { if (entries[0].isIntersecting) { io.disconnect(); init(); } }, { rootMargin: '200px' });
+  io.observe(el);
 })();

@@ -1,0 +1,18 @@
+{
+  "kdrk_v2/views/admin/account.php": "2823a6f9dd976b549127a9e1f7cf924bfa26231096fca0a4e7c0684eb81d0282",
+  "kdrk_v2/views/layouts/admin.php": "04d54bfe7edff958d649df4c88b72ac6e7848f87a75a1860b78c91b79eadb092",
+  "kdrk_v2/views/admin/activities/applications.php": "95e1ecafb29b8d1093d071d6c71faf1e3f5308f15c1336fb838b6a447623c98b",
+  "kdrk_v2/views/admin/activities/form.php": "4ef88a357f984b11ad03d7e4e77b0d7ec9ddffd159981fa8538a3b9fa40b32ef",
+  "kdrk_v2/views/admin/activities/guide-picker.php": "3ef764a8bef385c15991e40d4d5891be1206945760f6167f3e943d3fbb23c624",
+  "kdrk_v2/views/admin/users/form.php": "5511eecbb90375e81ffc97dae065ad040cb4311629510ce6206667c827b18256",
+  "kdrk_v2/views/admin/users/index.php": "db0247ffce49e58f9387de4c78938a29aecf2ba37fa5df4eb8eb76d981daffcd",
+  "kdrk_v2/app/Core/Auth.php": "087661f3855774bf13083d231119b0915ac9ae412bd6535b230dd1b201eaabba",
+  "kdrk_v2/app/Models/Activity.php": "eb54afb6d49fcb2b27b6139c907f015c28ef45313cb1ed0c56f38ee9ddf39397",
+  "kdrk_v2/app/Models/GuideContact.php": "529da4a0b2a8dba3ae1b643f5ffc3265a2cd424464bb299e9cec701a33680367",
+  "kdrk_v2/app/Controllers/Admin/AccountController.php": "41816699cc0d7045e65dc85094fdc40345f87ddbec5c6ea2fd7912c97b047a2b",
+  "kdrk_v2/app/Controllers/Admin/ActivityController.php": "58e278846e2a1a0ba7695746d2235deed89f146b816a499ccaf3a40e3635728f",
+  "kdrk_v2/app/Controllers/Admin/ApplicationController.php": "c5d4d1317dc4c1aadafdb60bc9f29d0d114ee52b7bca188a94f824fe11ca4854",
+  "kdrk_v2/app/Controllers/Admin/DashboardController.php": "4d2c785587b4c008afe80efd62b384c92b59eec4b235168e9c6625b344c9c754",
+  "kdrk_v2/app/Controllers/Admin/GuideContactController.php": "f79ca2877b75f87de63f8d76c9ca75f2e692736642b80ceb387f7aa4a0d11c1c",
+  "kdrk_v2/app/Controllers/Admin/UserController.php": "f21738e58aa23f163e92dd01fd1b3680c8989fdaf5686567449ab8a04fffc4d6"
+}

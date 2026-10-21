@@ -45,6 +45,13 @@ $lb = array_map(static fn (array $p, int $i) => [
 <?php endif ?>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg> <strong><?= $n ?></strong> fotoğraf</span>
         </div>
+<?php if ($tags = \App\Models\Gallery::tagList($album['tags'] ?? null)): ?>
+        <ul class="gd-tags" aria-label="Etiketler">
+<?php foreach ($tags as $t): ?>
+          <li><a href="<?= e(url('galeri', ['q' => $t])) ?>"><?= e($t) ?></a></li>
+<?php endforeach ?>
+        </ul>
+<?php endif ?>
       </div>
 <?php if ($album['activity_url']): ?>
       <a href="<?= e($album['activity_url']) ?>" class="gd-cta">Faaliyet Detayını Gör <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>

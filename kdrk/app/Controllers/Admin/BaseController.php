@@ -43,16 +43,43 @@ abstract class BaseController
         }
     }
 
+    /**
+     * Açılır pencere kipi: liste sayfasındaki "Yeni …" düğmesi formu ?pencere=1 ile bir pencerede açar.
+     * Pencerede kenar çubuğu yoktur; kayıt bitince done() ana sayfayı hedef adrese götürür.
+     * JS kapalıyken aynı formlar normal sayfa olarak çalışır.
+     */
+    protected static function inModal(): bool
+    {
+        return ($_GET['pencere'] ?? $_POST['_pencere'] ?? '') === '1';
+    }
+
+    /** Adrese pencere kipini ekler (hata sonrası forma dönüşte pencere içinde kalınsın). */
+    protected static function keepModal(string $to): string
+    {
+        return self::inModal() ? $to . (str_contains($to, '?') ? '&' : '?') . 'pencere=1' : $to;
+    }
+
     /** @param string $active kenar çubuğunda işaretlenecek modül */
     protected function render(string $view, string $title, string $active, array $data = []): void
     {
         echo View::render('admin/' . $view, $data + [
             'title'  => $title,
             'active' => $active,
+            'modal'  => self::inModal(),
             'flash'  => Session::pull('admin_flash'),
             'errors' => Session::pull('admin_errors', []),
             'old'    => Session::pull('admin_old', []),
-        ], 'layouts/admin');
+        ], self::inModal() ? 'layouts/admin-modal' : 'layouts/admin');
+    }
+
+    /** Kayıt bitti: pencere kipindeyse ana sayfayı $to adresine götürür, değilse yönlendirir. */
+    protected function done(string $to): never
+    {
+        if (self::inModal()) {
+            echo View::render('admin/_done', ['to' => $to], null);
+            exit;
+        }
+        redirect($to, 303);
     }
 
     protected function flash(string $message, string $type = 'ok'): void
@@ -66,7 +93,7 @@ abstract class BaseController
         Session::flash('admin_errors', $errors);
         Session::flash('admin_old', $old);
         $this->flash('Formda düzeltilmesi gereken alanlar var.', 'error');
-        redirect($to, 303);
+        redirect(self::keepModal($to), 303);
     }
 
     protected function requireRole(string ...$roles): void
@@ -84,7 +111,7 @@ abstract class BaseController
     {
         if (!empty($_FILES[$field]['name']) && ($_FILES[$field]['error'] ?? 0) !== UPLOAD_ERR_NO_FILE) {
             try {
-                $d[$column] = Image::store($_FILES[$field], $folder);
+                $d[$column] = Image::store($_FILES[$field], $folder, Image::parseCrop($_POST[$field . '_crop'] ?? null));
             } catch (\RuntimeException $ex) {
                 $this->back($back, [$field => $ex->getMessage()], $_POST);
             }

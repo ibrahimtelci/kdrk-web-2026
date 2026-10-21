@@ -7,7 +7,7 @@ $roleColor = ['admin' => 'orange', 'editor' => 'blue', 'viewer' => 'gray'];
 <div class="toolbar">
   <p class="muted toolbar-note"><b>Admin</b> her şeyi yapar, TC ve sağlık bilgisini görür. <b>Editör</b> faaliyet, başvuru ve mesajları yönetir. <b>İzleme</b> yalnızca okur.</p>
   <div class="tb-spacer"></div>
-  <a class="btn btn-primary" href="<?= e(url('admin.users.new')) ?>"><?= icon('plus') ?>Yeni Kullanıcı</a>
+  <a class="btn btn-primary" href="<?= e(url('admin.users.new')) ?>" data-modal-link><?= icon('plus') ?>Yeni Kullanıcı</a>
 </div>
 <div class="panel">
   <ul class="row-list">

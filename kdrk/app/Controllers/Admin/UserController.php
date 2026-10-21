@@ -39,7 +39,7 @@ final class UserController extends BaseController
         $id = App::db()->insert('users', $d);
         Audit::log('create', 'user', $id, ['role' => $d['role']]);
         $this->flash('Kullanıcı eklendi. Parolayı kişiye güvenli bir yoldan ilet; ilk girişte değiştirmesini iste.');
-        redirect(url('admin.users'), 303);
+        $this->done(url('admin.users'));
     }
 
     public function update(string $id): void

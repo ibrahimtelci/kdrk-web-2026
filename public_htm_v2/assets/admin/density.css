@@ -1,0 +1,65 @@
+/* Desktop density uses real layout dimensions; browser zoom remains user-controlled.
+   Keep generous touch targets and 16px mobile form text. */
+.frame-dialog-compact { width:min(720px,calc(100vw - 32px));height:min(650px,calc(100dvh - 40px)); }
+@media (min-width:641px) and (pointer:fine) {
+  body { font-size:14px;line-height:1.5; }
+  body .btn, body .steps-tab, body .seg a, body .al-btn { min-height:36px;height:36px;font-size:13px; }
+  body .btn { padding-inline:12px;gap:6px; }
+  body .btn-sm { min-height:32px;height:32px;padding-inline:10px; }
+  body .btn-icon { min-width:32px;width:32px;min-height:32px;height:32px; }
+  body .field input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+  body .field select { min-height:38px;height:38px;font-size:14px; }
+  body .field input, body .field select { padding-inline:10px; }
+  body .field textarea { min-height:90px;font-size:14px; }
+  body .field { gap:5px;margin-bottom:12px; }
+  body .field label, body .field-label { letter-spacing:.04em; }
+  body .panel-head { padding:12px 16px; }
+  body .panel-body { padding:16px; }
+  body .panel-head h2, body .panel-head h3 { font-size:15px; }
+  body .toolbar { gap:10px;margin-bottom:14px; }
+  body .row-list a { min-height:58px;padding:10px 16px;gap:10px; }
+  body .row-list .mi-ava { width:32px;height:32px;font-size:13px;flex-shrink:0; }
+  body .row-list .rl-title { font-size:14px; }
+  body .row-list .rl-sub { font-size:12px; }
+  body .tbl td { padding:9px 12px;font-size:13px; }
+  body .tbl th { padding:10px 12px;font-size:11px; }
+  body .t-actions .btn, body .t-actions .btn-icon { margin-block:0; }
+  body .search-box input { height:36px;font-size:14px; }
+  body .save-bar { padding:10px 12px;gap:8px; }
+  body .is-js>.steps-nav { margin-bottom:12px; }
+  body .modal-content { padding:16px; }
+  body .frame-head { padding:8px 10px 8px 16px; }
+  body .frame-head h2 { font-size:16px; }
+  body .banner-workspace .btn, body .banner-workspace .btn-icon { min-height:36px; }
+  body .banner-workspace .btn-icon { min-width:36px;width:36px;height:36px; }
+  body .bw-filter-pill { min-height:36px;padding:6px 10px;font-size:13px; }
+  body .bw-heading h2 { font-size:24px; }
+  body .bw-heading p { font-size:14px; }
+  body .bw-filter-bar { padding:12px; }
+  body .bw-grid { gap:12px; }
+  body .bw-card-body { padding:10px;gap:8px; }
+  body .bw-card-body h2 { font-size:14px; }
+  body .bw-view-bar { margin-block:10px; }
+  body .bw-order-bar { margin-block:8px; }
+}
+@media (min-width:861px) and (pointer:fine) {
+  :root, [data-theme] { --sidebar-w:232px; }
+  body .topbar { height:56px;padding-inline:20px;gap:12px; }
+  body .topbar .tb-title { font-size:18px; }
+  body .content { padding:20px; }
+  body .modal-content { padding:16px; }
+  body .sb-brand { padding:16px; }
+  body .sb-nav { padding:8px 10px 16px;gap:1px; }
+  body .sb-link { padding:8px 10px;font-size:13px;gap:9px;min-height:36px; }
+  body .sb-section-label { padding:12px 10px 5px;font-size:11px; }
+  body .sb-foot { padding:10px 12px; }
+}
+@media (max-width:640px) {
+  .frame-dialog-compact { width:100vw;height:100dvh; }
+}
+@media (any-pointer:coarse) {
+  body .btn, body .btn-sm, body .btn-icon, body .steps-tab, body .seg a, body .al-btn,
+  body .banner-workspace .btn, body .banner-workspace .btn-icon, body .bw-filter-pill { min-height:44px; }
+  body .btn-icon, body .banner-workspace .btn-icon { min-width:44px; }
+  body .field input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), body .field select { min-height:44px;font-size:16px; }
+}

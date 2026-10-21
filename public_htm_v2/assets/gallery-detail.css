@@ -1,0 +1,235 @@
+/* ============================================================
+   Galeri Detay
+   ============================================================ */
+
+.gd-hero {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  padding: 120px 0 48px; /* sabit nav (76px) altında boşluk — .list-header ile aynı */
+  position: relative;
+  overflow: hidden;
+}
+.gd-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('topo.svg');
+  background-size: 600px;
+  background-position: top right;
+  background-repeat: no-repeat;
+  opacity: 0.04;
+  pointer-events: none;
+}
+.gd-hero-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+}
+@media (max-width: 800px) {
+  .gd-hero-grid { grid-template-columns: 1fr; }
+}
+
+.gd-hero h1 {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: clamp(36px, 5.5vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin: 14px 0 18px;
+}
+.gd-hero .eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.gd-hero .eyebrow::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--accent-primary);
+}
+
+.gd-meta-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  margin-top: 6px;
+}
+.gd-meta-line span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.gd-meta-line svg {
+  width: 14px; height: 14px;
+  color: var(--accent-primary);
+}
+.gd-meta-line strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.gd-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 999px;
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  background: transparent;
+  transition: background-color 200ms ease, color 200ms ease, transform 200ms ease;
+}
+.gd-cta:hover {
+  background: var(--accent-primary);
+  color: var(--on-accent);
+  transform: translateX(2px);
+}
+.gd-cta svg { width: 14px; height: 14px; }
+
+/* ---------- Masonry ---------- */
+.gd-gallery {
+  padding: 56px 0 80px;
+}
+.masonry {
+  column-count: 3;
+  column-gap: 16px;
+}
+@media (max-width: 1024px) { .masonry { column-count: 2; } }
+@media (max-width: 600px) { .masonry { column-count: 1; } }
+
+.masonry-tile {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: var(--bg-secondary);
+  display: block;
+  border: none;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+}
+.masonry-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms ease, filter 300ms ease;
+}
+.masonry-tile:hover img {
+  transform: scale(1.04);
+  filter: brightness(0.7);
+}
+.masonry-tile-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+.masonry-tile:hover .masonry-tile-overlay { opacity: 1; }
+.masonry-tile-expand {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.masonry-tile-expand svg { width: 22px; height: 22px; }
+.masonry-tile-stamp {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  padding: 4px 8px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.masonry-tile-credit {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  padding: 4px 8px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.masonry-tile:hover .masonry-tile-stamp,
+.masonry-tile:hover .masonry-tile-credit { opacity: 1; }
+
+/* ---------- Related ---------- */
+.gd-related {
+  padding: 64px 0 96px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.gd-related-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+}
+.gd-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+@media (max-width: 1023px) { .gd-related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .gd-related-grid { grid-template-columns: minmax(0, 1fr); } }
+/* Albüm açıklaması (panelden) */
+.gd-lede {
+  max-width: 640px;
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+.lightbox[hidden] { display: none; }
+.gd-hero .breadcrumb { position: static; margin-bottom: 16px; color: var(--text-secondary); }
+
+/* Albüm etiketleri: tıklayınca galeride o etiketle arar */
+.gd-tags { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.gd-tags a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary); font-size: 14px; transition: border-color 180ms ease, color 180ms ease; }
+.gd-tags a:hover { border-color: var(--accent-primary); color: var(--text-primary); }

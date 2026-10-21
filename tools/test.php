@@ -120,6 +120,8 @@ foreach (App::db()->all("SELECT slug FROM news WHERE status = 'published' AND pu
     $pages[] = '/duyurular/' . $r['slug'];
 }
 $pages[] = '/galeri';
+$pages[] = '/duyurular';
+$pages[] = '/duyurular?tur=haber';
 $pages[] = '/galeri?yil=2024&kategori=dagcilik';
 foreach (App::db()->all('SELECT slug FROM gallery_albums g WHERE is_published = 1 AND EXISTS (SELECT 1 FROM gallery_photos p WHERE p.album_id = g.id)') as $r) {
     $pages[] = '/galeri/' . $r['slug'];
@@ -202,7 +204,9 @@ foreach ($pages as $path) {
 echo "\n3) Anasayfa içeriği\n";
 $home = dom(http('GET', "$BASE/")['body']);
 $slides = $home->query('//*[@data-slide]')->length;
-check($slides === 2, "süresi geçen slayt gizli (görünen slayt: $slides)");
+$expired = array_column(App::db()->all('SELECT title FROM banners WHERE show_until < CURDATE()'), 'title');
+$shownTitles = array_map(static fn ($n) => trim($n->textContent), iterator_to_array($home->query('//*[@data-slide]//*[contains(@class,"hero-title")]')));
+check($slides >= 1 && $slides <= 3 && !array_intersect($expired, $shownTitles), "süresi geçen slayt gizli, en fazla 3 slayt (görünen slayt: $slides)");
 check($home->query('//*[@data-slide][1]//h1')->length === 1 && $home->query('//*[@data-slide]//h1')->length === 1, 'yalnız ilk slaytta h1');
 check(!str_contains($home->document->saveHTML(), '{yil}') && !str_contains($home->document->saveHTML(), '{zirve}'), 'rakam belirteçleri dolduruldu');
 $homeCards = $home->query('//section[@id="takvim"]//a[contains(@class,"activity-card")]');
@@ -316,34 +320,65 @@ $r = http('POST', "$BASE/yonetim/giris", ['jar' => 'admin', 'post' => ['_csrf' =
 check($r['code'] === 303 && $r['location'] === "$BASE/yonetim", 'giriş başarılı; dış adrese yönlendirme engellendi');
 check($login('editor')['code'] === 303 && $login('viewer')['code'] === 303, 'editör ve izleme girişi');
 
-// Faaliyet ekleme: kapak görseli + program + malzeme
+// Faaliyet ekleme (sade form, açılır pencere): kapak, zorluk puanı, harita, plan; genel ödeme ve malzeme notu
 $jpg = tempnam(sys_get_temp_dir(), 'kdrkimg') . '.jpg';
 $im = imagecreatetruecolor(1800, 1100);
 imagefill($im, 0, 0, imagecolorallocate($im, 40, 90, 140));
 imagejpeg($im, $jpg, 85);
+
+// Kapak kırpma: panel "x,y,w,h" oranları gönderir; bozuk değerde görsel kırpılmadan saklanır
+$pc = static fn ($v) => \App\Core\Image::parseCrop($v);
+check($pc('0.1,0.2,0.5,0.5') === [0.1, 0.2, 0.5, 0.5] && $pc('0,0,1,1') === [0.0, 0.0, 1.0, 1.0] && $pc('0.0000,0.2188,1.0000,0.5625') === [0.0, 0.2188, 1.0, 0.5625]
+    && $pc('') === null && $pc('0.9,0,0.5,0.5') === null && $pc('-1,0,1,1') === null && $pc('0,0,0.001,1') === null && $pc('1e3,0,1,1') === null && $pc(['x']) === null,
+    'kırpma: geçerli değer okunur, taşan/bozuk değer yok sayılır');
+$cropped = \App\Core\Image::store(['error' => UPLOAD_ERR_OK, 'size' => filesize($jpg), 'tmp_name' => $jpg], 'test', $pc('0.25,0.1,0.5,0.8'));
+check(\App\Core\Image::size($cropped) === [900, 880], 'kırpma: görsel seçilen alana kırpılıp küçültüldü');
+\App\Core\Image::delete($cropped);
+@rmdir(App::config('public_path') . '/uploads/test');
+$keepNotes = ['payment_note' => setting('payment_note'), 'gear_dagcilik' => setting('gear_dagcilik')];
+\App\Core\Settings::set('payment_note', 'Test ödeme notu: ücret ulaşımı kapsar.');
+\App\Core\Settings::set('gear_dagcilik', "Kask\n\nKrampon\n");
+$newForm = http('GET', "$BASE/yonetim/faaliyetler/yeni?pencere=1", ['jar' => 'admin'])['body'];
+check(str_contains($newForm, 'data-steps="wizard"') && str_contains($newForm, 'data-modal-page') && !str_contains($newForm, 'class="sidebar"')
+    && str_contains($newForm, 'data-preview') && str_contains($newForm, 'vendor/leaflet/leaflet.js'), 'yeni faaliyet: açılır pencerede sihirbaz (kenar çubuğu yok, önizleme adımı, harita)');
 $t = $token('admin', '/yonetim/faaliyetler/yeni');
+$r = http('POST', "$BASE/yonetim/faaliyetler", ['jar' => 'admin', 'post' => ['_csrf' => $t, '_pencere' => '1', 'title' => 'x']]);
+check($r['code'] === 303 && str_contains($r['location'], 'pencere=1'), 'pencerede hatalı kayıt: form pencere kipinde geri döner');
 $r = http('POST', "$BASE/yonetim/faaliyetler", ['jar' => 'admin', 'multipart' => [
-    '_csrf' => $t, 'title' => 'Test Zirvesi Tırmanışı', 'category' => 'dagcilik', 'location' => 'Rize / Test',
+    '_csrf' => $t, '_pencere' => '1', 'title' => 'Test Zirvesi Tırmanışı', 'category' => 'dagcilik', 'location' => 'Rize / Test',
     'summary' => 'Panel testinden eklenen faaliyet.', 'body' => "Birinci paragraf.\n\nİkinci <b>paragraf</b>.",
     'starts_on' => date('Y-m-d', strtotime('+40 days')), 'ends_on' => date('Y-m-d', strtotime('+41 days')),
-    'difficulty' => '3', 'quota' => '2', 'fee' => '1250', 'is_published' => '1',
-    'program' => json_encode([['title' => 'Yaklaşma', 'date' => null, 'items' => [['time' => '07.30', 'text' => 'Toplanma'], ['time' => 'x', 'text' => '']]]]),
-    'equipment' => "Kask\n\nKrampon\n", 'cover' => new CURLFile($jpg, 'image/jpeg', 'kapak.jpg'),
+    'difficulty_score' => '7', 'distance_km' => '12,5', 'lat' => '40.832112', 'lng' => '41.110355', 'meeting_text' => 'Rize otogarı · 06:30',
+    'quota' => '2', 'fee' => '1250', 'is_published' => '1', 'cover' => new CURLFile($jpg, 'image/jpeg', 'kapak.jpg'),
 ]]);
 $act = $db->one("SELECT * FROM activities WHERE title = 'Test Zirvesi Tırmanışı'");
-check($r['code'] === 303 && $act !== null && $act['slug'] === 'test-zirvesi-tirmanisi-' . substr($act['starts_on'], 0, 4), 'faaliyet eklendi, adres üretildi');
-$prog = json_decode((string) $act['program'], true);
-check(($prog[0]['items'] ?? null) === [['time' => '07:30', 'text' => 'Toplanma']] && json_decode((string) $act['equipment'], true) === ['Kask', 'Krampon'], 'program ve malzeme temizlenerek kaydedildi');
+check($r['code'] === 200 && str_contains($r['body'], "kdrk: 'go'") && $act !== null && str_contains($r['body'], '/yonetim/faaliyetler/' . $act['id'])
+    && $act['slug'] === 'test-zirvesi-tirmanisi-' . substr($act['starts_on'], 0, 4), 'faaliyet pencereden eklendi; pencere ana sayfayı düzenleme sayfasına götürür');
+$r2 = http('POST', "$BASE/yonetim/faaliyetler", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Zirvesi Tırmanışı', 'category' => 'sosyal', 'location' => 'Rize',
+    'summary' => 'Aynı adlı ikinci faaliyet.', 'starts_on' => $act['starts_on'], 'no_difficulty' => '1', 'quota' => '0']]);
+$dup = $db->one("SELECT * FROM activities WHERE slug = ?", [$act['slug'] . '-2']);
+check($r2['code'] === 303 && $dup && $dup['difficulty'] === null && $dup['difficulty_score'] === null, 'aynı adlı faaliyete adres -2 ile verilir; "zorluk yok" seçilebilir');
+if ($dup) {
+    $db->run('DELETE FROM activities WHERE id = ?', [$dup['id']]);
+}
+check((int) $act['difficulty_score'] === 7 && (int) $act['difficulty'] === 3 && (float) $act['distance_km'] === 12.5 && (float) $act['lat'] === 40.832112 && (int) $act['is_training'] === 0,
+    'zorluk puanı 7 → "Zor" bandı; mesafe ve harita konumu kaydedildi');
 $coverOk = $act['cover_image'] && is_file(App::config('public_path') . "/{$act['cover_image']}-900.webp") && is_file(App::config('public_path') . "/{$act['cover_image']}-1600.webp") && !is_file(App::config('public_path') . "/{$act['cover_image']}-2400.webp");
 check($coverOk, 'kapak WebP türevleri üretildi (özgünden büyük türev yok)');
 $site = http('GET', "$BASE/faaliyetler/{$act['slug']}")['body'];
-check(str_contains($site, 'Toplanma') && str_contains($site, 'Krampon') && str_contains($site, '-1600.webp') && str_contains($site, '₺1.250'), 'yeni faaliyet sitede: program, malzeme, kapak, ücret');
+check(str_contains($site, 'Krampon') && str_contains($site, 'Test ödeme notu') && str_contains($site, '-1600.webp') && str_contains($site, '₺1.250')
+    && str_contains($site, '7/10') && str_contains($site, 'Rize otogarı') && str_contains($site, 'data-detail-map') && str_contains($site, 'openstreetmap.org/?mlat=40.832112'),
+    'yeni faaliyet sitede: kategori malzeme notu, genel ödeme notu, kapak, ücret, puan, buluşma, harita');
 check(str_contains($site, '&lt;b&gt;paragraf&lt;/b&gt;') && !str_contains($site, '<b>paragraf</b>'), 'açıklamadaki HTML kaçışlı (XSS yok)');
 
 $r = http('POST', "$BASE/yonetim/faaliyetler/{$act['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => '', 'category' => 'dagcilik', 'location' => 'x', 'summary' => 'kısa',
     'starts_on' => '2027-05-10', 'ends_on' => '2027-05-01']]);
 $form = http('GET', $r['location'], ['jar' => 'admin'])['body'];
-check(str_contains($form, 'Faaliyet adını yaz') && str_contains($form, 'Bitiş tarihi başlangıçtan önce olamaz') && str_contains($form, 'value="x"'), 'hatalı form: alan hataları + girilen değer korunur');
+check(str_contains($form, 'Faaliyet adını yaz') && str_contains($form, 'Bitiş tarihi başlangıçtan önce olamaz') && str_contains($form, 'value="x"') && str_contains($form, 'data-steps="tabs"'), 'hatalı form: alan hataları + girilen değer korunur; düzenleme sekmeli');
+$r = http('POST', "$BASE/yonetim/faaliyetler/{$act['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => $act['title'], 'category' => 'dagcilik', 'location' => 'x', 'summary' => $act['summary'],
+    'starts_on' => $act['starts_on'], 'difficulty_score' => '7', 'lat' => '999', 'lng' => '41']]);
+check(str_contains(http('GET', $r['location'], ['jar' => 'admin'])['body'], 'konum okunamadı'), 'geçersiz harita konumu reddedilir');
+check(!str_contains(http('GET', "$BASE/yonetim/faaliyetler/{$act['id']}", ['jar' => 'admin'])['body'], 'Albüm oluştur'), 'albüm oluştur düğmesi faaliyet tamamlanmadan görünmez');
 check(http('POST', "$BASE/yonetim/faaliyetler/{$act['id']}", ['jar' => 'admin', 'post' => ['title' => 'x']])['code'] === 419, 'CSRF olmadan panel POST → 419');
 
 // Başvuru → onay → listeler
@@ -377,7 +412,7 @@ check(http('GET', "$BASE/yonetim/mesajlar", ['jar' => 'viewer'])['code'] === 403
 // Durum: elle kapatma sitede görünür
 $t = $token('admin', "/yonetim/faaliyetler/{$act['id']}");
 $fields = ['_csrf' => $t, 'title' => $act['title'], 'category' => 'dagcilik', 'location' => 'Rize / Test', 'summary' => $act['summary'], 'starts_on' => $act['starts_on'],
-    'ends_on' => $act['ends_on'], 'difficulty' => '3', 'quota' => '2', 'slug' => $act['slug'], 'is_published' => '1', 'manual_status' => 'closed'];
+    'ends_on' => $act['ends_on'], 'difficulty_score' => '7', 'quota' => '2', 'slug' => $act['slug'], 'is_published' => '1', 'manual_status' => 'closed'];
 http('POST', "$BASE/yonetim/faaliyetler/{$act['id']}", ['jar' => 'admin', 'post' => $fields]);
 check(str_contains(http('GET', "$BASE/faaliyetler/{$act['slug']}")['body'], 'başvuruları kapandı'), 'elle kapatılan faaliyet sitede "kapandı"');
 $r = http('POST', "$BASE/yonetim/faaliyetler/{$act['id']}/sil", ['jar' => 'admin', 'post' => ['_csrf' => $t]]);
@@ -388,7 +423,9 @@ $t = $token('admin', '/yonetim/ayarlar');
 $settings = ['_csrf' => $t, 'stat_kurulus' => '1998', 'stat_zirve' => '512', 'stat_yuruyus' => '1000', 'stat_arama_kurtarma' => '25',
     'contact_email' => 'info@kdrk.org.tr', 'contact_phone' => '+90 (464) 651 00 00', 'contact_address' => setting('contact_address'),
     'social_instagram' => 'https://instagram.com/kdrk_test', 'social_whatsapp' => '', 'social_youtube' => '', 'social_strava' => '',
-    'maintenance' => '1', 'maintenance_title' => 'Test bakımı', 'maintenance_message' => 'Kısa süre.', 'maintenance_eta' => '', 'kvkk_retention_days' => '365'];
+    'maintenance' => '1', 'maintenance_title' => 'Test bakımı', 'maintenance_message' => 'Kısa süre.', 'maintenance_eta' => '', 'kvkk_retention_days' => '365',
+    'payment_note' => 'Test ödeme notu: ücret ulaşımı kapsar.', 'gear_dagcilik' => "Kask\nKrampon"];
+check(str_contains(http('GET', "$BASE/yonetim/ayarlar", ['jar' => 'admin'])['body'], 'name="gear_egitim"'), 'ayarlar: her kategori için malzeme notu alanı var');
 $r = http('POST', "$BASE/yonetim/ayarlar", ['jar' => 'admin', 'post' => ['social_youtube' => 'javascript:alert(1)'] + $settings]);
 check(str_contains(http('GET', $r['location'], ['jar' => 'admin'])['body'], 'https:// ile başlayan'), 'sosyal linkte yalnızca https kabul edilir');
 http('POST', "$BASE/yonetim/ayarlar", ['jar' => 'admin', 'post' => $settings]);
@@ -415,6 +452,10 @@ $r = http('POST', "$BASE/yonetim/galeri", ['jar' => 'admin', 'post' => ['_csrf' 
 $alb = $db->one("SELECT * FROM gallery_albums WHERE title = 'Test Albüm'");
 check($r['code'] === 303 && $alb && $alb['activity_id'] == $act['id'] && $alb['slug'] === 'test-album-' . substr($act['starts_on'], 0, 4), 'galeri: faaliyete bağlı albüm oluşturuldu, adres üretildi');
 check(http('GET', "$BASE/galeri/{$alb['slug']}")['code'] === 404, 'galeri: fotoğrafı olmayan albüm sitede görünmez');
+$pre = http('GET', "$BASE/yonetim/galeri/yeni?faaliyet={$act['id']}&pencere=1", ['jar' => 'admin'])['body'];
+check(str_contains($pre, 'value="Test Zirvesi Tırmanışı, Rize / Test, Dağcılık, ' . substr($act['starts_on'], 0, 4) . '"') && str_contains($pre, 'value="' . $act['starts_on'] . '"'),
+    'galeri: faaliyetten açılan albüm ad, tarih, yer ve etiketlerle dolu gelir');
+$db->run("UPDATE gallery_albums SET tags = 'Testetiketi Vadisi, 2026' WHERE id = ?", [$alb['id']]);
 
 $png = tempnam(sys_get_temp_dir(), 'kdrkimg') . '.png';
 $im2 = imagecreatetruecolor(1000, 1400);
@@ -443,6 +484,9 @@ check($order === [(int) $ph[1]['id'], (int) $ph[0]['id']] && (int) $db->value('S
 $site = http('GET', "$BASE/galeri/{$alb['slug']}")['body'];
 check(str_contains($site, 'masonry-tile') && str_contains($site, '© T. Test') && str_contains($site, 'Zirve &lt;script&gt;') && !str_contains($site, '<script>x</script>') && !str_contains($site, '<b>açıklama</b>'), 'galeri: albüm sitede, açıklamalar kaçışlı (XSS yok)');
 check(str_contains(http('GET', "$BASE/galeri")['body'], 'Test Albüm'), 'galeri: albüm listede görünüyor');
+check(str_contains(http('GET', "$BASE/galeri?q=" . rawurlencode('Testetiketi'))['body'], 'Test Albüm') && str_contains(http('GET', "$BASE/galeri?q=" . rawurlencode('Zirvesi Tırmanışı'))['body'], 'Test Albüm')
+    && str_contains(http('GET', "$BASE/yonetim/galeri?q=Testetiketi", ['jar' => 'admin'])['body'], 'Test Albüm'), 'galeri: etiket ve faaliyet adıyla sitede ve panelde aranır');
+check(str_contains($site, 'class="gd-tags"') && str_contains($site, 'Testetiketi Vadisi'), 'galeri: albüm sayfasında etiketler bağlantı olarak görünür');
 
 $tv = $token('viewer', '/yonetim');
 check(http('GET', "$BASE/yonetim/galeri/{$alb['id']}", ['jar' => 'viewer'])['code'] === 200, 'galeri: izleme rolü albümü görür');
@@ -485,8 +529,9 @@ $r = http('POST', "$BASE/yonetim/slaytlar", ['jar' => 'admin', 'post' => ['_csrf
 $form = http('GET', $r['location'], ['jar' => 'admin'])['body'];
 check(str_contains($form, 'bir görsel seç') && str_contains($form, 'hem yazı hem bağlantı'), 'slayt: görselsiz ve bağlantısız buton reddedilir');
 $r = http('POST', "$BASE/yonetim/slaytlar", ['jar' => 'admin', 'multipart' => ['_csrf' => $t, 'title' => 'Test Slaytı {yil} yıl', 'cta_label' => 'Takvim', 'cta_url' => '/faaliyetler',
-    'is_active' => '1', 'image' => new CURLFile($jpg, 'image/jpeg', 'slayt.jpg')]]);
+    'is_active' => '1', 'image' => new CURLFile($jpg, 'image/jpeg', 'slayt.jpg'), 'image_crop' => '0.5,0,0.5,0.5']]);
 $bn = $db->one("SELECT * FROM banners WHERE title LIKE 'Test Slaytı%'");
+check(\App\Core\Image::size($bn['image']) === [900, 550], 'kırpma: slayt görseli seçilen alana kırpıldı (1800×1100 → 900×550)');
 check($r['code'] === 303 && $bn && $bn['image'] && (int) $bn['sort'] === (int) $db->value('SELECT MAX(sort) FROM banners'), 'slayt: eklendi, sıranın sonunda');
 $live = array_column(\App\Models\Banner::visible(), 'id');
 check(count($live) <= 3, 'slayt: sitede en fazla 3 slayt');
@@ -495,9 +540,14 @@ for ($i = 0; $i < 6; $i++) {
 }
 $home = http('GET', "$BASE/")['body'];
 check(\App\Models\Banner::visible()[0]['id'] == $bn['id'] && str_contains($home, 'Test Slaytı ' . club_stat('yil') . ' yıl</h1>'), 'slayt: en üste taşındı, h1 oldu, {yil} doldu');
+// Tanıtım slaytında tarih alanı yok; eski kayıtlardaki tarih sınırı korunur
 http('POST', "$BASE/yonetim/slaytlar/{$bn['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Slaytı', 'is_active' => '1', 'show_until' => date('Y-m-d', strtotime('+10 days'))]]);
-check(str_contains(http('GET', "$BASE/yonetim/slaytlar", ['jar' => 'admin'])['body'], 'ilk sıraya konmaz'), 'slayt: bitiş tarihli slayt ilk sıradaysa panel uyarır');
-http('POST', "$BASE/yonetim/slaytlar/{$bn['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Slaytı', 'is_active' => '1', 'show_until' => date('Y-m-d', strtotime('-1 day'))]]);
+check($db->value('SELECT show_until FROM banners WHERE id = ?', [$bn['id']]) === null && !str_contains(http('GET', "$BASE/yonetim/slaytlar/{$bn['id']}", ['jar' => 'admin'])['body'], 'name="show_until"'), 'slayt: tanıtım slaytında tarih alanı yok');
+$db->run('UPDATE banners SET show_until = ? WHERE id = ?', [date('Y-m-d', strtotime('+10 days')), $bn['id']]);
+check(str_contains(http('GET', "$BASE/yonetim/slaytlar", ['jar' => 'admin'])['body'], 'tarihsiz bir slayt taşı'), 'slayt: bitiş tarihli (eski) slayt ilk sıradaysa panel uyarır');
+http('POST', "$BASE/yonetim/slaytlar/{$bn['id']}", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Slaytı', 'is_active' => '1']]);
+check($db->value('SELECT show_until FROM banners WHERE id = ?', [$bn['id']]) !== null, 'slayt: kaydetmek eski tarih sınırını silmez');
+$db->run('UPDATE banners SET show_until = ? WHERE id = ?', [date('Y-m-d', strtotime('-1 day')), $bn['id']]);
 check(!str_contains(http('GET', "$BASE/")['body'], 'Test Slaytı'), 'slayt: süresi geçen slayt sitede görünmez');
 $tv = $token('viewer', '/yonetim');
 check(http('POST', "$BASE/yonetim/slaytlar/{$bn['id']}/tasi", ['jar' => 'viewer', 'post' => ['_csrf' => $tv, 'do' => 'down']])['code'] === 403, 'slayt: izleme rolü sırayı değiştiremez');
@@ -508,7 +558,80 @@ foreach ($db->all('SELECT id FROM banners ORDER BY sort, id') as $n => $row) {
     $db->run('UPDATE banners SET sort = ? WHERE id = ?', [$n + 1, $row['id']]);
 }
 
+// Faaliyet slaytı
+$t = $token('admin', '/yonetim/slaytlar?sekme=faaliyet');
+$tv = $token('viewer', '/yonetim');
+check(http('POST', "$BASE/yonetim/slaytlar/faaliyet", ['jar' => 'viewer', 'post' => ['_csrf' => $tv, 'activity_id' => $act['id'], 'do' => 'add']])['code'] === 403, 'faaliyet slaytı: izleme rolü ekleyemez');
+$db->run("INSERT INTO activities (slug, title, category, starts_on, location, summary, difficulty) VALUES ('test-kapaksiz-slayt', 'Test Kapaksız', 'gunubirlik', ?, 'Rize', 'Kapaksız test faaliyeti', 1)", [date('Y-m-d', strtotime('+20 days'))]);
+$noCover = (int) $db->value("SELECT id FROM activities WHERE slug = 'test-kapaksiz-slayt'");
+http('POST', "$BASE/yonetim/slaytlar/faaliyet", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'activity_id' => $noCover, 'do' => 'add']]);
+check((int) $db->value('SELECT in_slider FROM activities WHERE id = ?', [$noCover]) === 0, 'faaliyet slaytı: kapak görseli olmayan faaliyet eklenemez');
+$db->run('DELETE FROM activities WHERE id = ?', [$noCover]);
+$r = http('POST', "$BASE/yonetim/slaytlar/faaliyet", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'activity_id' => $act['id'], 'do' => 'add']]);
+$fa = \App\Models\Activity::findBySlug($act['slug']);
+$home = dom(http('GET', "$BASE/")['body']);
+$slideTitles = array_map(static fn ($n) => trim($n->textContent), iterator_to_array($home->query('//*[@data-slide]//*[contains(@class,"hero-title")]')));
+$actSlide = $home->query('//*[@data-slide][.//*[contains(@class,"hero-title")][normalize-space()="' . $fa['title'] . '"]]')->item(0);
+$links = $actSlide ? array_map(static fn ($n) => $n->getAttribute('href') . '|' . trim($n->textContent), iterator_to_array($home->query('.//a[contains(@class,"btn")]', $actSlide))) : [];
+check($r['code'] === 303 && ($slideTitles[1] ?? '') === $fa['title'] && count($slideTitles) <= 3 && $home->query('//*[@data-slide]//h1')->length === 1,
+    'faaliyet slaytı: 2. sırada (ilk sabit slayttan sonra), h1 ilk slaytta kaldı');
+check(in_array($fa['url'] . '|Faaliyet Ayrıntıları', $links, true) && (!$fa['can_apply'] || in_array($fa['url'] . '#basvuru|Faaliyete Başvur', $links, true))
+    && $home->query('.//*[contains(@class,"activity-status")]', $actSlide)->length === 1, 'faaliyet slaytı: başvuru ve ayrıntı butonları, durum rozeti');
+check(str_contains(http('GET', "$BASE/yonetim/slaytlar?sekme=faaliyet", ['jar' => 'admin'])['body'], 'faaliyet-' . $act['id']), 'faaliyet slaytı: panel sekmesinde listeleniyor');
+$db->run('UPDATE activities SET starts_on = ?, ends_on = NULL WHERE id = ?', [date('Y-m-d', strtotime('-2 days')), $act['id']]);
+check(!in_array($fa['title'], array_column(\App\Models\Banner::visible(), 'title'), true), 'faaliyet slaytı: tarihi geçince kendiliğinden kalkar');
+$db->run('UPDATE activities SET starts_on = ?, ends_on = ? WHERE id = ?', [$act['starts_on'], $act['ends_on'], $act['id']]);
+http('POST', "$BASE/yonetim/slaytlar/faaliyet", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'activity_id' => $act['id'], 'do' => 'remove']]);
+check((int) $db->value('SELECT in_slider FROM activities WHERE id = ?', [$act['id']]) === 0 && !in_array($fa['title'], array_column(\App\Models\Banner::visible(), 'title'), true), 'faaliyet slaytı: kaldırıldı');
+
+// Duyuru & Haber slaytı ve /duyurular listesi
+$keepActs = array_column($db->all('SELECT id FROM activities WHERE in_slider = 1'), 'id'); // yerel veriyi bozmadan 3. sıraya yer aç
+$db->run('UPDATE activities SET in_slider = 0');
+$keepNews = array_column($db->all('SELECT id FROM news WHERE in_slider = 1'), 'id');
+$db->run('UPDATE news SET in_slider = 0');
+$t = $token('admin', '/yonetim/duyurular/yeni');
+$r = http('POST', "$BASE/yonetim/duyurular", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'title' => 'Test Slayt Haberi', 'body' => 'metin', 'status' => 'published', 'in_slider' => '1']]);
+check(str_contains(http('GET', $r['location'], ['jar' => 'admin'])['body'], 'kapak görseli yükle'), 'haber slaytı: kapaksız haber slayta eklenemez');
+http('POST', "$BASE/yonetim/duyurular", ['jar' => 'admin', 'multipart' => ['_csrf' => $t, 'title' => 'Test Slayt Haberi', 'category' => 'haber', 'status' => 'published', 'excerpt' => 'Slayt özeti',
+    'body' => 'Haber metni', 'in_slider' => '1', 'cover' => new CURLFile($jpg, 'image/jpeg', 'kapak.jpg'), 'cover_crop' => '0,0,1,0.5']]);
+$sn = $db->one("SELECT * FROM news WHERE title = 'Test Slayt Haberi'");
+check(\App\Core\Image::size($sn['cover_image']) === [1600, 489], 'kırpma: haber kapağı seçilen alana kırpıldı');
+$snUrl = \App\Models\News::findBySlug($sn['slug'])['url'];
+$home = dom(http('GET', "$BASE/")['body']);
+$slide = $home->query('//*[@data-slide][.//*[contains(@class,"hero-title")][normalize-space()="Test Slayt Haberi"]]')->item(0);
+$links = $slide ? array_map(static fn ($n) => $n->getAttribute('href') . '|' . trim($n->textContent), iterator_to_array($home->query('.//a[contains(@class,"btn")]', $slide))) : [];
+check((int) $sn['in_slider'] === 1 && in_array($snUrl . '|Devamını Oku', $links, true) && in_array(url('duyurular') . '|Tüm Duyuru & Haberler', $links, true)
+    && $home->query('//*[@data-slide]//h1')->length === 1, 'haber slaytı: Anasayfada, "Devamını Oku" ve "Tüm Duyuru & Haberler" butonlarıyla');
+check(str_contains(http('GET', "$BASE/yonetim/slaytlar?sekme=haber", ['jar' => 'admin'])['body'], 'haber-' . $sn['id']), 'haber slaytı: panel sekmesinde listeleniyor');
+$db->run('UPDATE news SET slider_until = ? WHERE id = ?', [date('Y-m-d', strtotime('-1 day')), $sn['id']]);
+check(!in_array('Test Slayt Haberi', array_column(\App\Models\Banner::visible(), 'title'), true) && http('GET', "$BASE/duyurular/{$sn['slug']}")['code'] === 200, 'haber slaytı: bitiş tarihi geçince slayttan kalkar, haber sitede kalır');
+$tv = $token('viewer', '/yonetim');
+check(http('POST', "$BASE/yonetim/slaytlar/haber", ['jar' => 'viewer', 'post' => ['_csrf' => $tv, 'news_id' => $sn['id'], 'do' => 'add']])['code'] === 403, 'haber slaytı: izleme rolü ekleyemez');
+http('POST', "$BASE/yonetim/slaytlar/haber", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'news_id' => $sn['id'], 'do' => 'add']]);
+check(in_array('Test Slayt Haberi', array_column(\App\Models\Banner::visible(), 'title'), true), 'haber slaytı: panelden yeniden eklenince eski bitiş tarihi temizlenir');
+http('POST', "$BASE/yonetim/slaytlar/haber", ['jar' => 'admin', 'post' => ['_csrf' => $t, 'news_id' => $sn['id'], 'do' => 'remove']]);
+check((int) $db->value('SELECT in_slider FROM news WHERE id = ?', [$sn['id']]) === 0, 'haber slaytı: kaldırıldı');
+
+$list = http('GET', "$BASE/duyurular");
+$ld = dom($list['body']);
+check($list['code'] === 200 && $ld->query('//a[contains(@class,"news-card")][contains(@href,"/duyurular/' . $sn['slug'] . '")]')->length === 1
+    && $ld->query('//a[@aria-current="page"][contains(@href,"/duyurular")]')->length >= 1, 'duyuru listesi: haber kartı var, menüde "Duyuru & Haber" etkin');
+$rapor = dom(http('GET', "$BASE/duyurular?tur=rapor")['body']);
+check($rapor->query('//a[contains(@class,"news-card")][contains(@href,"' . $sn['slug'] . '")]')->length === 0
+    && $rapor->query('//link[@rel="canonical"][@href="' . url('duyurular') . '"]')->length === 1, 'duyuru listesi: türe göre süzülür, canonical yalın adres');
+check(str_contains(http('GET', "$BASE/")['body'], 'Tüm Duyuru &amp; Haberler'), 'Anasayfa: "Tüm Duyuru & Haberler" bağlantısı');
+http('POST', "$BASE/yonetim/duyurular/{$sn['id']}/sil", ['jar' => 'admin', 'post' => ['_csrf' => $t]]);
+foreach ($keepActs as $id) {
+    $db->run('UPDATE activities SET in_slider = 1 WHERE id = ?', [$id]);
+}
+foreach ($keepNews as $id) {
+    $db->run('UPDATE news SET in_slider = 1 WHERE id = ?', [$id]);
+}
+
 // Temizlik
+foreach ($keepNotes as $k => $v) {
+    \App\Core\Settings::set($k, (string) $v);
+}
 $db->run("DELETE FROM applications WHERE email = 'panel-test@example.invalid'");
 $db->run('DELETE FROM activities WHERE id = ?', [$act['id']]);
 \App\Core\Image::delete($act['cover_image']);

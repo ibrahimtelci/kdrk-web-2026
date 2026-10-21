@@ -9,8 +9,9 @@ use App\Core\Image;
 use App\Models\Banner;
 
 /**
- * Anasayfa slaytları (CLAUDE.md §4): sitede en fazla 3 görünür, sıra paneldeki sıradır.
- * İlk slayt kulübü tanıtır; tarihi geçebilecek duyuru ilk sıraya konmamalı (panel uyarır).
+ * Anasayfa slaytları (CLAUDE.md §4): sitede en fazla 3 görünür.
+ * Üç sekme: tanıtım slaytları (elle yazılır, sırası panelden), faaliyet slaytları ve duyuru & haber slaytları.
+ * Duyuru için ayrıca slayt yazılmaz; Duyuru & Haber'deki kayıt slayta eklenir. Sıra kuralı: Banner sınıfı.
  */
 final class BannerController extends BaseController
 {
@@ -18,13 +19,62 @@ final class BannerController extends BaseController
 
     public function index(): void
     {
-        $this->render('banners/index', 'Anasayfa Slaytları', 'banner', ['rows' => Banner::forPanel()]);
+        $tab = in_array($_GET['sekme'] ?? '', ['faaliyet', 'haber'], true) ? $_GET['sekme'] : 'tanitim';
+        $this->render('banners/index', 'Anasayfa Slaytları', 'banner', Banner::forPanel() + [
+            'tab'        => $tab,
+            'candidates' => match ($tab) {
+                'faaliyet' => Banner::activityCandidates(),
+                'haber'    => Banner::newsCandidates(),
+                default    => [],
+            },
+        ]);
+    }
+
+    /** Faaliyeti slayta ekle / slayttan kaldır (do = add|remove). Faaliyet formundaki onay kutusuyla aynı alanı yazar. */
+    public function activity(): void
+    {
+        $back = url('admin.banners', ['sekme' => 'faaliyet']);
+        $a = App::db()->one('SELECT id, title, cover_image FROM activities WHERE id = ?', [(int) ($_POST['activity_id'] ?? 0)]);
+        if ($a === null) {
+            $this->flash('Bir faaliyet seç.', 'error');
+            redirect($back, 303);
+        }
+        $add = ($_POST['do'] ?? '') === 'add';
+        if ($add && !$a['cover_image']) {
+            $this->flash('“' . $a['title'] . '” için önce kapak görseli yükle; slayt görseli kapaktan gelir.', 'error');
+            redirect($back, 303);
+        }
+        App::db()->run('UPDATE activities SET in_slider = ? WHERE id = ?', [$add ? 1 : 0, $a['id']]);
+        Audit::log('update', 'activity', (int) $a['id'], ['in_slider' => $add ? 1 : 0]);
+        $this->flash($add ? 'Faaliyet slayta eklendi.' : 'Faaliyet slayttan kaldırıldı.');
+        redirect($back, 303);
+    }
+
+    /** Duyuru & haberi slayta ekle / slayttan kaldır (do = add|remove). Haber formundaki onay kutusuyla aynı alanı yazar. */
+    public function news(): void
+    {
+        $back = url('admin.banners', ['sekme' => 'haber']);
+        $n = App::db()->one('SELECT id, title, cover_image FROM news WHERE id = ?', [(int) ($_POST['news_id'] ?? 0)]);
+        if ($n === null) {
+            $this->flash('Bir duyuru veya haber seç.', 'error');
+            redirect($back, 303);
+        }
+        $add = ($_POST['do'] ?? '') === 'add';
+        if ($add && !$n['cover_image']) {
+            $this->flash('“' . $n['title'] . '” için önce kapak görseli yükle; slayt görseli kapaktan gelir.', 'error');
+            redirect($back, 303);
+        }
+        // Eklerken eski (geçmiş) slayt bitişi temizlenir; bitiş gerekiyorsa haber formundan verilir.
+        App::db()->run('UPDATE news SET in_slider = ?, slider_until = IF(?, NULL, slider_until) WHERE id = ?', [$add ? 1 : 0, $add ? 1 : 0, $n['id']]);
+        Audit::log('update', 'news', (int) $n['id'], ['in_slider' => $add ? 1 : 0]);
+        $this->flash($add ? 'Slayta eklendi.' : 'Slayttan kaldırıldı.');
+        redirect($back, 303);
     }
 
     public function create(): void
     {
         $this->requireRole('admin', 'editor');
-        $this->render('banners/form', 'Yeni Slayt', 'banner', ['b' => null]);
+        $this->render('banners/form', 'Yeni Tanıtım Slaytı', 'banner', ['b' => null]);
     }
 
     public function edit(string $id): void
@@ -43,8 +93,8 @@ final class BannerController extends BaseController
         $data['sort'] = 1 + (int) App::db()->value('SELECT COALESCE(MAX(sort), 0) FROM banners');
         $id = App::db()->insert('banners', $data);
         Audit::log('create', 'banner', $id, ['title' => $data['title']]);
-        $this->flash('Slayt eklendi. Sırası listenin sonunda; gerekirse yukarı taşı.');
-        redirect(url('admin.banners'), 303);
+        $this->flash('Tanıtım slaytı eklendi. Sırası listenin sonunda; gerekirse yukarı taşı.');
+        $this->done(url('admin.banners'));
     }
 
     public function update(string $id): void
@@ -114,8 +164,6 @@ final class BannerController extends BaseController
             'cta2_url'   => null,
             'stamp_1'    => self::nullable('stamp_1', 60),
             'stamp_2'    => self::nullable('stamp_2', 60),
-            'show_from'  => null,
-            'show_until' => null,
             'is_active'  => empty($_POST['is_active']) ? 0 : 1,
         ];
         if (mb_strlen($d['title']) < 3) {
@@ -129,21 +177,7 @@ final class BannerController extends BaseController
                 $e[$d[$k] === null ? $k : $p . '_label'] = 'Buton için hem yazı hem bağlantı gerekli (ya da ikisini de boş bırak).';
             }
         }
-        foreach (['show_from', 'show_until'] as $k) {
-            $v = trim((string) ($_POST[$k] ?? ''));
-            if ($v === '') {
-                continue;
-            }
-            $dt = \DateTime::createFromFormat('!Y-m-d', $v);
-            if (!$dt || $dt->format('Y-m-d') !== $v) {
-                $e[$k] = 'Geçerli bir tarih seç.';
-            } else {
-                $d[$k] = $v;
-            }
-        }
-        if ($d['show_from'] && $d['show_until'] && $d['show_until'] < $d['show_from']) {
-            $e['show_until'] = 'Bitiş tarihi başlangıçtan önce olamaz.';
-        }
+        // Tanıtım slaytında tarih yok; eski kayıttaki show_from/show_until değerine dokunulmaz.
         $hasFile = !empty($_FILES['image']['name']) && ($_FILES['image']['error'] ?? 0) !== UPLOAD_ERR_NO_FILE;
         if (!$hasFile && ($current === null || !$current['image'] || !empty($_POST['remove_image']))) {
             $e['image'] = 'Slayt için bir görsel seç (yatay, en az 1600 px genişlik önerilir).';

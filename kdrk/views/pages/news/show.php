@@ -9,7 +9,7 @@ $activityUrl = $n['activity_slug'] && $n['activity_published'] ? url('faaliyet',
 <section class="kb-hero" data-screen-label="01 Başlık">
   <div class="container">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="<?= e(url('home')) ?>">Anasayfa</a><span class="sep" aria-hidden="true">›</span><span class="current" aria-current="page"><?= e($n['category_text']) ?></span>
+      <a href="<?= e(url('home')) ?>">Anasayfa</a><span class="sep" aria-hidden="true">›</span><a href="<?= e(url('duyurular')) ?>">Duyuru &amp; Haberler</a><span class="sep" aria-hidden="true">›</span><span class="current" aria-current="page"><?= e($n['category_text']) ?></span>
     </nav>
     <span class="kb-kicker"><?= e(tr_upper($n['category_text'])) ?></span>
     <h1><?= e($n['title']) ?></h1>
@@ -46,9 +46,9 @@ $activityUrl = $n['activity_slug'] && $n['activity_published'] ? url('faaliyet',
 </div>
 
 <?php if ($others): ?>
-<section class="corp-section alt news-others" data-screen-label="03 Diğer Duyurular">
+<section class="corp-section alt news-others" data-screen-label="03 Diğer Duyuru & Haberler">
   <div class="container">
-    <div class="section-head reveal"><div class="section-head-left"><span class="eyebrow">Gündem</span><h2>Diğer duyurular</h2></div></div>
+    <div class="section-head reveal"><div class="section-head-left"><span class="eyebrow">Gündem</span><h2>Diğer duyuru ve haberler</h2></div><div class="section-head-right"><a href="<?= e(url('duyurular')) ?>" class="btn-text">Tüm Duyuru &amp; Haberler <span class="arrow" aria-hidden="true">→</span></a></div></div>
     <div class="news-list reveal">
 <?php foreach ($others as $o): ?>
       <a href="<?= e($o['url']) ?>" class="news-item">

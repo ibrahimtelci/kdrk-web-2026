@@ -820,3 +820,7 @@ button.photo-tile { padding: 0; border: 0; width: 100%; display: block; }
   .detail-hero .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
   .detail-hero .breadcrumb a, .detail-hero .breadcrumb .sep { flex-shrink: 0; }
 }
+
+/* Konum haritası */
+.detail-map { height: 320px; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; background: var(--surface); z-index: 0; }
+@media (max-width: 640px) { .detail-map { height: 240px; } }
