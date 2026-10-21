@@ -30,6 +30,12 @@ function asset(string $path): string
  * Görsel adresi. Veritabanında ya yüklenen dosyanın göreli yolu (uploads/…) ya da
  * geçiş dönemi için tam URL (Unsplash yer tutucu) durur.
  */
+/** Uzantısız temel yol mu? (uploads/… panel yüklemesi ya da assets/… sabit içerik; -400/-900/-1600/-2400.webp türevleri) */
+function is_variant_base(string $src): bool
+{
+    return (str_starts_with($src, 'uploads/') || str_starts_with($src, 'assets/')) && !preg_match('/\.\w{3,4}$/', $src);
+}
+
 function img(?string $src, int $width = 900): string
 {
     if ($src === null || $src === '') {
@@ -41,8 +47,8 @@ function img(?string $src, int $width = 900): string
     if (preg_match('#^https?://#', $src)) {
         return $src;
     }
-    // Panelden yüklenen görsel: uzantısız temel yol → istenen genişliğe en uygun WebP türevi
-    if (str_starts_with($src, 'uploads/') && !preg_match('/\.\w{3,4}$/', $src)) {
+    // Panelden yüklenen (uploads/) ya da sabit içerik (assets/) görseli: uzantısız temel yol → en uygun WebP türevi
+    if (is_variant_base($src)) {
         $src = \App\Core\Image::variant($src, $width);
     }
     return rtrim((string) App::config('base_url'), '/') . '/' . ltrim($src, '/');
@@ -60,7 +66,7 @@ function img_srcset(?string $src): string
     $widths = [];
     if (preg_match('#^https://images\.unsplash\.com/#', $src)) {
         $widths = \App\Core\Image::WIDTHS;
-    } elseif (str_starts_with($src, 'uploads/') && !preg_match('/\.\w{3,4}$/', $src)) {
+    } elseif (is_variant_base($src)) {
         $root = App::config('public_path') . '/';
         $widths = array_filter(\App\Core\Image::WIDTHS, static fn (int $w) => is_file("$root$src-$w.webp"));
     }

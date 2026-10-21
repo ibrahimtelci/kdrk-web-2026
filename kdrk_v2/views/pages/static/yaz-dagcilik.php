@@ -21,7 +21,12 @@
     <article class="kb-article">
       <section id="genel" class="reveal">
         <h2><span class="h-num">01</span>Genel bakış</h2>
-        <p>Yaz dağcılığı, kar ve buzun büyük ölçüde çekildiği dönemde, kayalık ve çimenli zemin üzerinde yapılan tırmanışları kapsar. Temel beceriler; <strong>rota okuma, ip kullanımı, kayalık geçiş ve kamp kurma</strong> üzerine yoğunlaşır.</p><div class="kb-callout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><p>Bu not bir özettir; uygulamalı eğitim almadan teknik tırmanışa çıkma. Dağ, kitaptan değil sahada öğrenilir.</p></div>
+        <p>Yaz dağcılığı, kar ve buzun büyük ölçüde çekildiği dönemde, kayalık ve çimenli zemin üzerinde yapılan tırmanışları kapsar. Temel beceriler; <strong>rota okuma, ip kullanımı, kayalık geçiş ve kamp kurma</strong> üzerine yoğunlaşır.</p>
+        <figure class="kb-figure">
+          <div class="kb-figure-media"><?= img_tag('assets/egitim/yaz-dagcilik', '(min-width: 1100px) 820px, (min-width: 901px) 70vw, 100vw', 900, 'Kayalık bir yamaçta eğitmen, kasklı ve emniyet kemerli dört katılımcıya ip, karabina ve emniyet kurulumunu gösteriyor; arkada karlı zirveler ve bir göl var.') ?></div>
+          <figcaption>Sahada ip ve emniyet uygulaması: düğüm, karabina ve emniyet kurulumu eğitmen eşliğinde denenir.</figcaption>
+        </figure>
+        <div class="kb-callout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><p>Bu not bir özettir; uygulamalı eğitim almadan teknik tırmanışa çıkma. Dağ, kitaptan değil sahada öğrenilir.</p></div>
       </section>
       <section id="mufredat" class="reveal">
         <h2><span class="h-num">02</span>Temel müfredat</h2>

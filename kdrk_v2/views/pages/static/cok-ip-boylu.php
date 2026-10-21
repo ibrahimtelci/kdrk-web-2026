@@ -21,7 +21,12 @@
     <article class="kb-article">
       <section id="tanim" class="reveal">
         <h2><span class="h-num">01</span>Çok ip boylu nedir?</h2>
-        <p><strong>Çok ip boylu (multi-pitch)</strong> tırmanış; bir ip uzunluğundan daha yüksek duvarların, ardışık ip boyları halinde tırmanılmasıdır. Her ip boyu sonunda bir <strong>istasyon</strong> kurulur ve ekip yukarı doğru ilerler.</p><div class="kb-callout warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><p>Çok ip boylu tırmanış; tek ip boylu sistemde ustalaşmadan denenmemelidir. Hata payı düşük, sorumluluk yüksektir.</p></div>
+        <p><strong>Çok ip boylu (multi-pitch)</strong> tırmanış; bir ip uzunluğundan daha yüksek duvarların, ardışık ip boyları halinde tırmanılmasıdır. Her ip boyu sonunda bir <strong>istasyon</strong> kurulur ve ekip yukarı doğru ilerler.</p>
+        <figure class="kb-figure">
+          <div class="kb-figure-media"><?= img_tag('assets/egitim/cok-ip-boylu', '(min-width: 1100px) 820px, (min-width: 901px) 70vw, 100vw', 900, 'Yüksek bir kaya duvarında çok ip boylu tırmanış: lider yukarıda tırmanıyor, ikinci tırmanıcı istasyonda onu emniyete alıyor; aşağıda orman, göl ve vadi.') ?></div>
+          <figcaption>Çok ip boylu tırmanışta ekip istasyondan istasyona ilerler: lider tırmanırken ikinci, istasyonda emniyet verir.</figcaption>
+        </figure>
+        <div class="kb-callout warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><p>Çok ip boylu tırmanış; tek ip boylu sistemde ustalaşmadan denenmemelidir. Hata payı düşük, sorumluluk yüksektir.</p></div>
       </section>
       <section id="istasyon" class="reveal">
         <h2><span class="h-num">02</span>İstasyon kurulumu</h2>

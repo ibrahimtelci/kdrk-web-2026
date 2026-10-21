@@ -21,7 +21,12 @@
     <article class="kb-article">
       <section id="tanim" class="reveal">
         <h2><span class="h-num">01</span>Tek ip boylu nedir?</h2>
-        <p><strong>Tek ip boylu (single-pitch)</strong> tırmanış; bir ip uzunluğunu (yaklaşık 30-35 m) geçmeyen, tepedeki istasyona ulaşıp aynı noktadan inilen tırmanış türüdür. Emniyetçi yerde kalır.</p><p>Yeni başlayanlar için ideal başlangıç sistemidir; öncü (lead) ve tepeden emniyetli (top-rope) olarak yapılabilir.</p>
+        <p><strong>Tek ip boylu (single-pitch)</strong> tırmanış; bir ip uzunluğunu (yaklaşık 30-35 m) geçmeyen, tepedeki istasyona ulaşıp aynı noktadan inilen tırmanış türüdür. Emniyetçi yerde kalır.</p>
+        <figure class="kb-figure">
+          <div class="kb-figure-media"><?= img_tag('assets/egitim/tek-ip-boylu', '(min-width: 1100px) 820px, (min-width: 901px) 70vw, 100vw', 900, 'Kireçtaşı bir duvarda tek ip boyu tırmanış: tırmanıcı ipi ara emniyetlere geçirerek yükseliyor, kasklı emniyetçi yerden ipi yönetiyor.') ?></div>
+          <figcaption>Tek ip boylu tırmanışta emniyetçi yerde kalır; tırmanıcı ipi ara emniyetlere geçirerek ilerler.</figcaption>
+        </figure>
+        <p>Yeni başlayanlar için ideal başlangıç sistemidir; öncü (lead) ve tepeden emniyetli (top-rope) olarak yapılabilir.</p>
       </section>
       <section id="sistem" class="reveal">
         <h2><span class="h-num">02</span>Sistem kurulumu</h2>

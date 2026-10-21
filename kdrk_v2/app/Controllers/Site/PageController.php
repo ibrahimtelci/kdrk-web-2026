@@ -11,7 +11,8 @@ final class PageController
 {
     public function show(string $name): void
     {
-        [, $view, $title, $description, $css, $navLight, $group] = (require KDRK_ROOT . '/app/pages.php')[$name];
+        $cfg = (require KDRK_ROOT . '/app/pages.php')[$name];
+        [, $view, $title, $description, $css, $navLight, $group] = $cfg;
         echo View::render($view, [
             // Form içeren sayfalar (İletişim) JS kapalıyken dönen hata/değerleri buradan okur
             'old'    => Session::pull('form_old', []),
@@ -24,6 +25,7 @@ final class PageController
             'navLight'    => $navLight,
             'nav'         => $group,
             'current'     => $name,
+            'image'       => $cfg[8] ?? null, // paylaşım görseli (og:image), varsa
         ]]);
     }
 }

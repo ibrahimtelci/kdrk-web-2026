@@ -21,7 +21,12 @@
     <article class="kb-article">
       <section id="genel" class="reveal">
         <h2><span class="h-num">01</span>Genel bakış</h2>
-        <p>Kış dağcılığı, kar ve buz örtülü zeminde yapılan tırmanıştır. Yaz becerilerine ek olarak <strong>krampon-balta kullanımı, kar zemini değerlendirme ve çığ güvenliği</strong> kritik öneme sahiptir.</p><div class="kb-callout warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><p>Çığ, kış dağcılığının en büyük tehlikesidir. Çığ güvenliği eğitimi almadan kış arazisine çıkma.</p></div>
+        <p>Kış dağcılığı, kar ve buz örtülü zeminde yapılan tırmanıştır. Yaz becerilerine ek olarak <strong>krampon-balta kullanımı, kar zemini değerlendirme ve çığ güvenliği</strong> kritik öneme sahiptir.</p>
+        <figure class="kb-figure">
+          <div class="kb-figure-media"><?= img_tag('assets/egitim/kis-dagcilik', '(min-width: 1100px) 820px, (min-width: 901px) 70vw, 100vw', 900, 'Karla kaplı bir düzlükte çığ arama tatbikatı: iki katılımcı sondayla arıyor, biri çığ arama cihazıyla sinyal izliyor, biri kürekle kazıyor; arkada iglo ve çadırlar.') ?></div>
+          <figcaption>Çığ arama tatbikatı: arama cihazı, sonda ve kürek birlikte kullanılır; her biri ayrı bir beceridir.</figcaption>
+        </figure>
+        <div class="kb-callout warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><p>Çığ, kış dağcılığının en büyük tehlikesidir. Çığ güvenliği eğitimi almadan kış arazisine çıkma.</p></div>
       </section>
       <section id="mufredat" class="reveal">
         <h2><span class="h-num">02</span>Temel müfredat</h2>
